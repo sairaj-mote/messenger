@@ -1,98 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="css/main.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="css/main.css">
+	<script src="components.js"></script>
 </head>
+
 <body data-theme="light">
-    <header class="header">
-        <h5>RanchiMall</h5>
-        <h4>FLO Messenger</h4>
-    </header>
-    <nav class="navbar">
-        <div class="navbar-item">
-            <svg class="icon" viewBox="0 0 64 64">
-                <title>Inbox</title>
-                <path d="M56,8H8a8,8,0,0,0-8,8V48a8,8,0,0,0,8,8H56a8,8,0,0,0,8-8V16A8,8,0,0,0,56,8Zm-.68,10.62L33.39,38.43a2.08,2.08,0,0,1-2.78,0L8.68,18.62A2.08,2.08,0,0,1,10.07,15H53.93A2.08,2.08,0,0,1,55.32,18.62Z"/>
-            </svg>
-            <h5 class="label">Inbox</h5>
-        </div>
-    </nav>
-    <div class="page" id="email_page">
-        <header class="header">
-            <h3>Inbox</h3>
-            <button id="compose_new_email" title="Compose new email">
-                <svg class="icon" viewBox="0 0 64 64">
-                    <title>Compose new email</title>
-                    <polygon points="64 29 35 29 35 0 29 0 29 29 0 29 0 35 29 35 29 64 35 64 35 35 64 35 64 29"/>
-                </svg>
-                compose new email
-            </button>
-        </header>
-        <ul id="email_container">
-            <li class="email">
-                <h5 class="sender">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-                <h4 class="subject">Subject</h4>
-                <h5 class="date">19 May</h5>
-                <p class="email-summary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero optio vitae aliquid ad laboriosam ullam, sint nostrum accusamus saepe placeat. Magni, molestias alias! Cum, labore cumque error voluptate et voluptatibus!</p>
-            </li>
-            <li class="email">
-                <h5 class="sender">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-                <h4 class="subject">Subject</h4>
-                <h5 class="date">19 May</h5>
-                <p class="email-summary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero optio vitae aliquid ad laboriosam ullam, sint nostrum accusamus saepe placeat. Magni, molestias alias! Cum, labore cumque error voluptate et voluptatibus!</p>
-            </li>
-            <li class="email">
-                <h5 class="sender">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-                <h4 class="subject">Subject</h4>
-                <h5 class="date">19 May</h5>
-                <p class="email-summary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero optio vitae aliquid ad laboriosam ullam, sint nostrum accusamus saepe placeat. Magni, molestias alias! Cum, labore cumque error voluptate et voluptatibus!</p>
-            </li>
-            <li class="email">
-                <h5 class="sender">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-                <h4 class="subject">Subject</h4>
-                <h5 class="date">19 May</h5>
-                <p class="email-summary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero optio vitae aliquid ad laboriosam ullam, sint nostrum accusamus saepe placeat. Magni, molestias alias! Cum, labore cumque error voluptate et voluptatibus!</p>
-            </li>
-            <li class="email">
-                <h5 class="sender">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-                <h4 class="subject">Subject</h4>
-                <h5 class="date">19 May</h5>
-                <p class="email-summary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero optio vitae aliquid ad laboriosam ullam, sint nostrum accusamus saepe placeat. Magni, molestias alias! Cum, labore cumque error voluptate et voluptatibus!</p>
-            </li>
-            <li class="email">
-                <h5 class="sender">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-                <h4 class="subject">Subject</h4>
-                <h5 class="date">19 May</h5>
-                <p class="email-summary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero optio vitae aliquid ad laboriosam ullam, sint nostrum accusamus saepe placeat. Magni, molestias alias! Cum, labore cumque error voluptate et voluptatibus!</p>
-            </li>
-            <li class="email">
-                <h5 class="sender">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-                <h4 class="subject">Subject</h4>
-                <h5 class="date">19 May</h5>
-                <p class="email-summary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero optio vitae aliquid ad laboriosam ullam, sint nostrum accusamus saepe placeat. Magni, molestias alias! Cum, labore cumque error voluptate et voluptatibus!</p>
-            </li>
-            <li class="email">
-                <h5 class="sender">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-                <h4 class="subject">Subject</h4>
-                <h5 class="date">19 May</h5>
-                <p class="email-summary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero optio vitae aliquid ad laboriosam ullam, sint nostrum accusamus saepe placeat. Magni, molestias alias! Cum, labore cumque error voluptate et voluptatibus!</p>
-            </li>
-            <li class="email">
-                <h5 class="sender">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-                <h4 class="subject">Subject</h4>
-                <h5 class="date">19 May</h5>
-                <p class="email-summary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero optio vitae aliquid ad laboriosam ullam, sint nostrum accusamus saepe placeat. Magni, molestias alias! Cum, labore cumque error voluptate et voluptatibus!</p>
-            </li>
-            <li class="email">
-                <h5 class="sender">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-                <h4 class="subject">Subject</h4>
-                <h5 class="date">19 May</h5>
-                <p class="email-summary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero optio vitae aliquid ad laboriosam ullam, sint nostrum accusamus saepe placeat. Magni, molestias alias! Cum, labore cumque error voluptate et voluptatibus!</p>
-            </li>
-        </ul>
-    </div>
+	<audio id="notification_sound">
+		<source src="https://rmservices.duckdns.org/files/notification-sound.mp3" type="audio/mpeg">
+		<source src="https://rmservices.duckdns.org/files/notification-sound.ogg" type="audio/ogg">
+	</audio>
+
+	<h5 id="textCopied" class="hide">
+		Copied
+	</h5>
+
+	<div class="popup-container hide">
+		<div id="confirmation" class="popup">
+			<p></p>
+			<div>
+				<sm-btn value="cancel" onclick="hidePopup()"></sm-btn>
+				<sm-btn value="ok"></sm-btn>
+			</div>
+		</div>
+	</div>
+	<div id="notify" class="hide">
+		<div>
+			<svg id="error_icon" class="notification-icon hide-completely" viewBox="0 0 100 100">
+				<title>Error icon</title>
+				<path
+					d="M50,0a50,50,0,1,0,50,50A50,50,0,0,0,50,0ZM46,27.18A.79.79,0,0,1,46.6,27h7.72a.79.79,0,0,1,.79.79l-1,28.76a.79.79,0,0,
+            1-.79.79H47.46a.77.77,0,0,1-.56-.23.73.73,0,0,1-.23-.56l-.86-28.76A.77.77,0,0,1,46,27.18Zm7.68,44.39A4.91,4.91,0,0,1,50,73.05a5.08,5.08,
+            0,0,1-5.21-5.21A5,5,0,0,1,50,62.63a5,5,0,0,1,3.73,1.45,5.18,5.18,0,0,1,1.42,3.76A5.11,5.11,0,0,1,53.72,71.57Z" />
+			</svg>
+			<svg id="done_icon" class="notification-icon" viewBox="0 0 100 100">
+				<title>Done icon</title>
+				<path
+					d="M50,0a50,50,0,1,0,50,50A50,50,0,0,0,50,0ZM80.85,32.37,40.3,72.92a1.24,1.24,0,0,1-1.75,0l-19.4-19.4a1.23,1.23,0,0,1,0-1.75l3.54-3.54a1.23,
+            1.23,0,0,1,1.74,0L38.55,62.35a1.24,1.24,0,0,0,1.75,0L75.57,27.08a1.23,1.23,0,0,1,1.74,0l3.54,3.54A1.23,1.23,0,0,1,80.85,32.37Z" />
+			</svg>
+		</div>
+		<span id="notification_text">Message</span>
+		<button id="hide_banner_btn">
+			<svg viewBox="0 0 50 50">
+				<title>Close this notification</title>
+				<line x1="50" y1="0" x2="0" y2="50" />
+				<line x1="0" y1="0" x2="50" y2="50" />
+			</svg>
+		</button>
+	</div>
+	<div class="popup-container hide">
+		<div id="contact_list" class="popup std-popup">
+			<header>
+				<h3>Contacts</h3>
+				<sm-btn type="secondary" value="add contact">
+					<svg class="icon primary" slot="icon" viewBox="0 0 64 64">
+						<title>add</title>
+						<line x1="32" x2="32" y2="64"/>
+						<line x1="64" y1="32" y2="32"/>
+					</svg>
+				</sm-btn>
+				<sm-input id="search_contact" type="search" placeholder="search contacts">
+					<svg slot="icon" class="icon" viewBox="0 0 64 64">
+						<title>Search</title>
+						<path d="M25.69,1A24.7,24.7,0,0,1,43.15,43.15,24.7,24.7,0,0,1,8.23,8.22,24.53,24.53,0,0,1,25.69,1m0-1A25.7,25.7,0,1,0,43.85,7.51,25.64,25.64,0,0,0,25.69,0Z"/>
+						<line x1="63.65" y1="63.66" x2="43.36" y2="43.37"/>
+					</svg>
+				</sm-input>
+			</header>
+			<ul id="contact_container">
+				<li class="contact">
+					<div class="dp"></div>
+					<h4 class="name">Sairaj mote</h4>
+					<h5 class="address">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
+				</li>
+				<li class="contact">
+					<div class="dp"></div>
+					<h4 class="name">Sairaj mote</h4>
+					<h5 class="address">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
+				</li>
+				<li class="contact">
+					<div class="dp"></div>
+					<h4 class="name">Sairaj mote</h4>
+					<h5 class="address">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
+				</li>
+				<li class="contact">
+					<div class="dp"></div>
+					<h4 class="name">Sairaj mote</h4>
+					<h5 class="address">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
+				</li>
+				<li class="contact">
+					<div class="dp"></div>
+					<h4 class="name">Sairaj mote</h4>
+					<h5 class="address">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="popup-container solid-background hide">
+		<div id="sign_in" class="popup">
+			<div class="left">
+				<div class="logo-section">
+					<div class="logo">
+
+					</div>
+					<h5 class="light-text">RanchiMall</h5>
+					<h3>Messenger</h3>
+				</div>
+				<h1 class="title-font">One App For<br>
+					Sending and Receiving<br>
+					Emails and Messages
+				</h1>
+				<p class="light-text">New here? login as guest and get your FLO private key.</p>
+				<sm-btn type="secondary" value="Guest login"></sm-btn>
+			</div>
+			<div class="right">
+				<h2 class="title-font">Login</h2>
+				<h4>Welcome Back!</h4>
+				<p class="light-text">
+					Please enter your FLO private key to continue.
+				</p>
+				<sm-input type="password" placeholder="private key"></sm-input>
+				<sm-btn width="cover" type="primary" value="continue"></sm-btn>
+			</div>
+		</div>
+	</div>
+	<sm-tab-header type="tab">
+		<sm-tab panel="">inbox</sm-tab>
+		<sm-tab active panel="">sent</sm-tab>
+	</sm-tab-header>
+	<sm-input placeholder="somthing">
+		<svg slot="icon" class="icon" viewBox="0 0 64 64">
+			<title>Search</title>
+			<path d="M25.69,1A24.7,24.7,0,0,1,43.15,43.15,24.7,24.7,0,0,1,8.23,8.22,24.53,24.53,0,0,1,25.69,1m0-1A25.7,25.7,0,1,0,43.85,7.51,25.64,25.64,0,0,0,25.69,0Z"/>
+			<line x1="63.65" y1="63.66" x2="43.36" y2="43.37"/>
+		</svg>
+	</sm-input>
+	<ul id="address_transaction_container" data-tab-group="address" class="transaction-container"></ul>
+    <ul id="token_balance_container" data-tab-group="address" class="hide-completely"></ul>
+	<script>
+		//Checks for internet connection status
+		if (!navigator.onLine)
+			notify('There seems to be a problem connecting to the internet.', 'error', true)
+		window.addEventListener('offline', () => {
+			notify('There seems to be a problem connecting to the internet.', 'error', true)
+		})
+		window.addEventListener('online', () => {
+			notify('We are back online.')
+		})
+
+		function askConfirmation(message) {
+			return new Promise(resolve => {
+				let popup = document.getElementById('confirmation');
+				showPopup('confirmation')
+				popup.children[0].textContent = message;
+				popup.children[1].firstElementChild.onclick = () => {
+					hidePopup()
+					resolve(false)
+				}
+				popup.children[1].children[1].onclick = () => {
+					hidePopup()
+					resolve(true)
+				}
+			})
+		}
+
+		// function required for popups or modals to appear
+		class Stack {
+			constructor() {
+				this.items = [];
+			}
+			push(element) {
+				this.items.push(element);
+			}
+			pop() {
+				if (this.items.length == 0)
+					return "Underflow";
+				return this.items.pop();
+			}
+			peek() {
+				return this.items[this.items.length - 1];
+			}
+		}
+		let popupStack = new Stack(),
+			loader = document.getElementById('loader'),
+			zIndex = 10,
+			tipsInterval;
+		function showPopup(popup, permission) {
+			let thisPopup = document.getElementById(popup);
+			thisPopup.parentNode.classList.remove('hide');
+			thisPopup.classList.add('no-transformations');
+			popupStack.push({ popup, permission })
+			zIndex++;
+			thisPopup.parentNode.setAttribute('style', `z-index: ${zIndex}`)
+			if (popup === 'main_loader') {
+				loader.classList.add('animate-loader')
+				tipsInterval = setInterval(changeTips, 2000)
+				document.querySelector('main').classList.add('hide-completely')
+			}
+		}
+
+		// hides the popup or modal 
+		function hidePopup() {
+			let { popup, permission } = popupStack.pop();
+			thisPopup = document.getElementById(popup);
+			thisPopup.closest('.popup-container').classList.add('hide');
+			thisPopup.closest('.popup').classList.remove('no-transformations');
+			setTimeout(() => {
+				clearAllInputs(thisPopup)
+				zIndex--;
+				thisPopup.parentNode.setAttribute('style', `z-index: ${zIndex}`)
+			}, 400)
+			if (popup === 'main_loader') {
+				loader.classList.remove('animate-loader')
+				clearInterval(tipsInterval)
+				document.querySelector('main').classList.remove('hide-completely')
+			}
+		}
+
+		addEventListener('mousedown', e => {
+			if (e.target.classList.contains('popup-container') && popupStack.peek().permission !== 'no') {
+				hidePopup()
+			}
+		})
+
+		function clearAllInputs(parent) {
+			parent.querySelectorAll("sm-input").forEach((field) => {
+				if (field.type !== 'radio') {
+					field.value = '';
+				}
+				else
+					field.checked = false
+			})
+		}
+
+
+		function setAttributes(el, attrs) {
+			for (var key in attrs) {
+				el.setAttribute(key, attrs[key]);
+			}
+		}
+		//Function for displaying toast notifications.
+        /*options
+        message - notifiation body text.
+        mode - error or normal notification. only error has to be specified.
+        pinned - if set true notification will not fade after 4s;
+        sound - set true to enable notification sound. ! should only be used for important tasks.
+        setAside - set true to add notification inside notification panel
+        */
+		//let currentCount = 0;
+		function notify(message, mode, pinned, sound, setAside) {
+			let banner = document.getElementById('notify'),
+				notificationContainer = document.getElementById('notification_container'),
+				notifiationCounter = document.querySelector("#notification_badge");
+			currentCount = parseInt(notifiationCounter.getAttribute('data-badge'));
+
+			if (mode === 'error') {
+				banner.querySelector('#error_icon').classList.remove('hide-completely')
+				banner.querySelector('#done_icon').classList.add('hide-completely')
+			}
+			else {
+				banner.querySelector('#error_icon').classList.add('hide-completely')
+				banner.querySelector('#done_icon').classList.remove('hide-completely')
+			}
+            /*if(setAside){
+              notificationContainer.prepend(render.notification(message));
+              currentCount++;
+              notifiationCounter.setAttribute('data-badge', currentCount);
+            }*/
+
+			banner.classList.add('no-transformations')
+			banner.classList.remove('hide')
+			banner.querySelector('#notification_text').textContent = message.charAt(0).toUpperCase() + message.slice(1);
+			if (navigator.onLine && sound) {
+				notificationSound.currentTime = 0;
+				notificationSound.play();
+			}
+			banner.querySelector('#hide_banner_btn').onclick = function () {
+				banner.classList.add('hide')
+				banner.classList.remove('no-transformations')
+			}
+			clearTimeout(currentTimeout)
+			if (fixed) return;
+			currentTimeout = setTimeout(() => {
+				banner.classList.add('hide')
+				banner.classList.remove('no-transformations')
+			}, 6000)
+		}
+	</script>
+	<script>
+		addEventListener('keyup', e => {
+			if(e.target.id === 'search_contact'){
+				console.log('hi')
+			}
+		})
+	</script>
 </body>
+
 </html>
