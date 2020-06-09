@@ -325,11 +325,9 @@ smTabHeader.innerHTML = `
     display: flex;
 }
 .tab-header{
-    display: grid;
+    display: flex;
     position: relative;
-    grid-auto-flow: column dense;
     overflow-x: auto;
-    width: auto;
 }
 .indicator{
     position: absolute;
@@ -420,7 +418,6 @@ smTab.innerHTML = `
 }
 .tab{
     user-select: none;
-    display: flex;
     justify-content: center;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
@@ -430,7 +427,6 @@ smTab.innerHTML = `
     font-weight: 500;
     letter-spacing: 0.06em;
     word-spacing: 0.1em;
-    width: 100%;
     text-align: center;
     transition: color 0.3s;
     text-transform: uppercase;
