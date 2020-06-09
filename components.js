@@ -123,8 +123,8 @@ customElements.define('sm-btn',
             display: flex;
         }
         .hide{
-           opacity: 0;
-           pointer-events: none;
+           opacity: 0 !important;
+           pointer-events: none !important;
         }
         .icon {
             fill: none;
@@ -215,7 +215,6 @@ class extends HTMLElement{
     constructor(){
         super()
         this.attachShadow({mode: 'open'}).append(smInput.content.cloneNode(true))
-
     }
     static get observedAttributes(){
         return ['placeholder']
@@ -252,13 +251,21 @@ class extends HTMLElement{
             }
     }
 
-    checkInput(input, inputParent, clear) {
+    checkInput(input, label, inputParent, clear) {
+        if (!this.hasAttribute('placeholder') || this.getAttribute('placeholder') === '')
+            return;
         if (input.value !== '') {
-            inputParent.classList.add('animate-label')
+            if (this.animate)
+                inputParent.classList.add('animate-label')
+            else
+                label.classList.add('hide')
             clear.classList.remove('hide')
         }
         else {
-            inputParent.classList.remove('animate-label')
+            if (this.animate)
+                inputParent.classList.remove('animate-label')
+            else
+                label.classList.remove('hide')
             clear.classList.add('hide')
         }
     }
@@ -266,7 +273,9 @@ class extends HTMLElement{
     connectedCallback(){
         let input = this.shadowRoot.querySelector('input'),
             inputParent = this.shadowRoot.querySelector('.input'),
-            clearBtn = this.shadowRoot.querySelector('.clear')
+            clearBtn = this.shadowRoot.querySelector('.clear'),
+            label = this.shadowRoot.querySelector('.label')
+        this.animate = this.hasAttribute('animate')
         this.shadowRoot.querySelector('.label').textContent = this.getAttribute('placeholder')
         if (this.hasAttribute('value')) {
             input.value = this.getAttribute('value')
@@ -286,11 +295,11 @@ class extends HTMLElement{
                 this.preventNonNumericalInput(e);
         })
         input.addEventListener('input', e => {
-            this.checkInput(input, inputParent, clearBtn)
+            this.checkInput(input, label, inputParent, clearBtn)
         })
         clearBtn.addEventListener('click', e => {
             input.value = ''
-            this.checkInput(input, inputParent, clearBtn)
+            this.checkInput(input, label, inputParent, clearBtn)
         })
     }
 
@@ -307,6 +316,11 @@ class extends HTMLElement{
 const smTabHeader = document.createElement('template')
 smTabHeader.innerHTML = `
 <style>
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+} 
 :host{
     display: flex;
 }
@@ -395,6 +409,11 @@ customElements.define('sm-tab-header', class extends HTMLElement {
 const smTab = document.createElement('template')
 smTab.innerHTML = `
 <style>
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+} 
 :host{
     display: inline-flex;
     z-index: 2;
@@ -406,7 +425,7 @@ smTab.innerHTML = `
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     white-space: nowrap;
-    font-size: 1rem;
+    font-size: 0.9rem;
     padding: 0.4rem 0.6rem;
     font-weight: 500;
     letter-spacing: 0.06em;
