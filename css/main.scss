@@ -80,6 +80,22 @@ sm-input{
         margin-right: 1rem;
     }
 }
+.checkbox{
+    cursor: pointer;
+    input{
+        display: none;
+    }
+    .checkmark{
+        stroke-dashoffset: -60;
+        stroke-dasharray: 60;
+        transition: stroke-dashoffset 0.3s;
+    }
+    input:checked{
+        & ~ svg .checkmark{
+            stroke-dashoffset: 0;
+        }
+    }
+}
 .icon{
     fill: none;
     height: 1rem;

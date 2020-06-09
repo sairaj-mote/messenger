@@ -114,6 +114,25 @@ sm-input .icon {
   margin-right: 1rem;
 }
 
+.checkbox {
+  cursor: pointer;
+}
+
+.checkbox input {
+  display: none;
+}
+
+.checkbox .checkmark {
+  stroke-dashoffset: -60;
+  stroke-dasharray: 60;
+  -webkit-transition: stroke-dashoffset 0.3s;
+  transition: stroke-dashoffset 0.3s;
+}
+
+.checkbox input:checked ~ svg .checkmark {
+  stroke-dashoffset: 0;
+}
+
 .icon {
   fill: none;
   height: 1rem;

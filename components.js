@@ -2,7 +2,12 @@
 
 const smBtn = document.createElement('template')
 smBtn.innerHTML = `
-        <style>           
+        <style>     
+            *{
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            }       
             :host{
                 display: flex;
             }
@@ -93,10 +98,15 @@ customElements.define('sm-btn',
         }
     })
 
-    //Input
-    const smInput = document.createElement('template')
-    smInput.innerHTML = `
+//Input
+const smInput = document.createElement('template')
+smInput.innerHTML = `
         <style>
+        *{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        } 
         input[type="search"]::-webkit-search-decoration,
         input[type="search"]::-webkit-search-cancel-button,
         input[type="search"]::-webkit-search-results-button,
@@ -128,10 +138,11 @@ customElements.define('sm-btn',
         }
         .icon {
             fill: none;
-            height: 1rem;
-            width: 1rem;
+            height: 1.2rem;
+            width: 1.2rem;
+            padding: 0.3rem;
             stroke: rgba(var(--text), 0.7);
-            stroke-width: 6;
+            stroke-width: 10;
             overflow: visible;
             stroke-linecap: round;
             stroke-linejoin: round;
@@ -155,6 +166,7 @@ customElements.define('sm-btn',
         }
     
         .label {
+            user-select: none;
             opacity: .7;
             font-weight: 400;
             font-size: 1rem;
@@ -204,112 +216,111 @@ customElements.define('sm-btn',
         </div>
         <svg class="icon clear hide" viewBox="0 0 64 64">
             <title>clear</title>
-            <path d="M55.44,51.69H22.71a8,8,0,0,1-5.4-2.09L1.66,35.38a3.57,3.57,0,0,1-.11-5.16L17.26,14.65a8,8,0,0,1,5.65-2.34H55.44a8.09,8.09,0,0,1,8.06,8.12V43.57A8.09,8.09,0,0,1,55.44,51.69Z"/>
-            <line x1="43.81" y1="24.13" x2="28.19" y2="39.87"/>
-            <line x1="43.81" y1="39.87" x2="28.19" y2="24.13"/>
+            <line x1="63.65" y1="0.35" x2="0.35" y2="63.65"/>
+            <line x1="63.65" y1="63.65" x2="0.35" y2="0.35"/>
         </svg>
     </label>
 `;
-customElements.define('sm-input', 
-class extends HTMLElement{
-    constructor(){
-        super()
-        this.attachShadow({mode: 'open'}).append(smInput.content.cloneNode(true))
-    }
-    static get observedAttributes(){
-        return ['placeholder']
-    }
+customElements.define('sm-input',
+    class extends HTMLElement {
+        constructor() {
+            super()
+            this.attachShadow({ mode: 'open' }).append(smInput.content.cloneNode(true))
+        }
+        static get observedAttributes() {
+            return ['placeholder']
+        }
 
-    get value(){
-        return this.shadowRoot.querySelector('input').value
-    }
+        get value() {
+            return this.shadowRoot.querySelector('input').value
+        }
 
-    set value(val){
-        this.shadowRoot.querySelector('input').value = val;
-    }
+        set value(val) {
+            this.shadowRoot.querySelector('input').value = val;
+        }
 
-    get placeholder() {
-        return this.getAttribute('placeholder')
-    }
+        get placeholder() {
+            return this.getAttribute('placeholder')
+        }
 
-    set placeholder(val) {
-        this.setAttribute('placeholder', val)
-    }
+        set placeholder(val) {
+            this.setAttribute('placeholder', val)
+        }
 
-    get type() {
-        return this.getAttribute('type')
-    }
+        get type() {
+            return this.getAttribute('type')
+        }
 
-    get isValid() {
-        return this.shadowRoot.querySelector('input').checkValidity()
-    }
+        get isValid() {
+            return this.shadowRoot.querySelector('input').checkValidity()
+        }
 
-    preventNonNumericalInput(e) {
-        let keyCode = e.keyCode;
-        if(!((keyCode >= 48 && keyCode <= 57) || (keyCode >= 37 && keyCode <= 40) || (keyCode >=96 && keyCode <= 105) || keyCode === 110 || (keyCode > 7 && keyCode < 19))) {
+        preventNonNumericalInput(e) {
+            let keyCode = e.keyCode;
+            if (!((keyCode > 47 && keyCode < 56) || (keyCode > 36 && keyCode < 39) || (keyCode > 95 && keyCode < 104) || keyCode === 110 || (keyCode > 7 && keyCode < 19))) {
                 e.preventDefault();
             }
-    }
+        }
 
-    checkInput(input, label, inputParent, clear) {
-        if (!this.hasAttribute('placeholder') || this.getAttribute('placeholder') === '')
-            return;
-        if (input.value !== '') {
-            if (this.animate)
-                inputParent.classList.add('animate-label')
-            else
-                label.classList.add('hide')
-            clear.classList.remove('hide')
+        checkInput(input, label, inputParent, clear) {
+            if (!this.hasAttribute('placeholder') || this.getAttribute('placeholder') === '')
+                return;
+            if (input.value !== '') {
+                if (this.animate)
+                    inputParent.classList.add('animate-label')
+                else
+                    label.classList.add('hide')
+                clear.classList.remove('hide')
+            }
+            else {
+                if (this.animate)
+                    inputParent.classList.remove('animate-label')
+                else
+                    label.classList.remove('hide')
+                clear.classList.add('hide')
+            }
         }
-        else {
-            if (this.animate)
-                inputParent.classList.remove('animate-label')
-            else
-                label.classList.remove('hide')
-            clear.classList.add('hide')
-        }
-    }
 
-    connectedCallback(){
-        let input = this.shadowRoot.querySelector('input'),
-            inputParent = this.shadowRoot.querySelector('.input'),
-            clearBtn = this.shadowRoot.querySelector('.clear'),
-            label = this.shadowRoot.querySelector('.label')
-        this.animate = this.hasAttribute('animate')
-        this.shadowRoot.querySelector('.label').textContent = this.getAttribute('placeholder')
-        if (this.hasAttribute('value')) {
-            input.value = this.getAttribute('value')
-            this.checkInput(input, inputParent, clearBtn)
-        }
-        if (this.hasAttribute('type')) {
-            if(this.getAttribute('type') === 'number'){
-                input.setAttribute('inputmode', 'numeric')
+        connectedCallback() {
+            let input = this.shadowRoot.querySelector('input'),
+                inputParent = this.shadowRoot.querySelector('.input'),
+                clearBtn = this.shadowRoot.querySelector('.clear'),
+                label = this.shadowRoot.querySelector('.label')
+            this.animate = this.hasAttribute('animate')
+            this.shadowRoot.querySelector('.label').textContent = this.getAttribute('placeholder')
+            if (this.hasAttribute('value')) {
+                input.value = this.getAttribute('value')
+                this.checkInput(input, inputParent, clearBtn)
+            }
+            if (this.hasAttribute('type')) {
+                if (this.getAttribute('type') === 'number') {
+                    input.setAttribute('inputmode', 'numeric')
+                }
+                else
+                    input.setAttribute('type', this.getAttribute('type'))
             }
             else
-                input.setAttribute('type', this.getAttribute('type'))
+                input.setAttribute('type', 'text')
+            input.addEventListener('keydown', e => {
+                if (this.getAttribute('type') === 'number')
+                    this.preventNonNumericalInput(e);
+            })
+            input.addEventListener('input', e => {
+                this.checkInput(input, label, inputParent, clearBtn)
+            })
+            clearBtn.addEventListener('click', e => {
+                input.value = ''
+                this.checkInput(input, label, inputParent, clearBtn)
+            })
         }
-        else
-            input.setAttribute('type', 'text')
-        input.addEventListener('keydown', e => {
-            if(this.getAttribute('type') === 'number')
-                this.preventNonNumericalInput(e);
-        })
-        input.addEventListener('input', e => {
-            this.checkInput(input, label, inputParent, clearBtn)
-        })
-        clearBtn.addEventListener('click', e => {
-            input.value = ''
-            this.checkInput(input, label, inputParent, clearBtn)
-        })
-    }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (oldValue !== newValue) {
-            if (name === 'placeholder')
-                this.shadowRoot.querySelector('.label').textContent = newValue;
+        attributeChangedCallback(name, oldValue, newValue) {
+            if (oldValue !== newValue) {
+                if (name === 'placeholder')
+                    this.shadowRoot.querySelector('.label').textContent = newValue;
+            }
         }
-    }
-})
+    })
 
 // tab-header
 
@@ -337,7 +348,6 @@ smTabHeader.innerHTML = `
 :host([type="line"]) .indicator{
     height: 0.12rem;
     background: var(--primary-color);
-    border-radius: 0.4rem 0.4rem 0 0;
 }
 :host([type="tab"]) .indicator{
     height: 100%;
@@ -365,41 +375,32 @@ customElements.define('sm-tab-header', class extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: 'open' }).append(smTabHeader.content.cloneNode(true))
-        
+
         this.indicator = this.shadowRoot.querySelector('.indicator');
     }
     static get observedAttributes() {
-        return ['active-tab']
+        return ['type']
     }
     connectedCallback() {
+        this.prevTab = ''
+        this.type = this.getAttribute('type')
         this.addEventListener('switchTab', e => {
-            this.setAttribute('active-tab', e.detail.index)
-        })
-        this.addEventListener('activeTab', e => {
-            this.setAttribute('active-tab', e.activeTab)
-        })
-    }
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (oldValue !== newValue) {
-            if (name === 'active-tab') {
-                setTimeout(() => {
-                    if (this.getAttribute('type') === 'tab') {
-                        if (this.children[oldValue])
-                            this.children[oldValue].classList.remove('tab-active')
-                        this.children[newValue].classList.add('tab-active')
-                    }
-                    else {
-                        if (this.children[oldValue])
-                            this.children[oldValue].classList.remove('line-active')
-                        this.children[newValue].classList.add('line-active')
-                    }
-                    this.indicator.setAttribute('style', `width: ${this.children[newValue].offsetWidth}px; transform: translateX(${this.children[newValue].offsetLeft}px)`)      
-                }, 0);
-                setTimeout(() => {
-                    this.indicator.classList.add('transition')
-                }, 100);
+            if (this.type === 'tab') {
+                if(this.prevTab)
+                    this.prevTab.classList.remove('tab-active')
+                e.target.classList.add('tab-active')
             }
-        }
+            else {
+                if (this.prevTab)
+                    this.prevTab.classList.remove('line-active')
+                e.target.classList.add('line-active')
+            }
+            setTimeout(() => {
+                this.indicator.classList.add('transition')
+            }, 100);
+            this.indicator.setAttribute('style', `width: ${e.detail.width}px; transform: translateX(${e.detail.left}px)`)
+            this.prevTab = e.target;
+        })
     }
 })
 // tab
@@ -449,25 +450,57 @@ customElements.define('sm-tab', class extends HTMLElement {
         this.shadow = this.attachShadow({ mode: 'open' }).append(smTab.content.cloneNode(true))
     }
     connectedCallback() {
+        let width = 0, left = 0;
+        if ('ResizeObserver' in window) {
+            let resizeObserver = new ResizeObserver(entries => {
+                entries.forEach(entry => {
+                    width = entry.contentRect.width;
+                    left = this.offsetLeft
+                })
+            })
+            resizeObserver.observe(this, {box: 'border-box'})
+        }
+        else {
+            let observer = new IntersectionObserver((entries, observer) => {
+                if (entries[0].isIntersecting) {
+                    width = this.offsetWidth;
+                    left = this.offsetLeft
+                }                    
+            }, {
+                threshold: 1
+            })
+            observer.observe(this)
+        }
         let switchTab = new CustomEvent('switchTab', {
             bubbles: true,
             composed: true,
             detail: {
                 panel: this.getAttribute('panel'),
-                index: [...this.parentNode.children].indexOf(this)
             }
         })
-        let activeTab = new CustomEvent('switchTab', {
-            bubbles: true,
-            composed: true,
-            activeTab: {
-                index: [...this.parentNode.children].indexOf(this)
-            }
-        })
-        this.addEventListener('click', e => {
+        this.addEventListener('click', () => {
+            switchTab.detail.width = width;
+            switchTab.detail.left = left;
             this.dispatchEvent(switchTab)
         })
-        if(this.hasAttribute('active'))
-            this.dispatchEvent(switchTab)
+        if (this.hasAttribute('active')) { 
+            setTimeout(() => {
+                switchTab.detail.width = width;
+                switchTab.detail.left = left;
+                this.dispatchEvent(switchTab)
+            }, 0);
+
+        }
+    }
+})
+
+//chcekbox
+
+const smCheckbox = document.createElement('template')
+smCheckbox.innerHTML = ``
+customElements.define('sm-checkbox', class extends HTMLElement{
+    constructor() {
+        super()
+        this.attachShadow({mode: 'open'}).append(smCheckbox.content.cloneNode(true))
     }
 })
