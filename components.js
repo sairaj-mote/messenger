@@ -386,7 +386,7 @@ customElements.define('sm-tab-header', class extends HTMLElement {
         this.type = this.getAttribute('type')
         this.addEventListener('switchTab', e => {
             if (this.type === 'tab') {
-                if(this.prevTab)
+                if (this.prevTab)
                     this.prevTab.classList.remove('tab-active')
                 e.target.classList.add('tab-active')
             }
@@ -458,14 +458,14 @@ customElements.define('sm-tab', class extends HTMLElement {
                     left = this.offsetLeft
                 })
             })
-            resizeObserver.observe(this, {box: 'border-box'})
+            resizeObserver.observe(this, { box: 'border-box' })
         }
         else {
             let observer = new IntersectionObserver((entries, observer) => {
                 if (entries[0].isIntersecting) {
                     width = this.offsetWidth;
                     left = this.offsetLeft
-                }                    
+                }
             }, {
                 threshold: 1
             })
@@ -483,7 +483,7 @@ customElements.define('sm-tab', class extends HTMLElement {
             switchTab.detail.left = left;
             this.dispatchEvent(switchTab)
         })
-        if (this.hasAttribute('active')) { 
+        if (this.hasAttribute('active')) {
             setTimeout(() => {
                 switchTab.detail.width = width;
                 switchTab.detail.left = left;
@@ -497,10 +497,104 @@ customElements.define('sm-tab', class extends HTMLElement {
 //chcekbox
 
 const smCheckbox = document.createElement('template')
-smCheckbox.innerHTML = ``
-customElements.define('sm-checkbox', class extends HTMLElement{
+smCheckbox.innerHTML = `
+<style>
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+} 
+:host{
+    display: inline-flex;
+}
+.checkbox {
+    diplay:flex;
+  border-radius: 2rem;
+  cursor: pointer;
+}
+
+.checkbox:active svg {
+  -webkit-transform: scale(0.9);
+          transform: scale(0.9);
+}
+
+.checkbox input {
+  display: none;
+}
+
+.checkbox .checkmark {
+  stroke-dashoffset: -60;
+  stroke-dasharray: 60;
+  -webkit-transition: stroke-dashoffset 0.3s;
+  transition: stroke-dashoffset 0.3s;
+}
+
+.checkbox input:checked ~ svg .checkmark {
+  stroke-dashoffset: 0;
+}
+
+.icon {
+  fill: none;
+  height: 1rem;
+  width: 1rem;
+  stroke: rgba(var(--text), 0.7);
+  stroke-width: 6;
+  overflow: visible;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+</style>
+<label class="checkbox">
+    <input type="checkbox">
+    <svg class="icon" viewBox="0 0 64 64">
+        <title>checkbox</title>
+        <rect class="box" x="0" y="0" width="64" height="64" rx="4" />
+        <path class="checkmark" d="M50.52,19.56,26,44.08,13.48,31.56" />
+    </svg>
+</label>`
+customElements.define('sm-checkbox', class extends HTMLElement {
     constructor() {
         super()
-        this.attachShadow({mode: 'open'}).append(smCheckbox.content.cloneNode(true))
+        this.attachShadow({ mode: 'open' }).append(smCheckbox.content.cloneNode(true))
     }
+
+    static get observedAttributes() {
+        return ['disabled']
+    }
+
+    get disabled() {
+        return this.getAttribute('disabled')
+    }
+
+    set disabled(val) {
+        this.setAttribute('disabled', val)
+    }
+
+    connectedCallback() {
+        this.checkbox = this.shadowRoot.querySelector('.checkbox');
+        if (this.hasAttribute('disabled')) {
+            this.checkbox.classList.add('disabled')
+        }
+        else {
+            this.checkbox.classList.remove('disabled')
+        }
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+        this.checkbox = this.shadowRoot.querySelector('.checkbox');
+        if (oldValue !== newValue) {
+            if (name === 'disabled') {
+                if (newValue === 'true') {
+                    this.checkbox.classList.add('disabled')
+                }
+                else {
+                    this.checkbox.classList.remove('disabled')
+                }
+            }
+        }
+    }
+
 })

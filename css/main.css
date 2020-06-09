@@ -115,7 +115,16 @@ sm-input .icon {
 }
 
 .checkbox {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  border-radius: 2rem;
   cursor: pointer;
+}
+
+.checkbox:active svg {
+  -webkit-transform: scale(0.9);
+          transform: scale(0.9);
 }
 
 .checkbox input {

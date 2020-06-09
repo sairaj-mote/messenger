@@ -81,7 +81,12 @@ sm-input{
     }
 }
 .checkbox{
+    display: inline-flex;
+    border-radius: 2rem;
     cursor: pointer;
+    &:active svg{
+        transform: scale(0.9);
+    }
     input{
         display: none;
     }
