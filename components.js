@@ -461,15 +461,10 @@ customElements.define('sm-tab', class extends HTMLElement {
             resizeObserver.observe(this, { box: 'border-box' })
         }
         else {
-            let observer = new IntersectionObserver((entries, observer) => {
-                if (entries[0].isIntersecting) {
-                    width = this.offsetWidth;
-                    left = this.offsetLeft
-                }
-            }, {
-                threshold: 1
-            })
-            observer.observe(this)
+        setTimeout(() => {
+            width = this.offsetWidth;
+            left = this.offsetLeft
+        }, 0);
         }
         let switchTab = new CustomEvent('switchTab', {
             bubbles: true,
