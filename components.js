@@ -455,15 +455,15 @@ customElements.define('sm-tab', class extends HTMLElement {
             let resizeObserver = new ResizeObserver(entries => {
                 entries.forEach(entry => {
                     width = entry.contentRect.width;
-                    left = this.offsetLeft
+                    left = this.getBoundingClientRect().left - this.parentNode.offsetLeft
                 })
             })
-            resizeObserver.observe(this, { box: 'border-box' })
+            resizeObserver.observe(this)
         }
         else {
         setTimeout(() => {
             width = this.offsetWidth;
-            left = this.getBoundingClientRect().left
+            left = this.getBoundingClientRect().left - this.parentNode.offsetLeft
         }, 0);
         }
         let switchTab = new CustomEvent('switchTab', {
