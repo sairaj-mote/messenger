@@ -463,7 +463,7 @@ customElements.define('sm-tab', class extends HTMLElement {
         else {
         setTimeout(() => {
             width = this.offsetWidth;
-            left = this.offsetLeft
+            left = this.getBoundingClientRect().left
         }, 0);
         }
         let switchTab = new CustomEvent('switchTab', {
