@@ -9,7 +9,7 @@ smBtn.innerHTML = `
                 box-sizing: border-box;
             }       
             :host{
-                display: flex;
+                display: inline-flex;
             }
             :host([disabled='true']) .sm-btn{
                 cursor: default;
@@ -29,9 +29,6 @@ smBtn.innerHTML = `
                 border: solid 1px var(--primary-color);
                 background: rgba(var(--foreground), 1); 
             }
-            :host([width='cover']) .sm-btn{
-                width: 100%;
-            }
             .sm-btn {
                 display: flex;
                 padding: 0.6rem 0.8rem;
@@ -39,16 +36,23 @@ smBtn.innerHTML = `
                 user-select: none;
                 border-radius: 0.2rem; 
                 justify-content: center;
+                transition: transform 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+            }
+            .sm-btn:hover{
+                opacity: 0.9;
+            }
+            .sm-btn:active{
+                transform: scale(0.9)
             }
             button{
                 text-transform: uppercase;
                 letter-spacing: 0.06rem;
                 word-spacing: 0.1rem;
-                font-family: 'Barlow', sans-serif;
+                font-family: var(--font-family);
                 font-weight: 600;
                 background: none;
                 border: none;
-                color: rgba(var(--text), 1);
+                color: var(--background);
                 outline: none;
                 pointer-events: none;
             }
@@ -138,26 +142,31 @@ smInput.innerHTML = `
         }
         .icon {
             fill: none;
-            height: 1.2rem;
-            width: 1.2rem;
-            padding: 0.3rem;
+            height: 1.6rem;
+            width: 1.6rem;
+            padding: 0.5rem;
             stroke: rgba(var(--text), 0.7);
             stroke-width: 10;
             overflow: visible;
             stroke-linecap: round;
+            border-radius: 1rem;
             stroke-linejoin: round;
             cursor: pointer;
             margin-left: 1rem;
+        }
+        .icon:hover{
+            background: rgba(var(--text), 0.1);
         }
         .input {
             display: flex;
             align-items: center;
             position: relative;
             gap: 1rem;
-            padding: 0.8em;
+            padding: 0.6rem 1rem;
             border-radius: 0.2em;
             transition: opacity 0.3s;
             background: rgba(var(--text), 0.1);
+            font-family: var(--font-family);
             width: 100%
         }
 
@@ -172,10 +181,7 @@ smInput.innerHTML = `
             font-size: 1rem;
             position: absolute;
             top: 0;
-            -webkit-transition: -webkit-transform 0.3s ease;
-            transition: -webkit-transform 0.3s ease;
-            transition: transform 0.3s ease;
-            transition: transform 0.3s ease, -webkit-transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
             -webkit-transform-origin: left;
             transform-origin: left;
             pointer-events: none;
@@ -333,17 +339,20 @@ smTabHeader.innerHTML = `
     box-sizing: border-box;
 } 
 :host{
-    display: flex;
+    display: inline-flex;
 }
 .tab-header{
     display: flex;
     position: relative;
     overflow-x: auto;
+    width: 100%;
 }
 .indicator{
     position: absolute;
+    display: flexbox;
     background: rgba(var(--text), 1);
     bottom: 0;
+    left: 0;
 }
 :host([type="line"]) .indicator{
     height: 0.12rem;
@@ -362,7 +371,7 @@ smTabHeader.innerHTML = `
     border: solid 1px rgba(var(--text), 1); 
 }
 .transition{
-    transition: transform 0.4s, width 0.4s;
+    transition: transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86), width 0.4s;
 }
 </style>
 <div class="tab-header">
@@ -398,7 +407,7 @@ customElements.define('sm-tab-header', class extends HTMLElement {
             setTimeout(() => {
                 this.indicator.classList.add('transition')
             }, 100);
-            this.indicator.setAttribute('style', `width: ${e.detail.width}px; transform: translateX(${e.detail.left}px)`)
+            this.indicator.setAttribute('style', `width: ${e.detail.width}px; transform: translateX(${e.detail.left - 1}px)`)
             this.prevTab = e.target;
         })
     }
@@ -431,6 +440,7 @@ smTab.innerHTML = `
     text-align: center;
     transition: color 0.3s;
     text-transform: uppercase;
+    font-family: var(--font-family);
 }
 :host(.tab-active) .tab{
     color: rgba(var(--foreground), 1);
@@ -461,10 +471,15 @@ customElements.define('sm-tab', class extends HTMLElement {
             resizeObserver.observe(this)
         }
         else {
-        setTimeout(() => {
-            width = this.offsetWidth;
-            left = this.getBoundingClientRect().left - this.parentNode.offsetLeft
-        }, 0);
+            let observer = new IntersectionObserver((entries, observer) => {
+                if (entries[0].isIntersecting) {
+                    width = entry.contentRect.width;
+                    left = this.getBoundingClientRect().left - this.parentNode.offsetLeft
+                }
+            }, {
+                threshold: 1
+            })
+            observer.observe(this)
         }
         let switchTab = new CustomEvent('switchTab', {
             bubbles: true,
@@ -520,12 +535,15 @@ smCheckbox.innerHTML = `
 .checkbox .checkmark {
   stroke-dashoffset: -60;
   stroke-dasharray: 60;
-  -webkit-transition: stroke-dashoffset 0.3s;
-  transition: stroke-dashoffset 0.3s;
+  -webkit-transition: stroke-dashoffset 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86); 
+  transition: stroke-dashoffset 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
 }
 
 .checkbox input:checked ~ svg .checkmark {
   stroke-dashoffset: 0;
+}
+.checkbox input:checked ~ svg {
+  stroke: var(--primary-color)
 }
 
 .icon {
@@ -592,4 +610,268 @@ customElements.define('sm-checkbox', class extends HTMLElement {
         }
     }
 
+})
+
+//sm-audio
+
+const smAudio = document.createElement('template')
+smAudio.innerHTML = `
+<style>
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+:host{
+	display: flex;
+}
+
+.audio{
+  position: relative;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+          align-items: center;
+  -webkit-user-select: none;
+          user-select: none;
+  padding: 0.6rem;
+  border-radius: 0.2rem;
+  background: rgba(var(--text), 0.08);
+  overflow: hidden;
+  width: 100%;
+}
+
+.hide {
+  display: none;
+}
+
+.icon{
+  stroke: rgba(var(--text), 1);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  overflow: visible;
+  height: 2.1rem;
+  width: 2.1rem;
+  padding: 0.6rem;
+  cursor: pointer;
+  border-radius: 2rem;
+  margin-right: 0.5rem;
+}
+
+.icon:hover{
+  background: rgba(var(--text), 0.1);
+}
+
+audio {
+  display: none;
+}
+
+.track {
+  position: absolute;
+  height: 0.2rem;
+  bottom: 0;
+  background: var(--primary-color);
+  left: 0;
+  -webkit-transition: width 0.2s;
+  transition: width 0.2s;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 0.2rem;
+}
+
+.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+</style>
+	<div class="audio">
+		<svg class="icon play" viewBox="-6 0 64 64">
+			<title>play</title>
+			<path d="M57.12,26.79,12.88,1.31a6,6,0,0,0-9,5.21v51a6,6,0,0,0,9,5.21L57.12,37.21A6,6,0,0,0,57.12,26.79Z"/>
+		</svg>
+		<svg class="icon pause hide" viewBox="0 0 64 64">
+			<title>pause</title>
+			<line x1="17.5" x2="17.5" y2="64"/>
+			<line x1="46.5" x2="46.5" y2="64"/>
+		</svg>
+		<h5 class="current-time"></h5> / <h5 class="duration"></h5>
+		<audio src=""></audio>
+		<div class="track"></div>
+	</audio>
+`;
+
+customElements.define('sm-audio', class extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' }).append(smAudio.content.cloneNode(true))
+
+        this.playing = false;
+    }
+    static get observedAttributes() {
+        return ['src']
+    }
+    play() {
+        this.audio.play()
+        this.playing = false;
+        this.pauseBtn.classList.remove('hide')
+        this.playBtn.classList.add('hide')
+    }
+    pause() {
+        this.audio.pause()
+        this.playing = true;
+        this.pauseBtn.classList.add('hide')
+        this.playBtn.classList.remove('hide')
+    }
+
+    get isPlaying() {
+        return this.playing;
+    }
+
+    connectedCallback() {
+        this.playBtn = this.shadowRoot.querySelector('.play');
+        this.pauseBtn = this.shadowRoot.querySelector('.pause');
+        this.audio = this.shadowRoot.querySelector('audio')
+        this.playBtn.addEventListener('click', e => {
+            this.play()
+        })
+        this.pauseBtn.addEventListener('click', e => {
+            this.pause()
+        })
+        this.audio.addEventListener('ended', e => {
+            this.pause()
+        })
+        let width;
+        if ('ResizeObserver' in window) {
+            let resizeObserver = new ResizeObserver(entries => {
+                entries.forEach(entry => {
+                    width = entry.contentRect.width;
+                })
+            })
+            resizeObserver.observe(this)
+        }
+        else {
+            let observer = new IntersectionObserver((entries, observer) => {
+                if (entries[0].isIntersecting)
+                    width = this.shadowRoot.querySelector('.audio').offsetWidth;
+            }, {
+                threshold: 1
+            })
+            observer.observe(this)
+        }
+        this.audio.addEventListener('timeupdate', e => {
+            let time = this.audio.currentTime,
+                minutes = Math.floor(time / 60),
+                seconds = Math.floor(time - minutes * 60),
+                y = seconds < 10 ? "0" + seconds : seconds;
+            this.shadowRoot.querySelector('.current-time').textContent = `${minutes}:${y}`
+            this.shadowRoot.querySelector('.track').style.width = (width / this.audio.duration) * this.audio.currentTime + 'px'
+        })
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (oldValue !== newValue) {
+            if (name === 'src') {
+                if (this.hasAttribute('src') && newValue.trim() !== '') {
+                    this.shadowRoot.querySelector('audio').src = newValue;
+                    this.shadowRoot.querySelector('audio').onloadedmetadata = () => {
+                        let duration = this.audio.duration,
+                            minutes = Math.floor(duration / 60),
+                            seconds = Math.floor(duration - minutes * 60),
+                            y = seconds < 10 ? "0" + seconds : seconds;
+                        this.shadowRoot.querySelector('.duration').textContent = `${minutes}:${y}`;
+                    }
+                }
+                else
+                    this.classList.add('disabled')
+            }
+        }
+    }
+})
+
+//sm-switch
+
+const smSwitch = document.createElement('template')
+smSwitch.innerHTML = `	
+<style>
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+:host{
+    display: inline-flex;
+}
+.switch {
+  position: relative;
+  overflow: hidden;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+          align-items: center;
+  border-radius: 1rem;
+  width: 2.4rem;
+  padding: 0.2rem;
+  cursor: pointer;
+}
+
+.switch input {
+  display: none;
+}
+
+.switch .track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  -webkit-transition: background 0.4s;
+  transition: background 0.4s;
+  background: rgba(var(--text), 0.6);
+}
+
+.switch .btn {
+  position: relative;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  height: 1rem;
+  width: 1rem;
+  border-radius: 1rem;
+  -webkit-transition: -webkit-transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  transition: -webkit-transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  transition: transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  transition: transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86), -webkit-transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  border: solid 0.3rem rgba(var(--foreground), 1);
+}
+
+.switch input:checked ~ .btn {
+  -webkit-transform: translateX(100%);
+          transform: translateX(100%);
+}
+
+.switch input:checked ~ .track {
+  background: var(--primary-color);
+}
+
+</style>
+<label class="switch">
+    <input type="checkbox">
+    <div class="track"></div>
+    <div class="btn"></div>
+</label>`
+
+customElements.define('sm-switch', class extends HTMLElement{
+    constructor() {
+        super()
+        this.attachShadow({mode: 'open'}).append(smSwitch.content.cloneNode(true))
+    }
+
+    connectedCallback() {
+        
+    }
 })

@@ -11,7 +11,7 @@
     scroll-behavior: smooth;
 }
 body{
-    --primary-color: #FF6060;
+    --primary-color: #0288D1;
     --text: 17, 17, 17;
     --text-light: 100, 100, 100;
     --foreground: 255, 255, 255;
@@ -71,34 +71,54 @@ a:any-link{
     font-family: 'Barlow', sans-serif;
 }
 sm-btn{
+    margin: 1rem;
+    --font-family: 'Barlow', sans-serif;
     .icon{
         margin-right: 0.4rem;
     }
 }
 sm-input{
+    display: inline-flex;
+    margin: 1rem;
     .icon{
         margin-right: 1rem;
     }
 }
-.checkbox{
+.switch{
+    position: relative;
+    overflow: hidden;
     display: inline-flex;
-    border-radius: 2rem;
+    align-items: center;
+    border-radius: 1rem;
+    width: 2.4rem;
+    padding: 0.2rem;
     cursor: pointer;
-    &:active svg{
-        transform: scale(0.9);
-    }
     input{
         display: none;
     }
-    .checkmark{
-        stroke-dashoffset: -60;
-        stroke-dasharray: 60;
-        transition: stroke-dashoffset 0.3s;
+    .track{
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        transition: background 0.4s;
+        background: rgba(var(--text), 0.6);
     }
-    input:checked{
-        & ~ svg .checkmark{
-            stroke-dashoffset: 0;
-        }
+    .btn{
+        position: relative;
+        display: inline-flex;
+        height: 1rem;
+        width: 1rem;
+        border-radius: 1rem;
+        transition: transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+        border: solid 0.3rem rgba(var(--foreground), 1);
+    }
+    input:checked ~ .btn{
+        transform: translateX(100%);
+    }
+    input:checked ~ .track{
+        background: var(--primary-color);
     }
 }
 .icon{
@@ -266,7 +286,9 @@ sm-input{
 }
 sm-tab-header{
     margin: 1rem;
-    font-family: 'Barlow' ,sans-serif;
+}
+sm-tab{
+    --font-family: 'Roboto', sans-serif;
 }
 #sign_in{
     display: grid;

@@ -14,7 +14,7 @@
 }
 
 body {
-  --primary-color: #FF6060;
+  --primary-color: #0288D1;
   --text: 17, 17, 17;
   --text-light: 100, 100, 100;
   --foreground: 255, 255, 255;
@@ -106,40 +106,78 @@ a:any-link {
   font-family: 'Barlow', sans-serif;
 }
 
+sm-btn {
+  margin: 1rem;
+  --font-family: 'Barlow', sans-serif;
+}
+
 sm-btn .icon {
   margin-right: 0.4rem;
+}
+
+sm-input {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  margin: 1rem;
 }
 
 sm-input .icon {
   margin-right: 1rem;
 }
 
-.checkbox {
+.switch {
+  position: relative;
+  overflow: hidden;
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  border-radius: 2rem;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border-radius: 1rem;
+  width: 2.4rem;
+  padding: 0.2rem;
   cursor: pointer;
 }
 
-.checkbox:active svg {
-  -webkit-transform: scale(0.9);
-          transform: scale(0.9);
-}
-
-.checkbox input {
+.switch input {
   display: none;
 }
 
-.checkbox .checkmark {
-  stroke-dashoffset: -60;
-  stroke-dasharray: 60;
-  -webkit-transition: stroke-dashoffset 0.3s;
-  transition: stroke-dashoffset 0.3s;
+.switch .track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  -webkit-transition: background 0.4s;
+  transition: background 0.4s;
+  background: rgba(var(--text), 0.6);
 }
 
-.checkbox input:checked ~ svg .checkmark {
-  stroke-dashoffset: 0;
+.switch .btn {
+  position: relative;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  height: 1rem;
+  width: 1rem;
+  border-radius: 1rem;
+  -webkit-transition: -webkit-transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  transition: -webkit-transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  transition: transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  transition: transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86), -webkit-transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  border: solid 0.3rem rgba(var(--foreground), 1);
+}
+
+.switch input:checked ~ .btn {
+  -webkit-transform: translateX(100%);
+          transform: translateX(100%);
+}
+
+.switch input:checked ~ .track {
+  background: var(--primary-color);
 }
 
 .icon {
@@ -426,7 +464,10 @@ sm-input .icon {
 
 sm-tab-header {
   margin: 1rem;
-  font-family: 'Barlow' ,sans-serif;
+}
+
+sm-tab {
+  --font-family: 'Roboto', sans-serif;
 }
 
 #sign_in {
