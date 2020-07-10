@@ -152,7 +152,7 @@ smInput.innerHTML = `
             border-radius: 1rem;
             stroke-linejoin: round;
             cursor: pointer;
-            margin-left: 1rem;
+            min-width: 0;
         }
         .icon:hover{
             background: rgba(var(--text), 0.1);
@@ -217,13 +217,13 @@ smInput.innerHTML = `
     <label class="input">
         <slot name = "icon"></slot>
         <div class="container">
-            <input required/>
+            <input/>
             <div class="label"></div>
         </div>
         <svg class="icon clear hide" viewBox="0 0 64 64">
             <title>clear</title>
-            <line x1="63.65" y1="0.35" x2="0.35" y2="63.65"/>
-            <line x1="63.65" y1="63.65" x2="0.35" y2="0.35"/>
+            <line x1="64" y1="0" x2="0" y2="64"/>
+            <line x1="64" y1="64" x2="0" y2="0"/>
         </svg>
     </label>
 `;
@@ -330,8 +330,8 @@ customElements.define('sm-input',
 
 // tab-header
 
-const smTabHeader = document.createElement('template')
-smTabHeader.innerHTML = `
+const smTabs = document.createElement('template')
+smTabs.innerHTML = `
 <style>
 *{
     padding: 0;
@@ -339,53 +339,62 @@ smTabHeader.innerHTML = `
     box-sizing: border-box;
 } 
 :host{
-    display: inline-flex;
+    display: flex;
+}
+.tabs{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
 }
 .tab-header{
-    display: flex;
     position: relative;
-    overflow-x: auto;
-    width: 100%;
+    overflow: hidden;
+    max-width: 100%;
 }
 .indicator{
     position: absolute;
-    display: flexbox;
-    background: rgba(var(--text), 1);
-    bottom: 0;
     left: 0;
-}
-:host([type="line"]) .indicator{
+    bottom: 0;
     height: 0.12rem;
     background: var(--primary-color);
+}
+slot{
+    display: flex;
 }
 :host([type="tab"]) .indicator{
     height: 100%;
     border-radius: 0.2rem
 }
-:host([type="line"]) .tab-header{
+slot[name="tab"]{
     border-bottom: solid 1px rgba(var(--text), .1); 
 }
-:host([type="tab"]) .tab-header{
+:host([type="tab"]) slot[name="tab"]{
     border-radius: 0.2rem;
     grid-auto-columns: 1fr;
-    border: solid 1px rgba(var(--text), 1); 
+    border-bottom: none;
 }
 .transition{
     transition: transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86), width 0.4s;
 }
 </style>
-<div class="tab-header">
-    <slot>Nothing to see here</slot>
-    <div class="indicator"></div>
+<div class="tabs">
+    <div class="tab-header">
+        <slot name="tab">Nothing to see here</slot>
+        <div class="indicator"></div>
+    </div>
+    <slot name="panel">Nothing to see here</slot>
 </div>
 `;
 
-customElements.define('sm-tab-header', class extends HTMLElement {
+customElements.define('sm-tabs', class extends HTMLElement {
     constructor() {
         super()
-        this.attachShadow({ mode: 'open' }).append(smTabHeader.content.cloneNode(true))
-
+        this.attachShadow({ mode: 'open' }).append(smTabs.content.cloneNode(true))
         this.indicator = this.shadowRoot.querySelector('.indicator');
+        this.tabSlot = this.shadowRoot.querySelector('slot[name="tab"]');
+        this.panelSlot = this.shadowRoot.querySelector('slot[name="panel"]');
+        this.tabHeader = this.shadowRoot.querySelector('.tab-header');
     }
     static get observedAttributes() {
         return ['type']
@@ -393,22 +402,34 @@ customElements.define('sm-tab-header', class extends HTMLElement {
     connectedCallback() {
         this.prevTab = ''
         this.type = this.getAttribute('type')
+        setTimeout(() => {
+            this.indicator.classList.add('transition')
+        }, 100);
         this.addEventListener('switchTab', e => {
+            if (e.target === this.prevTab)
+                return
             if (this.type === 'tab') {
                 if (this.prevTab)
                     this.prevTab.classList.remove('tab-active')
-                e.target.classList.add('tab-active')
+                setTimeout(() => {
+                    e.target.classList.add('tab-active')
+                }, 200);
             }
             else {
                 if (this.prevTab)
                     this.prevTab.classList.remove('line-active')
-                e.target.classList.add('line-active')
+                setTimeout(() => {
+                    e.target.classList.add('line-active')
+                }, 200);
             }
-            setTimeout(() => {
-                this.indicator.classList.add('transition')
-            }, 100);
-            this.indicator.setAttribute('style', `width: ${e.detail.width}px; transform: translateX(${e.detail.left - 1}px)`)
+            e.target.scrollIntoView({ behavior: 'smooth', inline: 'center' })
+            let tabDimensions = e.target.getBoundingClientRect()
+            this.indicator.setAttribute('style', `width: ${tabDimensions.width}px; transform: translateX(${tabDimensions.x + this.tabHeader.scrollLeft}px)`)
             this.prevTab = e.target;
+        })
+        let headerLength = this.tabSlot.scrollWidth;
+        this.tabHeader.addEventListener('touchmove', e => {
+            this.tabHeader.scrollLeft = headerLength - e.changedTouches[0].pageX
         })
     }
 })
@@ -424,7 +445,7 @@ smTab.innerHTML = `
 } 
 :host{
     display: inline-flex;
-    z-index: 2;
+    z-index: 1;
 }
 .tab{
     user-select: none;
@@ -460,46 +481,17 @@ customElements.define('sm-tab', class extends HTMLElement {
         this.shadow = this.attachShadow({ mode: 'open' }).append(smTab.content.cloneNode(true))
     }
     connectedCallback() {
-        let width = 0, left = 0;
-        if ('ResizeObserver' in window) {
-            let resizeObserver = new ResizeObserver(entries => {
-                entries.forEach(entry => {
-                    width = entry.contentRect.width;
-                    left = this.getBoundingClientRect().left - this.parentNode.offsetLeft
-                })
-            })
-            resizeObserver.observe(this)
-        }
-        else {
-            let observer = new IntersectionObserver((entries, observer) => {
-                if (entries[0].isIntersecting) {
-                    width = entry.contentRect.width;
-                    left = this.getBoundingClientRect().left - this.parentNode.offsetLeft
-                }
-            }, {
-                threshold: 1
-            })
-            observer.observe(this)
-        }
         let switchTab = new CustomEvent('switchTab', {
             bubbles: true,
             composed: true,
-            detail: {
-                panel: this.getAttribute('panel'),
-            }
         })
         this.addEventListener('click', () => {
-            switchTab.detail.width = width;
-            switchTab.detail.left = left;
             this.dispatchEvent(switchTab)
         })
         if (this.hasAttribute('active')) {
             setTimeout(() => {
-                switchTab.detail.width = width;
-                switchTab.detail.left = left;
                 this.dispatchEvent(switchTab)
-            }, 0);
-
+            }, 0)
         }
     }
 })
@@ -519,8 +511,8 @@ smCheckbox.innerHTML = `
 }
 .checkbox {
     diplay:flex;
-  border-radius: 2rem;
-  cursor: pointer;
+    border-radius: 2rem;
+    cursor: pointer;
 }
 
 .checkbox:active svg {
@@ -533,17 +525,20 @@ smCheckbox.innerHTML = `
 }
 
 .checkbox .checkmark {
-  stroke-dashoffset: -60;
-  stroke-dasharray: 60;
+  stroke-dashoffset: -65;
+  stroke-dasharray: 65;
   -webkit-transition: stroke-dashoffset 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86); 
   transition: stroke-dashoffset 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
 }
 
 .checkbox input:checked ~ svg .checkmark {
   stroke-dashoffset: 0;
+  stroke: rgba(var(--foreground), 1);
 }
 .checkbox input:checked ~ svg {
-  stroke: var(--primary-color)
+  stroke: var(--primary-color);
+  fill: var(--primary-color);
+  stroke-width: 8; 
 }
 
 .icon {
@@ -873,5 +868,203 @@ customElements.define('sm-switch', class extends HTMLElement{
 
     connectedCallback() {
         
+    }
+})
+
+// sm-select
+const smSelect = document.createElement('template')
+smSelect.innerHTML = `
+        <style>     
+            *{
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            } 
+            .icon {
+                fill: none;
+                height: 0.8rem;
+                width: 0.8rem;
+                stroke: rgba(var(--text), 0.7);
+                stroke-width: 6;
+                overflow: visible;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }      
+            :host{
+                display: inline-flex;
+            }
+            .hide{
+                opacity: 0;
+                pointer-events: none;
+            }
+            .sm-select{
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                cursor: pointer;
+                width: 100%;
+            }
+            .option-text{
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .selection{
+                border-radius: 0.2rem;
+                display: flex;
+                padding: 0.4rem 0.7rem;
+                background: rgba(var(--text), 0.1);
+                align-items: center;
+                justify-content: space-between;
+                outline: none;
+            }
+            .icon{
+                margin-left: 1rem;
+            }
+            .options{
+                overflow: hidden auto;
+                margin-top: 0.5rem;
+                position: absolute;
+                grid-area: options;
+                display: flex;
+                flex-direction: column;
+                top: 100%;
+                right: 0;
+                min-width: 100%;
+                transform: translateY(-0.5rem);
+                padding: 0.5rem 0;
+                background: rgba(var(--foreground), 1);
+                transition: opacity 0.3s, transform 0.3s;
+                border: solid 1px rgba(var(--text), 0.2);
+                border-radius: 0.2rem;
+                z-index: 2;
+            }
+            .rotate{
+                transform: rotate(-180deg)
+            }
+            .no-transformations{
+                transform: none;
+            }
+        </style>
+        <div class="sm-select">
+            <div class="selection" tabindex="0">
+                <div class="option-text"></div>
+                <svg class="icon toggle" viewBox="0 0 64 64">
+                    <polyline points="63.65 15.99 32 47.66 0.35 15.99"/>
+                </svg>
+            </div>
+            <div class="options hide">
+                <slot></slot> 
+            </div>
+        </div>`;
+customElements.define('sm-select', class extends HTMLElement {
+    constructor() {
+        super()
+        this.attachShadow({ mode: 'open' }).append(smSelect.content.cloneNode(true))
+    }
+    static get observedAttributes() {
+        return ['value']
+    }
+    get value() {
+        return this.getAttribute('value')
+    }
+    set value(val) {
+        this.setAttribute('value', val)
+    }
+    connectedCallback() {
+        let optionList = this.shadowRoot.querySelector('.options'),
+            chevron = this.shadowRoot.querySelector('.toggle'),
+            slot = this.shadowRoot.querySelector('.options slot'),
+            currentOption;
+        this.addEventListener('click', e => {
+            chevron.classList.toggle('rotate')
+            optionList.classList.toggle('hide')
+            optionList.classList.toggle('no-transformations')
+        })
+        this.addEventListener('optionSelected', e => {
+            if (currentOption !== e.detail.value) {
+                this.setAttribute('value', e.detail.value)
+                this.shadowRoot.querySelector('.option-text').textContent = e.detail.text;
+                this.dispatchEvent(new CustomEvent('change', {
+                    bubbles: true,
+                    composed: true
+                }))
+                currentOption = e.detail.value;
+            }
+        })
+        slot.addEventListener('slotchange', e => {
+            if (slot.assignedElements()[0]) {
+                let firstElement = slot.assignedElements()[0];
+                currentOption = firstElement.getAttribute('value');
+                this.setAttribute('value', firstElement.getAttribute('value'))
+                this.shadowRoot.querySelector('.option-text').textContent = firstElement.textContent
+            }
+        });
+        document.addEventListener('mousedown', e => {
+            if (!this.contains(e.target)) {
+                chevron.classList.remove('rotate')
+                optionList.classList.add('hide')
+                optionList.classList.remove('no-transformations')
+            }
+        })
+    }
+})
+
+// sm-option
+const smOption = document.createElement('template')
+smOption.innerHTML = `
+        <style>     
+            *{
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            }     
+            :host{
+                display: flex;
+            }
+            .sm-option{
+                width: 100%;
+                padding: 0.6rem 0.8rem;
+                cursor: pointer;
+                overflow-wrap: break-word;
+                outline: none;
+            }
+            .sm-option:hover{
+                background: rgba(var(--text), 0.1);
+            }
+        </style>
+        <div class="sm-option" tabindex="0">
+            <slot></slot> 
+        </div>`;
+customElements.define('sm-option', class extends HTMLElement {
+    constructor() {
+        super()
+        this.attachShadow({ mode: 'open' }).append(smOption.content.cloneNode(true))
+    }
+    connectedCallback() {
+        this.addEventListener('click', e => {
+            let optionSelected = new CustomEvent('optionSelected', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    text: this.textContent,
+                    value: this.getAttribute('value')
+                }
+            })
+            this.dispatchEvent(optionSelected)
+        })
+        if (this.hasAttribute('default')) {
+            setTimeout(() => {
+                let optionSelected = new CustomEvent('optionSelected', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        text: this.textContent,
+                        value: this.getAttribute('value')
+                    }
+                })
+                this.dispatchEvent(optionSelected)
+            }, 0);
+        }
     }
 })
