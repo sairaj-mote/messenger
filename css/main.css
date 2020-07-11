@@ -338,6 +338,110 @@ sm-input .icon {
           box-shadow: 0 2rem 2rem rgba(0, 0, 0, 0.24);
 }
 
+@-webkit-keyframes flyInLeft {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(-0.5rem);
+            transform: translateX(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+}
+
+@keyframes flyInLeft {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(-0.5rem);
+            transform: translateX(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+}
+
+@-webkit-keyframes flyInRight {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(0.5rem);
+            transform: translateX(0.5rem);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+}
+
+@keyframes flyInRight {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(0.5rem);
+            transform: translateX(0.5rem);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+}
+
+@-webkit-keyframes flyOutLeft {
+  from {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+  to {
+    opacity: 0;
+    -webkit-transform: translateX(-0.5rem);
+            transform: translateX(-0.5rem);
+  }
+}
+
+@keyframes flyOutLeft {
+  from {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+  to {
+    opacity: 0;
+    -webkit-transform: translateX(-0.5rem);
+            transform: translateX(-0.5rem);
+  }
+}
+
+@-webkit-keyframes flyOutRight {
+  from {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+  to {
+    opacity: 0;
+    -webkit-transform: translateX(0.5rem);
+            transform: translateX(0.5rem);
+  }
+}
+
+@keyframes flyOutRight {
+  from {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+  to {
+    opacity: 0;
+    -webkit-transform: translateX(0.5rem);
+            transform: translateX(0.5rem);
+  }
+}
+
 sm-tab-header {
   margin: 1rem;
 }
