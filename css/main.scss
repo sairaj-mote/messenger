@@ -232,58 +232,6 @@ sm-input{
         box-shadow: 0 2rem 2rem rgba($color: #000000, $alpha: 0.24);
     }
 }
-@keyframes flyInLeft{
-    from{
-        opacity: 0;
-        transform: translateX(-0.5rem);
-    }
-    to{
-        opacity: 1;
-        transform: none;
-    }
-}
-@keyframes flyInRight{
-    from{
-        opacity: 0;
-        transform: translateX(0.5rem);
-    }
-    to{
-        opacity: 1;
-        transform: none;
-    }
-}
-@keyframes flyOutLeft{
-    from{
-        opacity: 1;
-        transform: none;
-    }
-    to{
-        opacity: 0;
-        transform: translateX(-0.5rem);
-    }
-}
-@keyframes flyOutRight{
-    from{
-        opacity: 1;
-        transform: none;
-    }
-    to{
-        opacity: 0;
-        transform: translateX(0.5rem);
-    }
-}
-.fly-in-from-left{
-    animation: flyInLeft 0.2s forwards;
-}
-.fly-in-from-right{
-    animation: flyInRight 0.2s forwards;
-}
-.fly-out-to-left{
-    animation: flyOutLeft 0.2s forwards;
-}
-.fly-out-to-right{
-    animation: flyOutRight 0.2s forwards;
-}
 sm-tab-header{
     margin: 1rem;
 }

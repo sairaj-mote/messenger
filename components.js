@@ -349,9 +349,21 @@ smTabs.innerHTML = `
 }
 .tab-header{
     position: relative;
-    overflow: hidden;
+    overflow: auto hidden;
     max-width: 100%;
+    border-bottom: solid 1px rgba(var(--text), .1);
+    scrollbar-width: 0;
 }
+.tab-header::-webkit-scrollbar-track {
+    -webkit-box-shadow: none !important;
+    background-color: transparent !important;
+}
+
+.tab-header::-webkit-scrollbar {
+  height: 0;
+  background-color: transparent;
+}
+
 .indicator{
     position: absolute;
     left: 0;
@@ -366,8 +378,8 @@ slot{
     height: 100%;
     border-radius: 0.2rem
 }
-slot[name="tab"]{
-    border-bottom: solid 1px rgba(var(--text), .1); 
+:host([type="tab"]) .tab-header{
+    border-bottom: none; 
 }
 :host([type="tab"]) slot[name="tab"]{
     border-radius: 0.2rem;
@@ -375,7 +387,133 @@ slot[name="tab"]{
     border-bottom: none;
 }
 .transition{
-    transition: transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86), width 0.4s;
+    transition: transform 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86), width 0.4s;
+}
+.hide-completely{
+    display: none;
+}
+@-webkit-keyframes flyInLeft {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(-0.5rem);
+            transform: translateX(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+}
+
+@keyframes flyInLeft {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(-0.5rem);
+            transform: translateX(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+}
+
+@-webkit-keyframes flyInRight {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(0.5rem);
+            transform: translateX(0.5rem);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+}
+
+@keyframes flyInRight {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(0.5rem);
+            transform: translateX(0.5rem);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+}
+
+@-webkit-keyframes flyOutLeft {
+  from {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+  to {
+    opacity: 0;
+    -webkit-transform: translateX(-0.5rem);
+            transform: translateX(-0.5rem);
+  }
+}
+
+@keyframes flyOutLeft {
+  from {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+  to {
+    opacity: 0;
+    -webkit-transform: translateX(-0.5rem);
+            transform: translateX(-0.5rem);
+  }
+}
+
+@-webkit-keyframes flyOutRight {
+  from {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+  to {
+    opacity: 0;
+    -webkit-transform: translateX(0.5rem);
+            transform: translateX(0.5rem);
+  }
+}
+
+@keyframes flyOutRight {
+  from {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+  to {
+    opacity: 0;
+    -webkit-transform: translateX(0.5rem);
+            transform: translateX(0.5rem);
+  }
+}
+
+.fly-in-from-left {
+  -webkit-animation: flyInLeft 0.2s forwards;
+          animation: flyInLeft 0.2s forwards;
+}
+
+.fly-in-from-right {
+  -webkit-animation: flyInRight 0.2s forwards;
+          animation: flyInRight 0.2s forwards;
+}
+
+.fly-out-to-left {
+  -webkit-animation: flyOutLeft 0.2s forwards;
+          animation: flyOutLeft 0.2s forwards;
+}
+
+.fly-out-to-right {
+  -webkit-animation: flyOutRight 0.2s forwards;
+          animation: flyOutRight 0.2s forwards;
 }
 </style>
 <div class="tabs">
@@ -400,11 +538,23 @@ customElements.define('sm-tabs', class extends HTMLElement {
         return ['type']
     }
     connectedCallback() {
-        this.prevTab = ''
-        this.type = this.getAttribute('type')
+        this.prevTab
+        if(this.hasAttribute('type'))
+            this.type = this.getAttribute('type')
+        this.activePanel;
         setTimeout(() => {
             this.indicator.classList.add('transition')
         }, 100);
+        this.shadowRoot.querySelector('slot[name="panel"]').addEventListener('slotchange', () => {
+            this.shadowRoot.querySelector('slot[name="panel"]').assignedElements().forEach((panel, index) => {
+                panel.classList.add('hide-completely')
+            })
+        })
+        this.shadowRoot.querySelector('slot[name="tab"]').addEventListener('slotchange', () => {
+            this.shadowRoot.querySelector('slot[name="tab"]').assignedElements().forEach((panel, index) => {
+                panel.setAttribute('rank', index+1)
+            })
+        })
         this.addEventListener('switchTab', e => {
             if (e.target === this.prevTab)
                 return
@@ -422,19 +572,38 @@ customElements.define('sm-tabs', class extends HTMLElement {
                     e.target.classList.add('line-active')
                 }, 200);
             }
+            if (this.activePanel)
+                this.activePanel.classList.add('hide-completely')
+            
+            if (this.prevTab){
+                let targetBody = e.target.nextElementSibling,
+                    currentBody = this.prevTab.nextElementSibling;
+            
+                if (this.prevTab.getAttribute('rank') < e.target.getAttribute('rank')) {
+                    targetBody.classList.add('fly-in-from-right')
+                    currentBody.classList.add('fly-out-to-left')
+                } else {
+                    targetBody.classList.add('fly-in-from-left')
+                    currentBody.classList.add('fly-out-to-right')
+                }
+                setTimeout(() => {
+                    currentBody.classList.remove('fly-out-to-right', 'fly-out-to-left')
+                }, 300)
+                setTimeout(() => {
+                    targetBody.classList.remove('fly-in-from-right', 'fly-in-from-left')
+                }, 600)
+            }
             e.target.scrollIntoView({ behavior: 'smooth', inline: 'center' })
             let tabDimensions = e.target.getBoundingClientRect()
             this.indicator.setAttribute('style', `width: ${tabDimensions.width}px; transform: translateX(${tabDimensions.x + this.tabHeader.scrollLeft}px)`)
             this.prevTab = e.target;
-        })
-        let headerLength = this.tabSlot.scrollWidth;
-        this.tabHeader.addEventListener('touchmove', e => {
-            this.tabHeader.scrollLeft = headerLength - e.changedTouches[0].pageX
+            e.target.nextElementSibling.classList.remove('hide-completely')
+            this.activePanel = e.target.nextElementSibling
         })
     }
 })
-// tab
 
+// tab
 const smTab = document.createElement('template')
 smTab.innerHTML = `
 <style>
@@ -468,7 +637,7 @@ smTab.innerHTML = `
 }
 :host(.line-active) .tab{
     color: var(--primary-color);
-
+}
 </style>
 <div class="tab">
     <slot></slot>
