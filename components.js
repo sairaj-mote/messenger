@@ -386,19 +386,12 @@ slot{
     grid-auto-columns: 1fr;
     border-bottom: none;
 }
-slot[name="panel"]{
-    overflow: hidden;
-}
-slot[name="panel"]::slotted(*){
-    min-width: 100%;
-}
 .transition{
     transition: transform 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86), width 0.4s;
 }
 .hide-completely{
     display: none;
 }
-
 </style>
 <div class="tabs">
     <div class="tab-header">
@@ -422,12 +415,64 @@ customElements.define('sm-tabs', class extends HTMLElement {
         return ['type']
     }
     connectedCallback() {
+
+        //animations
+        let flyInLeft = [
+            {
+                opacity: 0,
+                transform: 'translateX(-1rem)'
+            },
+            {
+                opacity: 1,
+                transform: 'none'
+            }
+        ];
+        let flyInRight = [
+            {
+                opacity: 0,
+                transform: 'translateX(1rem)'
+            },
+            {
+                opacity: 1,
+                transform: 'none'
+            }
+        ]
+        let flyOutLeft = [
+            {
+                opacity: 1,
+                transform: 'none'
+            },
+            {
+                opacity: 0,
+                transform: 'translateX(-1rem)'
+            }
+        ]
+        let flyOutRight = [
+            {
+                opacity: 1,
+                transform: 'none'
+            },
+            {
+                opacity: 0,
+                transform: 'translateX(1rem)'
+            }
+        ]
+        let animationOptions = {
+            duration: 300,
+            fill: 'forwards',
+            easing: 'ease'
+        }
         this.prevTab
         if(this.hasAttribute('type'))
             this.type = this.getAttribute('type')
         setTimeout(() => {
             this.indicator.classList.add('transition')
         }, 100);
+        this.shadowRoot.querySelector('slot[name="panel"]').addEventListener('slotchange', () => {
+            this.shadowRoot.querySelector('slot[name="panel"]').assignedElements().forEach((panel, index) => {
+                panel.classList.add('hide-completely')
+            })
+        })
         this.shadowRoot.querySelector('slot[name="tab"]').addEventListener('slotchange', () => {
             this.shadowRoot.querySelector('slot[name="tab"]').assignedElements().forEach((panel, index) => {
                 panel.setAttribute('rank', index+1)
@@ -451,11 +496,50 @@ customElements.define('sm-tabs', class extends HTMLElement {
                 }, 200);
             }
             
+            if (this.prevTab) {
+                let targetBody = e.target.nextElementSibling,
+                    currentBody = this.prevTab.nextElementSibling;
+
+                if (this.prevTab.getAttribute('rank') < e.target.getAttribute('rank')) {
+                    if (currentBody && !targetBody)
+                        currentBody.animate(flyOutLeft, animationOptions).onfinish = () => {
+                            currentBody.classList.add('hide-completely')
+                        }
+                    else if (targetBody && !currentBody) {
+                        targetBody.classList.remove('hide-completely')
+                        targetBody.animate(flyInRight, animationOptions)
+                    }
+                    else if(currentBody && targetBody) {
+                        currentBody.animate(flyOutLeft, animationOptions).onfinish = () => {
+                            currentBody.classList.add('hide-completely')
+                            targetBody.classList.remove('hide-completely')
+                            targetBody.animate(flyInRight, animationOptions)
+                        }
+                    }
+                } else {
+                    if (currentBody && !targetBody)
+                        currentBody.animate(flyOutRight, animationOptions).onfinish = () => {
+                            currentBody.classList.add('hide-completely')
+                        }
+                    else if (targetBody && !currentBody) {
+                        targetBody.classList.remove('hide-completely')
+                        targetBody.animate(flyInLeft, animationOptions)
+                    }
+                    else if(currentBody && targetBody) {
+                        currentBody.animate(flyOutRight, animationOptions).onfinish = () => {
+                            currentBody.classList.add('hide-completely')
+                            targetBody.classList.remove('hide-completely')
+                            targetBody.animate(flyInLeft, animationOptions)
+                        }
+                    }
+                }
+            } else {
+                e.target.nextElementSibling.classList.remove('hide-completely')
+            }
             e.target.scrollIntoView({ behavior: 'smooth', inline: 'center' })
             let tabDimensions = e.target.getBoundingClientRect()
             this.indicator.setAttribute('style', `width: ${tabDimensions.width}px; transform: translateX(${tabDimensions.x + this.tabHeader.scrollLeft}px)`)
             this.prevTab = e.target;
-            e.target.nextElementSibling.scrollIntoView({ behavior: 'smooth', inline: 'center' })
         })
     }
 })
