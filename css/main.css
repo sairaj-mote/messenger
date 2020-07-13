@@ -13,6 +13,10 @@
   scroll-behavior: smooth;
 }
 
+html {
+  margin-right: calc(100vw - 100%);
+}
+
 body {
   --primary-color: #0288D1;
   --text: 17, 17, 17;
@@ -338,12 +342,12 @@ sm-input .icon {
           box-shadow: 0 2rem 2rem rgba(0, 0, 0, 0.24);
 }
 
-sm-tab-header {
-  margin: 1rem;
-}
-
 sm-tab {
   --font-family: 'Roboto', sans-serif;
+}
+
+sm-tabs {
+  margin: 0 1.5rem;
 }
 
 #sign_in {

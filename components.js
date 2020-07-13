@@ -351,8 +351,9 @@ smTabs.innerHTML = `
     position: relative;
     overflow: auto hidden;
     max-width: 100%;
-    border-bottom: solid 1px rgba(var(--text), .1);
+    border-bottom: solid 1px rgba(var(--text), .2);
     scrollbar-width: 0;
+    margin-bottom: 1rem;
 }
 .tab-header::-webkit-scrollbar-track {
     -webkit-box-shadow: none !important;
@@ -371,7 +372,7 @@ smTabs.innerHTML = `
     height: 0.12rem;
     background: var(--primary-color);
 }
-slot{
+slot[name="tab"]{
     display: flex;
 }
 :host([type="tab"]) .indicator{
@@ -392,6 +393,12 @@ slot{
 .hide-completely{
     display: none;
 }
+:host([type="tab"]) slot[name="tab"]::slotted(.active){
+    color: rgba(var(--foreground), 1);
+}
+slot[name="tab"]::slotted(.active){
+    color: var(--primary-color);
+}
 </style>
 <div class="tabs">
     <div class="tab-header">
@@ -410,9 +417,6 @@ customElements.define('sm-tabs', class extends HTMLElement {
         this.tabSlot = this.shadowRoot.querySelector('slot[name="tab"]');
         this.panelSlot = this.shadowRoot.querySelector('slot[name="panel"]');
         this.tabHeader = this.shadowRoot.querySelector('.tab-header');
-    }
-    static get observedAttributes() {
-        return ['type']
     }
     connectedCallback() {
 
@@ -463,11 +467,6 @@ customElements.define('sm-tabs', class extends HTMLElement {
             easing: 'ease'
         }
         this.prevTab
-        if(this.hasAttribute('type'))
-            this.type = this.getAttribute('type')
-        setTimeout(() => {
-            this.indicator.classList.add('transition')
-        }, 100);
         this.shadowRoot.querySelector('slot[name="panel"]').addEventListener('slotchange', () => {
             this.shadowRoot.querySelector('slot[name="panel"]').assignedElements().forEach((panel, index) => {
                 panel.classList.add('hide-completely')
@@ -475,27 +474,16 @@ customElements.define('sm-tabs', class extends HTMLElement {
         })
         this.shadowRoot.querySelector('slot[name="tab"]').addEventListener('slotchange', () => {
             this.shadowRoot.querySelector('slot[name="tab"]').assignedElements().forEach((panel, index) => {
-                panel.setAttribute('rank', index+1)
+                panel.setAttribute('rank', index + 1)
             })
         })
         this.addEventListener('switchTab', e => {
             if (e.target === this.prevTab)
                 return
-            if (this.type === 'tab') {
-                if (this.prevTab)
-                    this.prevTab.classList.remove('tab-active')
-                setTimeout(() => {
-                    e.target.classList.add('tab-active')
-                }, 200);
-            }
-            else {
-                if (this.prevTab)
-                    this.prevTab.classList.remove('line-active')
-                setTimeout(() => {
-                    e.target.classList.add('line-active')
-                }, 200);
-            }
-            
+            if (this.prevTab)
+                this.prevTab.classList.remove('active')
+            e.target.classList.add('active')
+
             if (this.prevTab) {
                 let targetBody = e.target.nextElementSibling,
                     currentBody = this.prevTab.nextElementSibling;
@@ -509,7 +497,7 @@ customElements.define('sm-tabs', class extends HTMLElement {
                         targetBody.classList.remove('hide-completely')
                         targetBody.animate(flyInRight, animationOptions)
                     }
-                    else if(currentBody && targetBody) {
+                    else if (currentBody && targetBody) {
                         currentBody.animate(flyOutLeft, animationOptions).onfinish = () => {
                             currentBody.classList.add('hide-completely')
                             targetBody.classList.remove('hide-completely')
@@ -525,7 +513,7 @@ customElements.define('sm-tabs', class extends HTMLElement {
                         targetBody.classList.remove('hide-completely')
                         targetBody.animate(flyInLeft, animationOptions)
                     }
-                    else if(currentBody && targetBody) {
+                    else if (currentBody && targetBody) {
                         currentBody.animate(flyOutRight, animationOptions).onfinish = () => {
                             currentBody.classList.add('hide-completely')
                             targetBody.classList.remove('hide-completely')
@@ -536,11 +524,33 @@ customElements.define('sm-tabs', class extends HTMLElement {
             } else {
                 e.target.nextElementSibling.classList.remove('hide-completely')
             }
-            e.target.scrollIntoView({ behavior: 'smooth', inline: 'center' })
-            let tabDimensions = e.target.getBoundingClientRect()
-            this.indicator.setAttribute('style', `width: ${tabDimensions.width}px; transform: translateX(${tabDimensions.x + this.tabHeader.scrollLeft}px)`)
+            e.target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+            this.indicator.setAttribute('style', `width: ${e.target.getBoundingClientRect().width}px; transform: translateX(${e.target.getBoundingClientRect().left - e.target.parentNode.getBoundingClientRect().left + this.tabHeader.scrollLeft}px)`)
             this.prevTab = e.target;
         })
+        let observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    let activeElement = this.tabSlot.assignedElements().filter(element => {
+                        if (element.classList.contains('active'))
+                            return true
+                    })
+                    if (activeElement.length) {
+                        let tabDimensions = activeElement[0].getBoundingClientRect();
+                        this.indicator.setAttribute('style', `width: ${tabDimensions.width}px; transform: translateX(${tabDimensions.left - activeElement[0].parentNode.getBoundingClientRect().left + this.tabHeader.scrollLeft}px)`)
+                    }
+                    else {
+                        let tabDimensions = this.tabSlot.assignedElements()[0].getBoundingClientRect();
+                        this.indicator.setAttribute('style', `width: ${tabDimensions.width}px; transform: translateX(${tabDimensions.left - this.tabSlot.assignedElements()[0].parentNode.getBoundingClientRect().left + this.tabHeader.scrollLeft}px)`)
+                    }
+                    setTimeout(() => {
+                        this.indicator.classList.add('transition')
+                    }, 100);
+                }
+            })
+        },
+            { threshold: 1.0 })
+        observer.observe(this.tabHeader)
     }
 })
 
@@ -554,10 +564,12 @@ smTab.innerHTML = `
     box-sizing: border-box;
 } 
 :host{
+    position: relative;
     display: inline-flex;
     z-index: 1;
 }
 .tab{
+    position: relative;
     user-select: none;
     justify-content: center;
     cursor: pointer;
@@ -572,12 +584,6 @@ smTab.innerHTML = `
     transition: color 0.3s;
     text-transform: uppercase;
     font-family: var(--font-family);
-}
-:host(.tab-active) .tab{
-    color: rgba(var(--foreground), 1);
-}
-:host(.line-active) .tab{
-    color: var(--primary-color);
 }
 </style>
 <div class="tab">
