@@ -373,7 +373,10 @@ smTabs.innerHTML = `
     background: var(--primary-color);
 }
 slot[name="tab"]{
-    display: flex;
+    display: grid;
+    grid-auto-flow: column;
+    gap: 1rem;
+    grid-auto-columns: max-content;
 }
 :host([type="tab"]) .indicator{
     height: 100%;
@@ -525,7 +528,7 @@ customElements.define('sm-tabs', class extends HTMLElement {
                 e.target.nextElementSibling.classList.remove('hide-completely')
             }
             e.target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
-            this.indicator.setAttribute('style', `width: ${e.target.getBoundingClientRect().width}px; transform: translateX(${e.target.getBoundingClientRect().left - e.target.parentNode.getBoundingClientRect().left + this.tabHeader.scrollLeft}px)`)
+            this.indicator.setAttribute('style', `width: ${e.target.getBoundingClientRect().width / 2}px; transform: translateX(${e.target.getBoundingClientRect().left - e.target.parentNode.getBoundingClientRect().left + this.tabHeader.scrollLeft + e.target.getBoundingClientRect().width / 4}px)`)
             this.prevTab = e.target;
         })
         let observer = new IntersectionObserver((entries) => {
@@ -537,11 +540,13 @@ customElements.define('sm-tabs', class extends HTMLElement {
                     })
                     if (activeElement.length) {
                         let tabDimensions = activeElement[0].getBoundingClientRect();
-                        this.indicator.setAttribute('style', `width: ${tabDimensions.width}px; transform: translateX(${tabDimensions.left - activeElement[0].parentNode.getBoundingClientRect().left + this.tabHeader.scrollLeft}px)`)
+                        this.indicator.setAttribute('style', `width: ${tabDimensions.width / 2}px; transform: translateX(${tabDimensions.left - activeElement[0].parentNode.getBoundingClientRect().left + this.tabHeader.scrollLeft + tabDimensions.width / 4}px)`)
                     }
                     else {
+                        this.tabSlot.assignedElements()[0].classList.add('active')
                         let tabDimensions = this.tabSlot.assignedElements()[0].getBoundingClientRect();
-                        this.indicator.setAttribute('style', `width: ${tabDimensions.width}px; transform: translateX(${tabDimensions.left - this.tabSlot.assignedElements()[0].parentNode.getBoundingClientRect().left + this.tabHeader.scrollLeft}px)`)
+                        this.indicator.setAttribute('style', `width: ${tabDimensions.width / 2}px; transform: translateX(${tabDimensions.left - this.tabSlot.assignedElements()[0].parentNode.getBoundingClientRect().left + this.tabHeader.scrollLeft + tabDimensions.width / 4}px)`)
+                        this.prevTab = this.tabSlot.assignedElements()[0];
                     }
                     setTimeout(() => {
                         this.indicator.classList.add('transition')
@@ -577,7 +582,7 @@ smTab.innerHTML = `
     white-space: nowrap;
     font-size: 0.9rem;
     padding: 0.4rem 0.6rem;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 0.06em;
     word-spacing: 0.1em;
     text-align: center;
