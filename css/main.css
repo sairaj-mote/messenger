@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap");
 *,
 ::before,
 ::after {
@@ -13,33 +13,56 @@
   scroll-behavior: smooth;
 }
 
-html {
-  margin-right: calc(100vw - 100%);
-}
-
 body {
-  --primary-color: #0288D1;
-  --text: 17, 17, 17;
-  --text-light: 100, 100, 100;
-  --foreground: 255, 255, 255;
-  --background: #efefef;
+  --accent-color: #0268D1;
+  --secondary-color: #FDB956;
+  --text-color: 17, 17, 17;
+  --text-color-light: 100, 100, 100;
+  --foreground-color: 255, 255, 255;
+  --background-color: #efefef;
   --dark-shade: #dadada;
+  --error-color: red;
   font-size: 16px;
-  color: rgba(var(--text), 1);
-  background: rgba(var(--foreground), 1);
+  color: rgba(var(--text-color), 1);
+  background: rgba(var(--foreground-color), 1);
 }
 
 body[data-theme='dark'] {
-  --text: 218, 218, 218;
-  --text-light: 170, 170, 170;
-  --foreground: 20, 20, 20;
-  --background: #111;
+  --text-color: 218, 218, 218;
+  --text-color-light: 170, 170, 170;
+  --foreground-color: 20, 20, 20;
+  -color: #111;
   --dark-shade: #1a1a1a;
 }
 
 p {
-  line-height: 1.4em;
-  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1.2rem;
+}
+
+h5 {
+  font-size: 0.8rem;
+}
+
+h1, h2, h3, h4, h5 {
+  color: rgba(var(--text-color), 1);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
 }
 
 .flex {
@@ -57,6 +80,12 @@ p {
   -ms-grid-columns: auto auto;
       grid-template-columns: auto auto;
   gap: 1em;
+}
+
+.align-center {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 .hide {
@@ -78,117 +107,102 @@ p {
 }
 
 .light-text {
-  color: rgba(var(--text-light), 1);
+  color: rgba(var(--text-color-light), 1);
+}
+
+.accent-color {
+  color: var(--accent-color);
+}
+
+.secondary-color {
+  color: var(--secondary-color);
 }
 
 a:-webkit-any-link {
   text-decoration: none;
-  color: var(--primary-color);
+  color: var(--accent-color);
   text-transform: capitalize;
   font-weight: 500;
 }
 
 a:-moz-any-link {
   text-decoration: none;
-  color: var(--primary-color);
+  color: var(--accent-color);
   text-transform: capitalize;
   font-weight: 500;
 }
 
 a:any-link {
   text-decoration: none;
-  color: var(--primary-color);
+  color: var(--accent-color);
   text-transform: capitalize;
   font-weight: 500;
 }
 
 .solid-background {
-  background: var(--background) !important;
+  background: var(--background-color) !important;
 }
 
-.title-font {
-  font-family: 'Barlow', sans-serif;
+.normal-weight {
+  font-weight: normal;
 }
 
-sm-btn {
-  margin: 1rem;
-  --font-family: 'Barlow', sans-serif;
+.icon {
+  fill: none;
+  stroke-width: 6;
+  stroke: rgba(var(--text-color), 1);
+  height: 1.2rem;
+  width: 1.2rem;
+  overflow: visible;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  -webkit-transition: -webkit-transform 0.3s;
+  transition: -webkit-transform 0.3s;
+  transition: transform 0.3s;
+  transition: transform 0.3s, -webkit-transform 0.3s;
 }
 
-sm-btn .icon {
+.page {
+  display: -ms-grid;
+  display: grid;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
+}
+
+sm-button {
+  --font-family: 'Poppins', sans-serif;
+  margin: 1rem 0;
+}
+
+sm-button .icon {
   margin-right: 0.4rem;
 }
 
+sm-button[variant="primary"] .icon {
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+  height: 0.8rem;
+  width: 0.8rem;
+  margin-left: 0.8rem;
+  stroke-width: 10;
+  stroke: rgba(var(--foreground-color), 1);
+}
+
 sm-input {
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  margin: 1rem;
-}
-
-sm-input .icon {
-  margin-right: 1rem;
-}
-
-.switch {
-  position: relative;
-  overflow: hidden;
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  border-radius: 1rem;
-  width: 2.4rem;
-  padding: 0.2rem;
-  cursor: pointer;
-}
-
-.switch input {
-  display: none;
-}
-
-.switch .track {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  -webkit-transition: background 0.4s;
-  transition: background 0.4s;
-  background: rgba(var(--text), 0.6);
-}
-
-.switch .btn {
-  position: relative;
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  height: 1rem;
-  width: 1rem;
-  border-radius: 1rem;
-  -webkit-transition: -webkit-transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition: -webkit-transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition: transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  transition: transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86), -webkit-transform 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  border: solid 0.3rem rgba(var(--foreground), 1);
-}
-
-.switch input:checked ~ .btn {
-  -webkit-transform: translateX(100%);
-          transform: translateX(100%);
-}
-
-.switch input:checked ~ .track {
-  background: var(--primary-color);
+  margin: 1rem 0;
 }
 
 .icon {
   fill: none;
   height: 1rem;
   width: 1rem;
-  stroke: rgba(var(--text), 0.7);
+  stroke: rgba(var(--text-color), 0.7);
   stroke-width: 6;
   overflow: visible;
   stroke-linecap: round;
@@ -196,7 +210,7 @@ sm-input .icon {
 }
 
 .icon.primary {
-  stroke: var(--primary-color);
+  stroke: var(--accent-color);
 }
 
 #confirmation {
@@ -236,248 +250,311 @@ sm-input .icon {
   margin-right: 0.6em;
 }
 
-#notify {
-  -webkit-transform: translate(0, -100%);
-          transform: translate(0, -100%);
-  -webkit-transition: opacity 0.3s, -webkit-transform 0.3s;
-  transition: opacity 0.3s, -webkit-transform 0.3s;
-  transition: transform 0.3s, opacity 0.3s;
-  transition: transform 0.3s, opacity 0.3s, -webkit-transform 0.3s;
-  -webkit-box-shadow: 0.2rem 0.4rem 0.8rem rgba(0, 0, 0, 0.16);
-          box-shadow: 0.2rem 0.4rem 0.8rem rgba(0, 0, 0, 0.16);
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  display: -ms-grid;
-  display: grid;
-  -ms-grid-columns: auto 1fr auto;
-      grid-template-columns: auto 1fr auto;
-  gap: 0 1rem;
-  color: rgba(var(--text), 1);
-  position: fixed;
-  right: 0;
-  top: 0;
-  bottom: auto;
-  width: 100%;
-  max-width: 100%;
-  z-index: 30;
-  background: rgba(var(--foreground), 1);
-}
-
-#notify #error_icon {
-  fill: #E53935;
-}
-
-#notify #done_icon {
-  fill: #00C853;
-}
-
-#notify .notification-icon {
-  height: 2em;
-  width: 2em;
-  margin: 1em 0 1em 1em;
-  fill: rgba(var(--text), 1);
-}
-
-#notify span {
-  font-weight: 500;
-}
-
-#notify #notification_text {
-  overflow-wrap: break-word;
-  word-break: break-all;
-}
-
-#notify button {
-  padding: 1rem;
-  margin: 0 1em 0 0;
-  border: none;
-  background: none;
-}
-
-#notify button svg {
-  height: 1em;
-  width: 1em;
-  stroke: rgba(var(--text), 1);
-  stroke-width: 6;
-}
-
-.popup-container {
-  display: -ms-grid;
-  display: grid;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  place-items: center;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 10;
-  -webkit-transition: opacity 0.3s ease;
-  transition: opacity 0.3s ease;
-}
-
-.popup-container .popup {
-  -ms-flex-item-align: end;
-      align-self: flex-end;
-  width: 100%;
-  border-radius: 0.5rem 0.5rem 0 0;
-  padding: 1.5rem;
-  position: relative;
+.logo-section {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  background: rgba(var(--foreground), 1);
-  -webkit-transform: translateY(1rem);
-          transform: translateY(1rem);
-  -webkit-transition: -webkit-transform 0.3s;
-  transition: -webkit-transform 0.3s;
-  transition: transform 0.3s;
-  transition: transform 0.3s, -webkit-transform 0.3s;
-  -webkit-box-shadow: 0 2rem 2rem rgba(0, 0, 0, 0.24);
-          box-shadow: 0 2rem 2rem rgba(0, 0, 0, 0.24);
+  position: relative;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  height: -webkit-max-content;
+  height: -moz-max-content;
+  height: max-content;
 }
 
-sm-tab {
-  --font-family: 'Roboto', sans-serif;
-}
-
-sm-tabs {
-  margin: 0 1.5rem;
+.logo-section .main-logo {
+  height: 1.4rem;
+  margin-right: 0.4rem;
 }
 
 #sign_in {
   display: -ms-grid;
   display: grid;
-  padding: 7vw 6vw;
   border-radius: 0.6rem;
-  background: -webkit-gradient(linear, left top, left bottom, from(#ffffff80)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Cdefs%3E%3Cstyle%3E.a,.b,.e,.h%7Bfill:none;%7D.a%7Bstroke:%23ff6060;%7D.b%7Bstroke:%230061d1;%7D.c%7Bfill:%23ff6060;%7D.d%7Bfill:%23ffa7a7;%7D.e%7Bstroke:%23a7d0ff;stroke-width:8px;%7D.e,.h%7Bstroke-linecap:round;%7D.f%7Bfill:%237bb8ff;%7D.g%7Bfill:%23ffc1c1;%7D.h%7Bstroke:%23fbb;stroke-width:4px;%7D%3C/style%3E%3C/defs%3E%3Ctitle%3Ebackground%3C/title%3E%3Cpath class='a' d='M379.54,310.32s9.94,9.45,9.7,1.45,5.82,0,7.52-3.63-6.06-8.73,0-7,5.57-1.94,5.57-4.61'/%3E%3Cpath class='b' d='M602.11,388.9s-6.55,12.05,1.11,9.75,1.51,5.62,5.46,6.32,6.86-8.12,6.79-1.82,3.32,4.88,5.9,4.19'/%3E%3Ccircle class='c' cx='380.06' cy='265.36' r='6'/%3E%3Ccircle class='d' cx='597.06' cy='457.36' r='12'/%3E%3Cline class='e' x1='713.63' y1='325.76' x2='778.56' y2='289.86'/%3E%3Cline class='e' x1='787.23' y1='308.11' x2='854.55' y2='271.86'/%3E%3Cline class='e' x1='776.23' y1='334.36' x2='828.02' y2='308.47'/%3E%3Cline class='e' x1='757.56' y1='323.86' x2='771.56' y2='315.86'/%3E%3Cpath class='f' d='M400.39,664.13a6,6,0,0,1,10.33,0l6,10.19a6,6,0,0,1-2.12,8.21,5.91,5.91,0,0,1-3,.83h-12a6,6,0,0,1-6-6,5.91,5.91,0,0,1,.83-3Z'/%3E%3Cpath class='g' d='M695.93,784.83a10,10,0,0,1,11.29,13l-7.1,21.36a10,10,0,0,1-17,3.41l-15-17.3a10,10,0,0,1,5.74-16.4Z'/%3E%3Cline class='h' x1='1337.56' y1='775.66' x2='1379.48' y2='752.48'/%3E%3Cline class='h' x1='1321.09' y1='796.27' x2='1364.56' y2='772.86'/%3E%3Cline class='h' x1='1284.98' y1='791.22' x2='1318.42' y2='774.5'/%3E%3Cline class='h' x1='1319.92' y1='785.44' x2='1328.96' y2='780.27'/%3E%3Cpath class='c' d='M1072.42,516.3c3.07,3.23,6.91,4.77,11.14,5.88a47.88,47.88,0,0,0,6,1.44,35.74,35.74,0,0,1,4.15.37c.49.12.33.22.34,0a7.25,7.25,0,0,1-.57,2.19,15.9,15.9,0,0,0-1.61,5.19c-.25,3.64,2.61,5.74,5.69,6.87a22.27,22.27,0,0,0,5.76,1.18,14.56,14.56,0,0,1,4.69.84c1.88.86,2.49,2.65,3.42,4.34a12.45,12.45,0,0,0,3.48,4c3.12,2.3,7,2.41,10.62,3.56a7.89,7.89,0,0,1,5.61,7.88c0,2.1-.47,4.27.24,6.32a7,7,0,0,0,4.67,4.35,20.8,20.8,0,0,0,6.3.35c1.75,0,3.77-.15,5,1.34s3.31-.63,2.12-2.12c-2.39-3-6.8-2.11-10.13-2.16-1.75,0-3.53-.31-4.63-1.83s-.64-3.56-.56-5.25c.19-3.9-1.13-7.9-4.43-10.2-3.08-2.16-7-2.18-10.45-3.36a9,9,0,0,1-4.16-2.83c-1.22-1.54-1.76-3.46-3-5-2.45-3-6.15-3-9.68-3.39-2.39-.29-7.23-1.17-7.53-4.24s3.57-6.44,1.82-9.51c-.78-1.35-2.37-1.6-3.78-1.72a27.89,27.89,0,0,1-5.39-.76c-4.77-1.32-9.41-2.2-13-5.93-1.33-1.4-3.45.72-2.12,2.12Z'/%3E%3Cpath class='c' d='M497.48,761.42c-2.65.3-4.62,2.75-5.08,5.29-.52,2.92,1.59,4.36,3.68,5.86a3.48,3.48,0,0,1,1.67,2.83,11.3,11.3,0,0,1-.46,4c-.62,2.08-2.64,4.08-2.11,6.38,1,4.25,6,5.18,9.48,6.2a17.8,17.8,0,0,1,5.5,2.17c1.08.78,1.39,1.63.51,2.79-1.4,1.84-4,2.89-6,3.79s-4.4,1.65-6.5,2.69c-1.73.86-.21,3.45,1.52,2.6,3.82-1.9,8.07-2.87,11.52-5.5,1.56-1.19,3-2.82,3-4.89a5.14,5.14,0,0,0-2.69-4.18c-3.28-2.12-7.36-2.35-10.89-3.87-1.1-.48-2.93-1.77-2.35-3.21.4-1,1-1.88,1.44-2.87a14.62,14.62,0,0,0,1-4.28,8.92,8.92,0,0,0-.57-4.46,8.11,8.11,0,0,0-3.08-3.1c-.85-.59-1.94-1.21-1.72-2.4.17-.92,1-2.67,2.13-2.8,1.9-.22,1.92-3.22,0-3Z'/%3E%3Cpath class='c' d='M1542.52,175.39l-2,.41a1.5,1.5,0,0,0-1,1c-.87,2.94.89,5,3.76,5.48a22.18,22.18,0,0,0,4,.18c.57,0,1.13,0,1.69,0,.22,0,.43,0,.64,0s.32,0,0,0c.28,0,.57.12.84.18a9.6,9.6,0,0,1,1.83.53,1.73,1.73,0,0,1,.78.66,37,37,0,0,0,2.9,4.14c2.48,2.63,6.61,3.2,8.58,6.38,1.08,1.75,1.4,3.84,2,5.79a12,12,0,0,0,3.49,5.83c1.45,1.26,3.58-.85,2.12-2.12-2.93-2.54-2.91-6.53-4.41-9.86-1.59-3.55-4.89-4.94-8-6.82a10.66,10.66,0,0,1-3.39-3.76,7.69,7.69,0,0,0-2.09-2.57c-2.05-1.37-4.69-1.39-7.05-1.34a14.24,14.24,0,0,1-3.8-.21c-1.12-.29-1.28-.52-1-1.65l-1,1,2-.41c1.89-.39,1.09-3.28-.8-2.9Z'/%3E%3Cpath class='c' d='M134.6,206.42c2.25,0,4.85.06,6.71,1.53s2.91,4.18,3.7,6.42a7.68,7.68,0,0,1,.6,3.32,2.12,2.12,0,0,1-.85,1.46c-1.26,1-3.29,1.42-5,2a12.8,12.8,0,0,0-6.49,4.57c-1.09,1.6,1.51,3.1,2.6,1.52,2.68-3.9,8.26-3.07,11.32-6.34,1.88-2,1.56-4.83.74-7.23-1-2.74-2.16-5.79-4.38-7.75-2.48-2.19-5.8-2.54-9-2.54a1.5,1.5,0,0,0,0,3Z'/%3E%3Cpath class='c' d='M1599.79,640.84a6.93,6.93,0,0,0,1.37,6.52,11.59,11.59,0,0,0,5.63,3.11,27.58,27.58,0,0,0,6.52.93,32.29,32.29,0,0,0,3.93-.26c1.24-.1,2.73,0,3.18,1.35a15.33,15.33,0,0,1,.19,4.44,8.88,8.88,0,0,0,.93,4.51,1.51,1.51,0,0,0,2.6-1.52,6.51,6.51,0,0,1-.53-3.41,24,24,0,0,0-.13-4c-.49-3.15-3.2-4.65-6.24-4.39a29.35,29.35,0,0,1-6.69,0,15.51,15.51,0,0,1-5.81-1.76,4,4,0,0,1-2-4.78c.47-1.87-2.42-2.67-2.9-.8Z'/%3E%3Cpath class='f' d='M267.22,508.08c1.06,2,1.88,4.36,3.64,5.94a5.21,5.21,0,0,0,3.29,1.42c.71,0,1.82-.35,2.39.18a1.33,1.33,0,0,1,.37,1.38,6.3,6.3,0,0,1-.9,1.85,14.94,14.94,0,0,0-2.26,4c-.57,2.28.77,4,2.65,5.16a1.51,1.51,0,0,0,1.52-2.6,4.09,4.09,0,0,1-.95-.7,1.38,1.38,0,0,1-.35-.58.77.77,0,0,1,0-.34,2.37,2.37,0,0,1,.25-.72c.66-1.35,1.68-2.48,2.36-3.82a5,5,0,0,0,.17-4.82,3.86,3.86,0,0,0-2.69-2c-1-.17-2.07.21-3-.11a4.83,4.83,0,0,1-2.17-2.33c-.64-1.12-1.13-2.31-1.72-3.46-.89-1.71-3.48-.2-2.6,1.52Z'/%3E%3Cpath class='f' d='M1172.5,7.3a4.66,4.66,0,0,0-2,3.86,5.85,5.85,0,0,0,2,3.5,30.44,30.44,0,0,1,2.88,2.67c1,1.37.81,3.28.95,4.89.29,3.53,2,6.1,4.36,8.63,2.1,2.27,4.23,4.47,4.31,7.75,0,1.93,3,1.93,3,0-.08-3.34-1.64-6-3.82-8.39-1.86-2.06-4.09-4-4.69-6.83-.39-1.83-.11-3.73-.62-5.54a7.24,7.24,0,0,0-2.17-3.43,21.69,21.69,0,0,1-2.74-2.59c-.78-1.05-.28-1.62.64-2.4,1.48-1.24-.65-3.36-2.12-2.12Z'/%3E%3Cpath class='f' d='M1835.23,280.12c-1.87,6.26-4.56,12.36-5,19a15.73,15.73,0,0,0,1.64,8.78c1.24,2.16,3.1,3.86,4.53,5.87a6,6,0,0,1,1.37,3.21c0,1.49-1.13,2.64-2.17,3.56-1.45,1.28.68,3.4,2.12,2.12,2.12-1.87,3.59-4.38,2.83-7.27-.65-2.47-2.56-4.45-4.15-6.36a12,12,0,0,1-3.17-7.16,29.82,29.82,0,0,1,1.41-10.13c1-3.64,2.38-7.16,3.47-10.78.55-1.85-2.34-2.65-2.9-.8Z'/%3E%3Cpath class='f' d='M88.14,1041.9a7.22,7.22,0,0,0,2.23-4.21,37.16,37.16,0,0,0-.1-4.22c0-2.82,1.88-5.44,4-7.09a27.78,27.78,0,0,1,7.93-4c2.87-1,5.5-2,7.17-4.7,2.06-3.33,2.91-7.26,4.88-10.64a1.51,1.51,0,0,0-2.6-1.52c-1.71,3-2.6,6.3-4.15,9.34a7,7,0,0,1-2.64,3.21,22.83,22.83,0,0,1-4.12,1.64c-5.38,1.83-10.93,5-12.93,10.61a11.46,11.46,0,0,0-.49,4.9c.15,1.85,0,3.19-1.35,4.56a1.5,1.5,0,0,0,2.12,2.12Z'/%3E%3Cpath class='f' d='M1339.22,1030c.14-1.69,2-2.44,3.42-3a25.35,25.35,0,0,0,5.45-2.56,32.3,32.3,0,0,0,6.23-5.56,18.45,18.45,0,0,0,4.1-6.62c1.51-5.09-1.88-10.35-6.2-12.86-3.89-2.26-8.83-2.58-12-6-3.79-4-3.18-10.25-3.12-15.31a1.5,1.5,0,0,0-3,0c-.06,4.78-.34,9.82,1.79,14.25s6.48,6.37,10.93,7.93a15.9,15.9,0,0,1,6,3.22c1.81,1.75,3.34,4.34,3,6.94s-2.2,4.78-3.86,6.64a28.4,28.4,0,0,1-6.38,5.44c-3.5,2.16-8.86,2.28-9.29,7.42-.16,1.92,2.84,1.91,3,0Z'/%3E%3Cpath class='f' d='M996.44,760.7c-6.92.17-13.92-1-18.82-6.31a43,43,0,0,1-7.69-11.94,12.06,12.06,0,0,1-1-3.27,4.52,4.52,0,0,1,0-1.14c.1-.41.08-.38.45-.7,1.47-1.25-.66-3.37-2.12-2.12-1.79,1.52-1.51,4.16-.93,6.18a32.39,32.39,0,0,0,3.84,7.89c3.22,5.15,6.91,9.93,12.67,12.38,4.28,1.82,9,2.14,13.56,2,1.93-.05,1.93-3.05,0-3Z'/%3E%3Cpath class='f' d='M1822,998.35c-1.26-.26-3.21-.68-3.86-1.75a1.39,1.39,0,0,1-.18-.93,6.45,6.45,0,0,1,.44-1.56c1.25-3,3.48-5.48,5-8.29a15,15,0,0,0,1.76-4.46,15.69,15.69,0,0,0-.66-6.69c-.67-2.6-1.57-5.19-1.53-7.91,0-1.64.26-3.27.33-4.9a11.48,11.48,0,0,0-.86-5.59,6.3,6.3,0,0,0-4.8-3.28c-1.89-.3-2.7,2.59-.8,2.9,1.58.25,2.77.89,3.21,2.5a14,14,0,0,1,.17,4.79,29.09,29.09,0,0,0-.19,5.11c.28,2.9,1.26,5.62,1.89,8.44a9.26,9.26,0,0,1-.07,5.37,22.67,22.67,0,0,1-2.24,4.21c-1.63,2.55-3.85,5.17-4.53,8.19-.91,4.08,2.61,6,6.08,6.75,1.89.39,2.69-2.5.8-2.9Z'/%3E%3Cpath class='f' d='M1157.34,275.1a20.65,20.65,0,0,0,3.09-3.69c1.21-1.62,2.39-3.27,3.73-4.79a11.23,11.23,0,0,1,3.92-3.23c1.56-.63,2.75.19,3.81,1.45l-.24-1.81a1.24,1.24,0,0,1-.47.41,5,5,0,0,1-1.28.56,15.16,15.16,0,0,1-3.54.6,24,24,0,0,1-8-.72,4.87,4.87,0,0,1-4-4.29c-.5-2.95.57-6.14,1.81-8.78a28.5,28.5,0,0,1,5.48-8.11,1.5,1.5,0,0,0-2.12-2.12,30.91,30.91,0,0,0-5.81,8.41c-1.58,3.29-2.84,7-2.35,10.72a7.77,7.77,0,0,0,5.07,6.7,24.13,24.13,0,0,0,9.36,1.22c2.8-.12,6.75-.48,8.43-3.09a1.53,1.53,0,0,0-.23-1.82,6.13,6.13,0,0,0-5.79-2.47,10.23,10.23,0,0,0-5.12,3.11,47,47,0,0,0-4.43,5.42,24,24,0,0,1-3.45,4.2c-1.48,1.24.65,3.36,2.12,2.12Z'/%3E%3Cpath class='f' d='M1316.83,254.2c-.56,2.81-.63,6.18,1.71,8.25,2,1.73,4.73,2,7.24,2.05,2.71,0,5.4-.33,8.11-.38.59,0,1.19,0,1.79,0l.78.07c.38,0-.28-.06.09,0l.42.08c.24.05.46.12.69.18l.29.1c-.14-.05-.2-.11,0,0s.67.47.29.14c.15.14.29.27.43.42-.4-.43.24.61,0,.07a4.64,4.64,0,0,1,.2.73c-.09-.47,0,0,0,.17s0,.31,0,.46,0,.34,0,.5c0-.37,0,.17-.05.27a21.15,21.15,0,0,1-2.44,5.9c-.92,1.7,1.67,3.22,2.6,1.52,1.52-2.8,3.65-6.63,2.76-10-.65-2.49-3-3.39-5.37-3.64a49,49,0,0,0-7.75.21,33.71,33.71,0,0,1-4,0c-.29,0-.58,0-.86-.06l-.16,0-.49-.08a10.11,10.11,0,0,1-1.63-.46c.33.13,0,0-.13-.07l-.38-.21a2.62,2.62,0,0,1-.34-.24c.13.1.1.11-.09-.08l-.3-.3c-.29-.3,0,.06-.08-.1a5.81,5.81,0,0,1-.43-.77c.18.4,0-.12-.06-.23s-.07-.28-.1-.42,0-.15,0-.23c-.08-.38,0,.33,0-.07,0-.19,0-.38,0-.57a9.49,9.49,0,0,1,.24-2.55c.37-1.89-2.52-2.69-2.9-.8Z'/%3E%3Ccircle class='d' cx='1861.87' cy='625.94' r='15.73'/%3E%3Cpath class='f' d='M1512.42,492.48a7.87,7.87,0,0,1,5.22,12.5l-9.29,12.4a7.86,7.86,0,0,1-13.55-1.68l-6.06-14.52a7.86,7.86,0,0,1,8.33-10.82Z'/%3E%3Cline class='e' x1='105.45' y1='786.65' x2='141.34' y2='851.58'/%3E%3Cline class='e' x1='123.09' y1='860.26' x2='159.34' y2='927.58'/%3E%3Cline class='e' x1='96.84' y1='849.26' x2='122.73' y2='901.04'/%3E%3Cline class='e' x1='107.34' y1='830.58' x2='115.34' y2='844.58'/%3E%3Cline class='h' x1='1795.52' y1='74.05' x2='1772.34' y2='32.13'/%3E%3Cline class='h' x1='1816.12' y1='90.52' x2='1792.72' y2='47.05'/%3E%3Cline class='h' x1='1811.07' y1='126.63' x2='1794.36' y2='93.19'/%3E%3Cline class='h' x1='1805.3' y1='91.69' x2='1800.13' y2='82.65'/%3E%3C/svg%3E"), #ffffff;
-  background: linear-gradient(#ffffff80), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Cdefs%3E%3Cstyle%3E.a,.b,.e,.h%7Bfill:none;%7D.a%7Bstroke:%23ff6060;%7D.b%7Bstroke:%230061d1;%7D.c%7Bfill:%23ff6060;%7D.d%7Bfill:%23ffa7a7;%7D.e%7Bstroke:%23a7d0ff;stroke-width:8px;%7D.e,.h%7Bstroke-linecap:round;%7D.f%7Bfill:%237bb8ff;%7D.g%7Bfill:%23ffc1c1;%7D.h%7Bstroke:%23fbb;stroke-width:4px;%7D%3C/style%3E%3C/defs%3E%3Ctitle%3Ebackground%3C/title%3E%3Cpath class='a' d='M379.54,310.32s9.94,9.45,9.7,1.45,5.82,0,7.52-3.63-6.06-8.73,0-7,5.57-1.94,5.57-4.61'/%3E%3Cpath class='b' d='M602.11,388.9s-6.55,12.05,1.11,9.75,1.51,5.62,5.46,6.32,6.86-8.12,6.79-1.82,3.32,4.88,5.9,4.19'/%3E%3Ccircle class='c' cx='380.06' cy='265.36' r='6'/%3E%3Ccircle class='d' cx='597.06' cy='457.36' r='12'/%3E%3Cline class='e' x1='713.63' y1='325.76' x2='778.56' y2='289.86'/%3E%3Cline class='e' x1='787.23' y1='308.11' x2='854.55' y2='271.86'/%3E%3Cline class='e' x1='776.23' y1='334.36' x2='828.02' y2='308.47'/%3E%3Cline class='e' x1='757.56' y1='323.86' x2='771.56' y2='315.86'/%3E%3Cpath class='f' d='M400.39,664.13a6,6,0,0,1,10.33,0l6,10.19a6,6,0,0,1-2.12,8.21,5.91,5.91,0,0,1-3,.83h-12a6,6,0,0,1-6-6,5.91,5.91,0,0,1,.83-3Z'/%3E%3Cpath class='g' d='M695.93,784.83a10,10,0,0,1,11.29,13l-7.1,21.36a10,10,0,0,1-17,3.41l-15-17.3a10,10,0,0,1,5.74-16.4Z'/%3E%3Cline class='h' x1='1337.56' y1='775.66' x2='1379.48' y2='752.48'/%3E%3Cline class='h' x1='1321.09' y1='796.27' x2='1364.56' y2='772.86'/%3E%3Cline class='h' x1='1284.98' y1='791.22' x2='1318.42' y2='774.5'/%3E%3Cline class='h' x1='1319.92' y1='785.44' x2='1328.96' y2='780.27'/%3E%3Cpath class='c' d='M1072.42,516.3c3.07,3.23,6.91,4.77,11.14,5.88a47.88,47.88,0,0,0,6,1.44,35.74,35.74,0,0,1,4.15.37c.49.12.33.22.34,0a7.25,7.25,0,0,1-.57,2.19,15.9,15.9,0,0,0-1.61,5.19c-.25,3.64,2.61,5.74,5.69,6.87a22.27,22.27,0,0,0,5.76,1.18,14.56,14.56,0,0,1,4.69.84c1.88.86,2.49,2.65,3.42,4.34a12.45,12.45,0,0,0,3.48,4c3.12,2.3,7,2.41,10.62,3.56a7.89,7.89,0,0,1,5.61,7.88c0,2.1-.47,4.27.24,6.32a7,7,0,0,0,4.67,4.35,20.8,20.8,0,0,0,6.3.35c1.75,0,3.77-.15,5,1.34s3.31-.63,2.12-2.12c-2.39-3-6.8-2.11-10.13-2.16-1.75,0-3.53-.31-4.63-1.83s-.64-3.56-.56-5.25c.19-3.9-1.13-7.9-4.43-10.2-3.08-2.16-7-2.18-10.45-3.36a9,9,0,0,1-4.16-2.83c-1.22-1.54-1.76-3.46-3-5-2.45-3-6.15-3-9.68-3.39-2.39-.29-7.23-1.17-7.53-4.24s3.57-6.44,1.82-9.51c-.78-1.35-2.37-1.6-3.78-1.72a27.89,27.89,0,0,1-5.39-.76c-4.77-1.32-9.41-2.2-13-5.93-1.33-1.4-3.45.72-2.12,2.12Z'/%3E%3Cpath class='c' d='M497.48,761.42c-2.65.3-4.62,2.75-5.08,5.29-.52,2.92,1.59,4.36,3.68,5.86a3.48,3.48,0,0,1,1.67,2.83,11.3,11.3,0,0,1-.46,4c-.62,2.08-2.64,4.08-2.11,6.38,1,4.25,6,5.18,9.48,6.2a17.8,17.8,0,0,1,5.5,2.17c1.08.78,1.39,1.63.51,2.79-1.4,1.84-4,2.89-6,3.79s-4.4,1.65-6.5,2.69c-1.73.86-.21,3.45,1.52,2.6,3.82-1.9,8.07-2.87,11.52-5.5,1.56-1.19,3-2.82,3-4.89a5.14,5.14,0,0,0-2.69-4.18c-3.28-2.12-7.36-2.35-10.89-3.87-1.1-.48-2.93-1.77-2.35-3.21.4-1,1-1.88,1.44-2.87a14.62,14.62,0,0,0,1-4.28,8.92,8.92,0,0,0-.57-4.46,8.11,8.11,0,0,0-3.08-3.1c-.85-.59-1.94-1.21-1.72-2.4.17-.92,1-2.67,2.13-2.8,1.9-.22,1.92-3.22,0-3Z'/%3E%3Cpath class='c' d='M1542.52,175.39l-2,.41a1.5,1.5,0,0,0-1,1c-.87,2.94.89,5,3.76,5.48a22.18,22.18,0,0,0,4,.18c.57,0,1.13,0,1.69,0,.22,0,.43,0,.64,0s.32,0,0,0c.28,0,.57.12.84.18a9.6,9.6,0,0,1,1.83.53,1.73,1.73,0,0,1,.78.66,37,37,0,0,0,2.9,4.14c2.48,2.63,6.61,3.2,8.58,6.38,1.08,1.75,1.4,3.84,2,5.79a12,12,0,0,0,3.49,5.83c1.45,1.26,3.58-.85,2.12-2.12-2.93-2.54-2.91-6.53-4.41-9.86-1.59-3.55-4.89-4.94-8-6.82a10.66,10.66,0,0,1-3.39-3.76,7.69,7.69,0,0,0-2.09-2.57c-2.05-1.37-4.69-1.39-7.05-1.34a14.24,14.24,0,0,1-3.8-.21c-1.12-.29-1.28-.52-1-1.65l-1,1,2-.41c1.89-.39,1.09-3.28-.8-2.9Z'/%3E%3Cpath class='c' d='M134.6,206.42c2.25,0,4.85.06,6.71,1.53s2.91,4.18,3.7,6.42a7.68,7.68,0,0,1,.6,3.32,2.12,2.12,0,0,1-.85,1.46c-1.26,1-3.29,1.42-5,2a12.8,12.8,0,0,0-6.49,4.57c-1.09,1.6,1.51,3.1,2.6,1.52,2.68-3.9,8.26-3.07,11.32-6.34,1.88-2,1.56-4.83.74-7.23-1-2.74-2.16-5.79-4.38-7.75-2.48-2.19-5.8-2.54-9-2.54a1.5,1.5,0,0,0,0,3Z'/%3E%3Cpath class='c' d='M1599.79,640.84a6.93,6.93,0,0,0,1.37,6.52,11.59,11.59,0,0,0,5.63,3.11,27.58,27.58,0,0,0,6.52.93,32.29,32.29,0,0,0,3.93-.26c1.24-.1,2.73,0,3.18,1.35a15.33,15.33,0,0,1,.19,4.44,8.88,8.88,0,0,0,.93,4.51,1.51,1.51,0,0,0,2.6-1.52,6.51,6.51,0,0,1-.53-3.41,24,24,0,0,0-.13-4c-.49-3.15-3.2-4.65-6.24-4.39a29.35,29.35,0,0,1-6.69,0,15.51,15.51,0,0,1-5.81-1.76,4,4,0,0,1-2-4.78c.47-1.87-2.42-2.67-2.9-.8Z'/%3E%3Cpath class='f' d='M267.22,508.08c1.06,2,1.88,4.36,3.64,5.94a5.21,5.21,0,0,0,3.29,1.42c.71,0,1.82-.35,2.39.18a1.33,1.33,0,0,1,.37,1.38,6.3,6.3,0,0,1-.9,1.85,14.94,14.94,0,0,0-2.26,4c-.57,2.28.77,4,2.65,5.16a1.51,1.51,0,0,0,1.52-2.6,4.09,4.09,0,0,1-.95-.7,1.38,1.38,0,0,1-.35-.58.77.77,0,0,1,0-.34,2.37,2.37,0,0,1,.25-.72c.66-1.35,1.68-2.48,2.36-3.82a5,5,0,0,0,.17-4.82,3.86,3.86,0,0,0-2.69-2c-1-.17-2.07.21-3-.11a4.83,4.83,0,0,1-2.17-2.33c-.64-1.12-1.13-2.31-1.72-3.46-.89-1.71-3.48-.2-2.6,1.52Z'/%3E%3Cpath class='f' d='M1172.5,7.3a4.66,4.66,0,0,0-2,3.86,5.85,5.85,0,0,0,2,3.5,30.44,30.44,0,0,1,2.88,2.67c1,1.37.81,3.28.95,4.89.29,3.53,2,6.1,4.36,8.63,2.1,2.27,4.23,4.47,4.31,7.75,0,1.93,3,1.93,3,0-.08-3.34-1.64-6-3.82-8.39-1.86-2.06-4.09-4-4.69-6.83-.39-1.83-.11-3.73-.62-5.54a7.24,7.24,0,0,0-2.17-3.43,21.69,21.69,0,0,1-2.74-2.59c-.78-1.05-.28-1.62.64-2.4,1.48-1.24-.65-3.36-2.12-2.12Z'/%3E%3Cpath class='f' d='M1835.23,280.12c-1.87,6.26-4.56,12.36-5,19a15.73,15.73,0,0,0,1.64,8.78c1.24,2.16,3.1,3.86,4.53,5.87a6,6,0,0,1,1.37,3.21c0,1.49-1.13,2.64-2.17,3.56-1.45,1.28.68,3.4,2.12,2.12,2.12-1.87,3.59-4.38,2.83-7.27-.65-2.47-2.56-4.45-4.15-6.36a12,12,0,0,1-3.17-7.16,29.82,29.82,0,0,1,1.41-10.13c1-3.64,2.38-7.16,3.47-10.78.55-1.85-2.34-2.65-2.9-.8Z'/%3E%3Cpath class='f' d='M88.14,1041.9a7.22,7.22,0,0,0,2.23-4.21,37.16,37.16,0,0,0-.1-4.22c0-2.82,1.88-5.44,4-7.09a27.78,27.78,0,0,1,7.93-4c2.87-1,5.5-2,7.17-4.7,2.06-3.33,2.91-7.26,4.88-10.64a1.51,1.51,0,0,0-2.6-1.52c-1.71,3-2.6,6.3-4.15,9.34a7,7,0,0,1-2.64,3.21,22.83,22.83,0,0,1-4.12,1.64c-5.38,1.83-10.93,5-12.93,10.61a11.46,11.46,0,0,0-.49,4.9c.15,1.85,0,3.19-1.35,4.56a1.5,1.5,0,0,0,2.12,2.12Z'/%3E%3Cpath class='f' d='M1339.22,1030c.14-1.69,2-2.44,3.42-3a25.35,25.35,0,0,0,5.45-2.56,32.3,32.3,0,0,0,6.23-5.56,18.45,18.45,0,0,0,4.1-6.62c1.51-5.09-1.88-10.35-6.2-12.86-3.89-2.26-8.83-2.58-12-6-3.79-4-3.18-10.25-3.12-15.31a1.5,1.5,0,0,0-3,0c-.06,4.78-.34,9.82,1.79,14.25s6.48,6.37,10.93,7.93a15.9,15.9,0,0,1,6,3.22c1.81,1.75,3.34,4.34,3,6.94s-2.2,4.78-3.86,6.64a28.4,28.4,0,0,1-6.38,5.44c-3.5,2.16-8.86,2.28-9.29,7.42-.16,1.92,2.84,1.91,3,0Z'/%3E%3Cpath class='f' d='M996.44,760.7c-6.92.17-13.92-1-18.82-6.31a43,43,0,0,1-7.69-11.94,12.06,12.06,0,0,1-1-3.27,4.52,4.52,0,0,1,0-1.14c.1-.41.08-.38.45-.7,1.47-1.25-.66-3.37-2.12-2.12-1.79,1.52-1.51,4.16-.93,6.18a32.39,32.39,0,0,0,3.84,7.89c3.22,5.15,6.91,9.93,12.67,12.38,4.28,1.82,9,2.14,13.56,2,1.93-.05,1.93-3.05,0-3Z'/%3E%3Cpath class='f' d='M1822,998.35c-1.26-.26-3.21-.68-3.86-1.75a1.39,1.39,0,0,1-.18-.93,6.45,6.45,0,0,1,.44-1.56c1.25-3,3.48-5.48,5-8.29a15,15,0,0,0,1.76-4.46,15.69,15.69,0,0,0-.66-6.69c-.67-2.6-1.57-5.19-1.53-7.91,0-1.64.26-3.27.33-4.9a11.48,11.48,0,0,0-.86-5.59,6.3,6.3,0,0,0-4.8-3.28c-1.89-.3-2.7,2.59-.8,2.9,1.58.25,2.77.89,3.21,2.5a14,14,0,0,1,.17,4.79,29.09,29.09,0,0,0-.19,5.11c.28,2.9,1.26,5.62,1.89,8.44a9.26,9.26,0,0,1-.07,5.37,22.67,22.67,0,0,1-2.24,4.21c-1.63,2.55-3.85,5.17-4.53,8.19-.91,4.08,2.61,6,6.08,6.75,1.89.39,2.69-2.5.8-2.9Z'/%3E%3Cpath class='f' d='M1157.34,275.1a20.65,20.65,0,0,0,3.09-3.69c1.21-1.62,2.39-3.27,3.73-4.79a11.23,11.23,0,0,1,3.92-3.23c1.56-.63,2.75.19,3.81,1.45l-.24-1.81a1.24,1.24,0,0,1-.47.41,5,5,0,0,1-1.28.56,15.16,15.16,0,0,1-3.54.6,24,24,0,0,1-8-.72,4.87,4.87,0,0,1-4-4.29c-.5-2.95.57-6.14,1.81-8.78a28.5,28.5,0,0,1,5.48-8.11,1.5,1.5,0,0,0-2.12-2.12,30.91,30.91,0,0,0-5.81,8.41c-1.58,3.29-2.84,7-2.35,10.72a7.77,7.77,0,0,0,5.07,6.7,24.13,24.13,0,0,0,9.36,1.22c2.8-.12,6.75-.48,8.43-3.09a1.53,1.53,0,0,0-.23-1.82,6.13,6.13,0,0,0-5.79-2.47,10.23,10.23,0,0,0-5.12,3.11,47,47,0,0,0-4.43,5.42,24,24,0,0,1-3.45,4.2c-1.48,1.24.65,3.36,2.12,2.12Z'/%3E%3Cpath class='f' d='M1316.83,254.2c-.56,2.81-.63,6.18,1.71,8.25,2,1.73,4.73,2,7.24,2.05,2.71,0,5.4-.33,8.11-.38.59,0,1.19,0,1.79,0l.78.07c.38,0-.28-.06.09,0l.42.08c.24.05.46.12.69.18l.29.1c-.14-.05-.2-.11,0,0s.67.47.29.14c.15.14.29.27.43.42-.4-.43.24.61,0,.07a4.64,4.64,0,0,1,.2.73c-.09-.47,0,0,0,.17s0,.31,0,.46,0,.34,0,.5c0-.37,0,.17-.05.27a21.15,21.15,0,0,1-2.44,5.9c-.92,1.7,1.67,3.22,2.6,1.52,1.52-2.8,3.65-6.63,2.76-10-.65-2.49-3-3.39-5.37-3.64a49,49,0,0,0-7.75.21,33.71,33.71,0,0,1-4,0c-.29,0-.58,0-.86-.06l-.16,0-.49-.08a10.11,10.11,0,0,1-1.63-.46c.33.13,0,0-.13-.07l-.38-.21a2.62,2.62,0,0,1-.34-.24c.13.1.1.11-.09-.08l-.3-.3c-.29-.3,0,.06-.08-.1a5.81,5.81,0,0,1-.43-.77c.18.4,0-.12-.06-.23s-.07-.28-.1-.42,0-.15,0-.23c-.08-.38,0,.33,0-.07,0-.19,0-.38,0-.57a9.49,9.49,0,0,1,.24-2.55c.37-1.89-2.52-2.69-2.9-.8Z'/%3E%3Ccircle class='d' cx='1861.87' cy='625.94' r='15.73'/%3E%3Cpath class='f' d='M1512.42,492.48a7.87,7.87,0,0,1,5.22,12.5l-9.29,12.4a7.86,7.86,0,0,1-13.55-1.68l-6.06-14.52a7.86,7.86,0,0,1,8.33-10.82Z'/%3E%3Cline class='e' x1='105.45' y1='786.65' x2='141.34' y2='851.58'/%3E%3Cline class='e' x1='123.09' y1='860.26' x2='159.34' y2='927.58'/%3E%3Cline class='e' x1='96.84' y1='849.26' x2='122.73' y2='901.04'/%3E%3Cline class='e' x1='107.34' y1='830.58' x2='115.34' y2='844.58'/%3E%3Cline class='h' x1='1795.52' y1='74.05' x2='1772.34' y2='32.13'/%3E%3Cline class='h' x1='1816.12' y1='90.52' x2='1792.72' y2='47.05'/%3E%3Cline class='h' x1='1811.07' y1='126.63' x2='1794.36' y2='93.19'/%3E%3Cline class='h' x1='1805.3' y1='91.69' x2='1800.13' y2='82.65'/%3E%3C/svg%3E"), #ffffff;
+  width: 100%;
+  padding: 0 1.5rem;
   height: 100%;
-  background-size: cover;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
 }
 
-#sign_in .left sm-btn {
-  margin-top: 1rem;
+#sign_in .logo-section {
+  padding: 1.5rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+#sign_in sm-popup::part(heading) {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+#sign_in .left {
+  display: -ms-grid;
+  display: grid;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  padding-bottom: 1.5rem;
+}
+
+#sign_in .left h2 {
+  font-weight: 400;
+}
+
+#sign_in .left h4 {
+  color: rgba(var(--foreground-color), 1);
+}
+
+#sign_in .left .title-font {
+  text-transform: uppercase;
+  line-height: 1;
+  font-weight: 700;
+}
+
+#sign_in .left sm-button {
+  margin-top: 3rem;
+  width: auto;
+}
+
+#sign_in .left sm-button:last-of-type {
+  margin-left: auto;
+}
+
+#sign_in .left sm-button:first-of-type:hover .icon {
+  -webkit-transform: translateX(0.4rem);
+          transform: translateX(0.4rem);
+}
+
+#sign_in .left h3 {
+  margin-bottom: 1rem;
+  font-weight: 500;
 }
 
 #sign_in .left p {
   font-weight: 500;
-  margin-top: 2rem;
 }
 
-#sign_in .logo-section {
-  margin-bottom: 3rem;
+#sign_in_page {
+  overflow: hidden;
 }
 
-#sign_in .logo-section h5 {
-  font-weight: 500;
-  margin-bottom: 0.2rem;
+#sign_in_illustration {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 100%;
 }
 
-#sign_in .right h2 {
+#sign_in_illustration svg {
+  height: 12rem;
+  width: 12rem;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  overflow: visible;
+  z-index: 1;
+}
+
+#sign_in_illustration .circle {
+  position: absolute;
+  border-radius: 50%;
+}
+
+#sign_in_illustration .circle:nth-of-type(1) {
+  right: -10vh;
+  background: var(--secondary-color);
+  width: 20vh;
+  height: 20vh;
+  z-index: -1;
+}
+
+#sign_in_illustration .circle:nth-of-type(2) {
+  right: 20vh;
+  bottom: -40vh;
+  background: var(--accent-color);
+  width: 60vh;
+  height: 60vh;
+  z-index: -2;
+}
+
+#sign_in_box {
+  width: 100%;
+}
+
+#sign_in_box sm-button, #sign_in_box sm-input {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  min-width: 100%;
+}
+
+#sign_in_box h2 {
   margin-bottom: 2rem;
 }
 
-#sign_in .right h4 {
-  margin-bottom: 0.5rem;
-}
-
-#sign_in .right p {
-  margin-bottom: 2rem;
-}
-
-#sign_in .right sm-input {
+#sign_in_box p {
   margin-bottom: 1rem;
 }
 
-#contact_list header {
+.contact-list {
+  -ms-grid-rows: max-content 1fr;
+      grid-template-rows: -webkit-max-content 1fr;
+      grid-template-rows: max-content 1fr;
+}
+
+.contact-list header {
+  background: rgba(var(--foreground-color), 1);
+  padding: 1rem 1.5rem 0 1.5rem;
   display: -ms-grid;
   display: grid;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  gap: 1.5rem;
+  gap: 0 1rem;
   -ms-grid-columns: 1fr auto;
       grid-template-columns: 1fr auto;
       grid-template-areas: '. .' 'search search';
 }
 
-#contact_list header sm-input {
+.contact-list header sm-input {
   -ms-grid-row: 2;
   -ms-grid-column: 1;
   -ms-grid-column-span: 2;
   grid-area: search;
+  margin: 0.5 0 0 0;
 }
 
-#contact_list #contact_container {
-  margin-top: 1.5rem;
-  overflow-y: auto;
-  max-height: 40vh;
-}
-
-#contact_list #contact_container .contact {
+.contact-list .contact-container .contact {
   display: -ms-grid;
   display: grid;
-  gap: 0.2rem 1rem;
+  gap: 0 1rem;
   -ms-grid-columns: auto 1fr;
       grid-template-columns: auto 1fr;
       grid-template-areas: 'dp .' 'dp .';
-  padding: 1rem 0;
+  padding: 0.8rem 0.5rem;
+  cursor: pointer;
 }
 
-#contact_list #contact_container .dp {
+.contact-list .contact-container .dp {
   -ms-grid-row: 1;
   -ms-grid-row-span: 2;
   -ms-grid-column: 1;
   grid-area: dp;
 }
 
-#contact_list #contact_container .name {
+.contact-list .contact-container .name {
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
   font-weight: 500;
   text-transform: capitalize;
 }
 
-#contact_list #contact_container .address {
-  overflow-wrap: break-word;
-  word-wrap: break-word;
+.contact-list .contact-container .address {
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-weight: 400;
+  color: rgba(var(--text-color), 0.8);
+}
+
+#main_tab {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+}
+
+#main_page {
+  -ms-grid-rows: max-content minmax(0, 1fr);
+      grid-template-rows: -webkit-max-content minmax(0, 1fr);
+      grid-template-rows: max-content minmax(0, 1fr);
+}
+
+#main_header {
+  padding: 1.5rem 2rem;
+}
+
+#main_header sm-tab-header {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  margin: 0 1.5rem;
+  border-left: solid 1px rgba(var(--text-color), 0.2);
+}
+
+#main_header sm-tab-header::part(tab-header) {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+}
+
+#main_header sm-tab {
+  font-size: 1.1rem;
+  font-weight: 600;
+  --font-family: 'Poppins', sans-serif;
+}
+
+#main_header .logo-section {
+  padding: 0;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: auto 1fr;
+      grid-template-columns: auto 1fr;
+      grid-template-areas: 'logo .' 'logo .';
+}
+
+#main_header .logo-section svg {
+  -ms-grid-row: 1;
+  -ms-grid-row-span: 2;
+  -ms-grid-column: 1;
+  grid-area: logo;
+}
+
+#main_header .logo-section h4 {
+  line-height: 1;
+  font-size: 1.2rem;
+}
+
+#main_header .logo-section h5 {
+  font-weight: 500;
+}
+
+@media screen and (max-width: 640px) {
+  #sign_in {
+    -ms-grid-rows: 16rem 2fr;
+        grid-template-rows: 16rem 2fr;
+        grid-template-areas: 'illustration' '.';
+    height: 100%;
+  }
+  #sign_in_illustration {
+    -ms-grid-row: 1;
+    -ms-grid-column: 1;
+    grid-area: illustration;
+  }
 }
 
 @media only screen and (min-width: 640px) {
   ::-webkit-scrollbar {
-    width: 0.3rem;
+    width: 0.5rem;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(var(--text), 0.3);
+    background: rgba(var(--text-color), 0.3);
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(var(--text), 0.6);
-  }
-  .popup-container .popup {
-    width: auto;
-    -ms-flex-item-align: center;
-        -ms-grid-row-align: center;
-        align-self: center;
-    border-radius: 0.2rem;
-    height: auto;
-    padding: 2rem;
-  }
-  #notify {
-    -webkit-transform: translate(100%, 0);
-            transform: translate(100%, 0);
-    margin: 1rem;
-    max-width: 60vw;
-    width: -webkit-max-content;
-    width: -moz-max-content;
-    width: max-content;
-    border-radius: 0.2rem;
-    bottom: 0;
-    top: auto;
+    background: rgba(var(--text-color), 0.6);
   }
   #confirmation {
     padding: 1rem;
@@ -493,30 +570,113 @@ sm-tabs {
     margin: 1rem;
     margin-bottom: 2rem;
   }
+  .logo-section {
+    padding: 2rem 3rem;
+  }
   #sign_in {
-    height: auto;
-    gap: 4vw;
-    width: 80vw;
-    -ms-grid-columns: 1.5fr 1fr;
-        grid-template-columns: 1.5fr 1fr;
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
+    gap: 4vw;
+    -ms-grid-columns: 1.5fr 1fr;
+        grid-template-columns: 1.5fr 1fr;
+    padding: 0 4vw;
   }
-  .std-popup {
-    min-width: 24rem;
+  #sign_in .left sm-button:last-of-type {
+    margin-left: 0.5rem;
+  }
+  #sign_in .left h4 {
+    color: var(--accent-color);
+  }
+  #sign_in .circle:nth-of-type(1) {
+    right: -40vh;
+    width: 80vh;
+    height: 80vh;
+  }
+  #sign_in .circle:nth-of-type(2) {
+    right: -70vh;
+    width: 140vh;
+    height: 140vh;
+  }
+  #sign_in_box .icon {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+  }
+  #message_page, #email_page, #setting_page {
+    width: 100%;
+    margin: 0 2rem;
+    height: 100%;
+  }
+  #message_page {
+    -ms-grid-columns: 22rem 1fr;
+        grid-template-columns: 22rem 1fr;
+  }
+  #message_page #message_page_contacts {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+  }
+  #message_page #message_page_contacts .contact-container {
+    height: 100%;
+    overflow-y: auto;
+  }
+  #message_page #chat {
+    height: 100%;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    overflow-y: hidden;
+    -ms-grid-rows: max-content 1fr max-content;
+        grid-template-rows: -webkit-max-content 1fr -webkit-max-content;
+        grid-template-rows: max-content 1fr max-content;
+  }
+  #message_page #chat header, #message_page #chat #chat_container, #message_page #chat #message_input_container {
+    padding: 1rem 1.5rem;
+  }
+  #message_page #chat #chat_container {
+    overflow-y: auto;
+    height: 100%;
+  }
+  #message_page #chat #message_input_container sm-input {
+    margin: 0;
+  }
+  #email_page header {
+    padding: 0.5rem 1.5rem;
+  }
+  #email_page sm-input {
+    -webkit-box-flex: 0;
+        -ms-flex: 0 1 40%;
+            flex: 0 1 40%;
+    margin: 0 1.5rem;
+  }
+  #email_page sm-input::part(input) {
+    font-size: 1.2rem;
+    --font-family: 'Poppins', sans-serif;
+  }
+  #email_page sm-tab-header {
+    margin-left: auto;
+    --accent-color: rgba(var(--text-color), 0.6);
+  }
+  #email_page sm-tab {
+    font-family: 'Poppins', sans-serif;
+  }
+  #setting_page header {
+    padding: 0.5rem 1.5rem;
   }
 }
 
 @media only screen and (min-width: 1280px) {
   #sign_in {
-    width: 65vw;
+    gap: 4vw;
+    padding: 0 12vw;
   }
-}
-
-@media only screen and (min-width: 1920px) {
-  #sign_in {
-    width: 50vw;
+  #sign_in .title-font {
+    font-size: 4rem;
   }
 }
 
@@ -524,8 +684,11 @@ sm-tabs {
   body {
     font-size: 20px;
   }
-  #sign_in {
-    width: 40vw;
+}
+
+@media (hover: hover) {
+  .contact:hover {
+    background: rgba(var(--text-color), 0.1);
   }
 }
 /*# sourceMappingURL=main.css.map */
