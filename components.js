@@ -10,18 +10,18 @@ smButton.innerHTML = `
             :host{
                 display: inline-flex;
             }
-            :host([disabled='true']) .button{
+            :host([disabled]) .button{
                 cursor: default;
                 opacity: 1;
                 background: rgba(var(--text-color), 0.4) !important;
                 color: rgba(var(--foreground-color), 1);
             }
             :host([variant='primary']) .button{
-                background: var(--accent-color);
+                background: hsl(var(--hue), var(--saturation), var(--lightness));
                 color: rgba(var(--foreground-color), 1);
             }
             :host([variant='outlined']) .button{
-                box-shadow: 0 0 0 0.1rem var(--accent-color) inset;
+                box-shadow: 0 0 0 1px rgba(var(--text-color), 0.2) inset;
                 background: rgba(var(--foreground-color), 1); 
                 color: var(--accent-color);
             }
@@ -32,47 +32,52 @@ smButton.innerHTML = `
             .button {
                 display: flex;
                 width: 100%;
-                padding: 0.6rem 0.9rem;
+                padding: 0.6rem 1rem;
                 cursor: pointer;
                 user-select: none;
                 border-radius: 0.3rem; 
                 justify-content: center;
                 transition: box-shadow 0.3s;
                 text-transform: capitalize;
-                font-weight: 600;
+                font-weight: 500;
                 color: rgba(var(--text-color), 0.9);
                 font-family: var(--font-family);
-                font-size: 0.9rem;
                 background: rgba(var(--text-color), 0.1); 
                 -webkit-tap-highlight-color: transparent;
                 outline: none;
             }
-            :host(:not([disabled="true"])) .button:focus{
+            :host(:not([disabled])) .button:focus{
                 box-shadow: 0 0.1rem 0.1rem rgba(0, 0, 0, 0.1), 0 0.2rem 0.8rem rgba(0, 0, 0, 0.2);
             }
             :host([variant='outlined']) .button:focus{
-                box-shadow: 0 0 0 0.1rem var(--accent-color)inset, 0 0.1rem 0.1rem rgba(0, 0, 0, 0.1), 0 0.4rem 0.8rem rgba(0, 0, 0, 0.2);
+                box-shadow: 0 0 0 1px rgba(var(--text-color), 0.2) inset, 0 0.1rem 0.1rem rgba(0, 0, 0, 0.1), 0 0.4rem 0.8rem rgba(0, 0, 0, 0.2);
             }
             @media (hover: hover){
-                :host(:not([disabled="true"])) .button:active{
+                :host(:not([disabled])) .button:active{
                     box-shadow: none !important;
                 }
                 :host([variant='outlined']) .button:active{
-                    box-shadow: 0 0 0 0.1rem var(--accent-color)inset !important;
+                    box-shadow: 0 0 0 1px rgba(var(--text-color), 0.2) inset !important;
                 }
-                :host(:not([disabled="true"])) .button:hover{
-                    box-shadow: 0 0.1rem 0.1rem rgba(0, 0, 0, 0.1), 0 0.2rem 0.8rem rgba(0, 0, 0, 0.2);
+                :host(:not([disabled])) .button:hover{
+                    box-shadow: 0 0.1rem 0.1rem rgba(0, 0, 0, 0.1), 0 0.2rem 0.8rem rgba(0, 0, 0, 0.12);
                 }
                 :host([variant='outlined']) .button:hover{
-                    box-shadow: 0 0 0 0.1rem var(--accent-color)inset, 0 0.1rem 0.1rem rgba(0, 0, 0, 0.1), 0 0.4rem 0.8rem rgba(0, 0, 0, 0.2);
+                    box-shadow: 0 0 0 1px rgba(var(--text-color), 0.2) inset, 0 0.1rem 0.1rem rgba(0, 0, 0, 0.1), 0 0.4rem 0.8rem rgba(0, 0, 0, 0.12);
+                }
+                :host([variant="primary"]:not([disabled])) .button:active{
+                    background: hsl(var(--hue), var(--saturation), calc(var(--lightness) - 20%)) !important;
+                }
+                :host([variant="primary"]:not([disabled])) .button:hover{
+                    background: hsl(var(--hue), var(--saturation), calc(var(--lightness) - 10%));
                 }
             }
             @media (hover: none){
-                :host(:not([disabled="true"])) .button:active{
+                :host(:not([disabled])) .button:active{
                     box-shadow: 0 0.1rem 0.1rem rgba(0, 0, 0, 0.1), 0 0.2rem 0.8rem rgba(0, 0, 0, 0.2);
                 }
                 :host([variant='outlined']) .button:active{
-                    box-shadow: 0 0 0 0.1rem var(--accent-color)inset, 0 0.1rem 0.1rem rgba(0, 0, 0, 0.1), 0 0.4rem 0.8rem rgba(0, 0, 0, 0.2);
+                    box-shadow: 0 0 0 1px rgba(var(--text-color), 0.2) inset, 0 0.1rem 0.1rem rgba(0, 0, 0, 0.1), 0 0.4rem 0.8rem rgba(0, 0, 0, 0.2);
                 }
             }
         </style>
@@ -85,20 +90,25 @@ customElements.define('sm-button',
             super()
             this.attachShadow({ mode: 'open' }).append(smButton.content.cloneNode(true))
         }
-        static get observedAttributes() {
-            return ['disabled']
-        }
 
         get disabled() {
-            return this.getAttribute('disabled')
+            return this.isDisabled
         }
 
-        set disabled(val) {
-            this.setAttribute('disabled', val)
+        set disabled(value) {
+            if (value && !this.isDisabled) {
+                this.isDisabled = true
+                this.setAttribute('disabled', '')
+                this.button.removeAttribute('tabindex')
+            }
+            else if (this.isDisabled) {
+                this.isDisabled = false
+                this.removeAttribute('disabled')
+            }
         }
 
         dispatch() {
-            if (this.getAttribute('disabled') === 'true') {
+            if (this.isDisabled) {
                 this.dispatchEvent(new CustomEvent('disabled', {
                     bubbles: true,
                     composed: true
@@ -113,6 +123,10 @@ customElements.define('sm-button',
         }
 
         connectedCallback() {
+            this.isDisabled = false
+            this.button = this.shadowRoot.querySelector('.button')
+            if (this.hasAttribute('disabled') && !this.isDisabled)
+                this.isDisabled = true
             this.addEventListener('click', (e) => {
                 this.dispatch()
             })
@@ -120,9 +134,6 @@ customElements.define('sm-button',
                 if (e.code === "Enter" || e.code === "Space")
                     this.dispatch()
             })
-        }
-
-        attributeChangedCallback(name, oldValue, newValue) {
         }
     })
 
@@ -185,7 +196,7 @@ smInput.innerHTML = `
             align-items: center;
             position: relative;
             gap: 1em;
-            padding: 0.6em 1em;
+            padding: 0.7em 1em;
             border-radius: 0.3em;
             transition: opacity 0.3s;
             background: rgba(var(--text-color), 0.1);
@@ -212,6 +223,10 @@ smInput.innerHTML = `
             -webkit-transform-origin: left;
             transform-origin: left;
             pointer-events: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
             will-change: transform;
         }
         .outer-container{
@@ -234,13 +249,13 @@ smInput.innerHTML = `
             width: 100%;
         }
         .animate-label .container input {
-            -webkit-transform: translateY(0.5em);
-                    transform: translateY(0.5em);
+            -webkit-transform: translateY(0.6em);
+                    transform: translateY(0.6em);
             }
           
         .animate-label .container .label {
-            -webkit-transform: translateY(-60%) scale(0.7);
-                    transform: translateY(-60%) scale(0.7);
+            -webkit-transform: translateY(-0.6em) scale(0.8);
+                    transform: translateY(-0.6em) scale(0.8);
             opacity: 1;
             color: var(--accent-color)
         }
@@ -1883,34 +1898,33 @@ smPopup.innerHTML = `
         transition: opacity 0.3s ease;
     }
     .popup{
+        display: flex;
+        flex-direction: column;
+        position: relative;
         align-self: flex-end;
         align-items: flex-start;
-        flex-direction: column;
-        flex-wrap: wrap;
         width: 100%;
         border-radius: 0.5rem 0.5rem 0 0;
-        position: relative;
-        display: flex;
         transform: translateY(100%);
         transition: transform 0.3s;
         background: rgba(var(--foreground-color), 1);
         box-shadow: 0 -1rem 2rem #00000020;
-        overflow-y: auto;
-        max-height: 100%;
+        max-height: 100vh;
     }
     .container-header{
         display: flex;
         width: 100%;
         align-items: center;
-        justify-content: space-between;
     }
     .popup-top{
         display: flex;
         width: 100%;
     }
     .popup-body{
+        flex: 1;
         width: 100%;
         padding: 1.5rem;
+        overflow-y: auto;
     }
     .heading{
         font-weight: 400;
@@ -1922,21 +1936,6 @@ smPopup.innerHTML = `
         opacity: 0;
         pointer-events: none;
     }
-    .popup-top .icon {
-        fill: none;
-        height: 1.6rem;
-        width: 1.6rem;
-        padding: 0.4rem;
-        stroke: rgba(var(--text-color), 0.7);
-        stroke-width: 10;
-        overflow: visible;
-        stroke-linecap: round;
-        border-radius: 1rem;
-        stroke-linejoin: round;
-        cursor: pointer;
-        min-width: 0;
-        -webkit-tap-highlight-color: transparent;
-    }
     @media screen and (min-width: 640px){
         .popup{
             width: max-content;
@@ -1945,9 +1944,6 @@ smPopup.innerHTML = `
             height: auto;
             transform: translateY(0) scale(0.9);
             box-shadow: 0 2rem 2rem #00000040;
-        }
-        .container-header{
-            padding: 1.2rem 1.5rem 0 1.5rem;
         }
     }
     @media screen and (max-width: 640px){
@@ -1977,14 +1973,7 @@ smPopup.innerHTML = `
     <div part="popup" class="popup">
         <div class="popup-top">
             <div class="handle"></div>
-            <div class="container-header">
-                <h3 part="heading" class="heading"></h3>
-                <svg class="icon close" viewBox="0 0 64 64">
-                    <title>Close</title>
-                    <line x1="64" y1="0" x2="0" y2="64"/>
-                    <line x1="64" y1="64" x2="0" y2="0"/>
-                </svg>
-            </div>
+            <slot name="header"></slot>
         </div>
         <div class="popup-body">
             <slot></slot>
@@ -2090,19 +2079,12 @@ customElements.define('sm-popup', class extends HTMLElement {
         this.threshold = this.popup.getBoundingClientRect().height * 0.3
         this.touchEndAnimataion;
 
-        if (this.hasAttribute('heading'))
-            this.shadowRoot.querySelector('.heading').textContent = this.getAttribute('heading')
-
         if (this.hasAttribute('open'))
             this.show()
         this.popupContainer.addEventListener('mousedown', e => {
             if (e.target === this.popupContainer && !this.pinned) {
                 this.hide()
             }
-        })
-
-        this.shadowRoot.querySelector('.close').addEventListener('click', e => {
-            this.hide()
         })
 
         this.popupHeader.addEventListener('touchstart', (e) => {
@@ -3056,9 +3038,9 @@ customElements.define('sm-tab-header', class extends HTMLElement {
 
     moveIndiactor(tabDimensions) {
         //if(this.isTab)
-            this.indicator.setAttribute('style', `width: ${tabDimensions.width}px; transform: translateX(${ tabDimensions.left - this.tabHeader.getBoundingClientRect().left + this.tabHeader.scrollLeft}px)`)
+        this.indicator.setAttribute('style', `width: ${tabDimensions.width}px; transform: translateX(${tabDimensions.left - this.tabHeader.getBoundingClientRect().left + this.tabHeader.scrollLeft}px)`)
         //else
-            //this.indicator.setAttribute('style', `width: calc(${tabDimensions.width}px - 1.6rem); transform: translateX(calc(${ tabDimensions.left - this.tabHeader.getBoundingClientRect().left + this.tabHeader.scrollLeft}px + 0.8rem)`)
+        //this.indicator.setAttribute('style', `width: calc(${tabDimensions.width}px - 1.6rem); transform: translateX(calc(${ tabDimensions.left - this.tabHeader.getBoundingClientRect().left + this.tabHeader.scrollLeft}px + 0.8rem)`)
     }
 
     connectedCallback() {
@@ -3139,7 +3121,6 @@ smTabPanels.innerHTML = `
 :host{
     display: grid;
     width: 100%;
-    overflow: hidden;
 }
 .panel-container{
     position: relative;
@@ -3311,13 +3292,13 @@ slidingSection.innerHTML = `
 </section>
 `
 
-customElements.define('sm-sliding-section', class extends HTMLElement{
+customElements.define('sm-sliding-section', class extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: 'open' }).append(slidingSection.content.cloneNode(true))
     }
     connectedCallback() {
-        
+
     }
 })
 
@@ -3343,7 +3324,7 @@ section.innerHTML = `
 </section>
 `
 
-customElements.define('sm-section', class extends HTMLElement{
+customElements.define('sm-section', class extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: 'open' }).append(section.content.cloneNode(true))
