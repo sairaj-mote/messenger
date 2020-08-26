@@ -5,72 +5,111 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>FLO Messenger</title>
-	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="css/dist/main.css">
+	<script id="floGlobals">
+		/* Constants for FLO blockchain operations !!Make sure to add this at begining!! */
+		const floGlobals = {
+	
+			//Required for all
+			blockchain: "FLO",
+	
+			//Required for blockchain API operators
+			apiURL: {
+				FLO: ['https://explorer.mediciland.com/', 'https://livenet.flocha.in/',
+					'https://flosight.duckdns.org/', 'http://livenet-explorer.floexperiments.com/'
+				],
+				FLO_TEST: ['https://testnet-flosight.duckdns.org/', 'https://testnet.flocha.in/']
+			},
+	
+			//Required for Supernode operations
+			SNStorageID: "FEzk75EGMPEQMrCuPosGiwuK162hcEu49E",
+			supernodes: {}, //each supnernode must be stored as floID : {uri:<uri>,pubKey:<publicKey>}
+	
+			//for app
+			application: "messenger",
+			pubKeys: {},
+			contacts: {},
+			appendix: {}
+		}
+	</script>
+	<script id="onLoadStartUp">
+		function onLoadStartUp() {
+			privKeyNotSecured = true;
+			//display loading screen
+			//clear Rendered Elements
+			let elementsToReset = ["startup-load-msg", 'inbox_mail_container', 'contacts_container', 'chat_container',
+				'receiver_floID', 'receiver_name'
+			]
+			//, "backup-info"
+			elementsToReset.forEach(e => clearElement(document.getElementById(e)))
+			//set the custom Privkey input
+			floDapps.setCustomPrivKeyInput((type) => {
+				return new Promise((resolve, reject) => {
+					mainPage.classList.add('hide-completely')
+					signInLanding.classList.remove('hide-completely')
+					signInPopup.show()
+					signInButton.onclick = () => {
+						let key = privateKeyInputField.value;
+						signInPopup.hide()
+						signInLanding.classList.add('hide-completely')
+						mainPage.classList.remove('hide-completely')
+						resolve(key)
+					}
+					if (type === "PRIVATE_KEY") {
+						privateKeyInputField.setAttribute("placeholder", "Private Key")
+						//signInBox["remove-account"].classList.add("hide");
+						guestLoginButton.onclick = () => {
+							signInPopup.hide()
+							signInLanding.classList.add('hide-completely')
+							mainPage.classList.remove('hide-completely')
+							reject(null)
+						}
+					} else if (type === "PIN/Password") {
+						privateKeyInputField.setAttribute("placeholder", "Password")
+						//signInBox["remove-account"].classList.remove("hide");
+						privKeyNotSecured = false;
+					}
+				})
+			})
+			//invoke the startup functions
+			floDapps.launchStartUp().then(result => {
+				console.log(result)
+				document.getElementById("greet_tag").textContent = myFloID
+				//load messages from IDB and render them
+				reactor.dispatchEvent("startUpSuccessLog", `Loading Data! Please Wait...`)
+				messenger.loadDataFromIDB().then(data => {
+					floGlobals.pubKeys = data.pubKeys;
+					floGlobals.contacts = data.contacts;
+					floGlobals.settings = data.settings;
+					floGlobals.appendix = data.appendix;
+					renderContactList(floGlobals.contacts)
+					renderMessages(data.messages, false)
+					renderMailList(data.mails, false)
+					renderMarked(data.marked)
+					reactor.dispatchEvent("startUpSuccessLog", `Load Successful!`)
+					//hide loading screen
+					//document.getElementById("loading-screen").classList.add("hide")
+					refresh()
+				}).catch(error => {
+					reactor.dispatchEvent("startUpErrorLog", `Failed to load data`)
+					showMessage(error, "error")
+				})
+			}).catch(error => showMessage(error, "error"))
+		}
+	</script>
 </head>
 
-<body data-theme="light">
+<body data-theme="light" onload="onLoadStartUp()">
 	<audio id="notification_sound">
 		<source src="https://rmservices.duckdns.org/files/notification-sound.mp3" type="audio/mpeg">
 		<source src="https://rmservices.duckdns.org/files/notification-sound.ogg" type="audio/ogg">
 	</audio>
-
-	<div class="popup-container hide-completely">
-		<div id="confirmation" class="popup">
-			<p></p>
-			<div>
-				<sm-button value="cancel" onclick="hidePopup()"></sm-button>
-				<sm-button value="ok"></sm-button>
-			</div>
-		</div>
-	</div>
-	<div class="popup-container hide-completely">
-		<div id="contact_list" class="popup std-popup">
-			<header>
-				<h3>Contacts</h3>
-				<sm-button type="secondary" value="add contact">
-					<svg class="icon primary" slot="icon" viewBox="0 0 64 64">
-						<title>add</title>
-						<line x1="32" x2="32" y2="64"/>
-						<line x1="64" y1="32" y2="32"/>
-					</svg>
-				</sm-button>
-				<sm-input id="search_contact" type="search" placeholder="search contacts">
-					<svg slot="icon" class="icon" viewBox="0 0 64 64">
-						<title>Search</title>
-						<path d="M25.69,1A24.7,24.7,0,0,1,43.15,43.15,24.7,24.7,0,0,1,8.23,8.22,24.53,24.53,0,0,1,25.69,1m0-1A25.7,25.7,0,1,0,43.85,7.51,25.64,25.64,0,0,0,25.69,0Z"/>
-						<line x1="63.65" y1="63.66" x2="43.36" y2="43.37"/>
-					</svg>
-				</sm-input>
-			</header>
-			<ul id="contact_container">
-				<li class="contact">
-					<div class="dp"></div>
-					<h4 class="name">Sairaj mote</h4>
-					<h5 class="address">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-				</li>
-				<li class="contact">
-					<div class="dp"></div>
-					<h4 class="name">Sairaj mote</h4>
-					<h5 class="address">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-				</li>
-				<li class="contact">
-					<div class="dp"></div>
-					<h4 class="name">Sairaj mote</h4>
-					<h5 class="address">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-				</li>
-				<li class="contact">
-					<div class="dp"></div>
-					<h4 class="name">Sairaj mote</h4>
-					<h5 class="address">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-				</li>
-				<li class="contact">
-					<div class="dp"></div>
-					<h4 class="name">Sairaj mote</h4>
-					<h5 class="address">FPFeL5PXzW9bGosUjQYCxTHSMHidnygvvd</h5>
-				</li>
-			</ul>
-		</div>
-	</div>
+	<div id="startup-load-msg" class="hide-completely"></div>
+	<sm-notifications id="notifications"></sm-notifications>
+    <div id="show-message" class="hide-completely">
+        <span>Message</span>
+        <button> &#x2716;</span>
+    </div>
 	<div id="sign_in_page" class="page hide-completely">
 		<header class="logo-section">
 			<svg class="main-logo" viewBox="0 0 27.25 32">
@@ -100,7 +139,7 @@
 							<polyline points="15.99 0.35 47.65 32 15.99 63.65" />
 						</svg>
 					</sm-button>
-					<sm-button variant="outlined">Guest login</sm-button>
+					<sm-button id="guest_login_button" variant="outlined">Guest login</sm-button>
 				</div>
 				<p class="light-text">New here? login as guest and get your FLO private key.</p>
 			</div>
@@ -159,12 +198,22 @@
 					<p class="light-text">
 						Please enter your FLO private key to continue.
 					</p>
-					<sm-input placeholder="private key"></sm-input>
-					<sm-button width="cover" variant="primary">continue</sm-button>
+					<sm-input id="private_key_input_field" placeholder="private key"></sm-input>
+					<sm-button id="sign_in_button" width="cover" variant="primary">continue</sm-button>
 				</div>
 			</sm-popup>
 		</div>
 	</div>
+	<sm-popup id="confirmation">
+		<fieldset>
+			<legend></legend>
+			<span></span>
+			<div class="input-container i-2">
+				<sm-button type="submit">ok</sm-button>
+				<sm-button type="reset">cancel</sm-button>
+			</div>
+		</fieldset>
+	</sm-popup>
 	<sm-popup id="add_contact_popup">
 		<header class="flex align-center" slot="header">
 			<svg class="icon" viewBox="0 0 64 64" onclick="this.closest('sm-popup').hide()">
@@ -173,10 +222,10 @@
 				<line x1="64" y1="64" x2="0" y2="0" />
 			</svg>
 			<h4>Add contact</h4>
-			<sm-button variant="primary">Add</sm-button>
+			<sm-button id="add_contact_button" variant="primary" disabled>Add</sm-button>
 		</header>
-		<sm-input placeholder="name" animate></sm-input>
-		<sm-input placeholder="FLO address" animate></sm-input>
+		<sm-input id="add_contact_name" placeholder="Name" animate required></sm-input>
+		<sm-input id="add_contact_floID" placeholder="FLO address" animate required></sm-input>
 	</sm-popup>
 	<sm-popup id="compose_mail_popup">
 		<header class="flex align-center" slot="header">
@@ -186,21 +235,73 @@
 				<line x1="64" y1="64" x2="0" y2="0" />
 			</svg>
 			<h4>Compose Mail</h4>
-			<sm-button variant="primary">Send</sm-button>
+			<sm-button id="send_mail_button" variant="primary" disabled>Send</sm-button>
 		</header>
-		<sm-input placeholder="To" animate></sm-input>
-		<sm-input placeholder="Subject" animate></sm-input>
-		<textarea placeholder="Type a mail" name="" id="" rows="10"></textarea>
+		<sm-input id="send_mail_to" placeholder="To" animate required></sm-input>
+		<sm-input id="subject_of_mail" placeholder="Subject" animate></sm-input>
+		<textarea id="mail_content" placeholder="Type a mail" name="" id="" rows="10" required></textarea>
 	</sm-popup>
+
+	<!-- Templates -->
+
+	<template id="mail_card_template">
+		<div class="mail-card">
+			<div class="flex align-center">
+				<h5 class="sender"></h5>
+				<h5 class="date"></h5>
+			</div>
+			<h4 class="subject"></h4>
+			<p class="description"></p>
+		</div>
+    </template>
+    
+    <template id="mail_template">
+        <div class="mail">
+            <header class="flex align-center">
+                <svg class="icon hide-on-desktop back-button" onclick="goto('mails')" viewBox="0 0 64 64">
+					<title>Go to main page</title>
+					<polyline points="48.01 0.35 16.35 32 48.01 63.65"/>
+				</svg>
+                <div class="rest">                            
+                    <h4 class="sender-name"></h4>
+                    <h5 class="flo-id text-overflow"></h5>
+                </div>
+                <h5 class="date justify-right"></h5>
+            </header>
+            <h4 class="mail-subject"></h4>
+            <p class="mail-content"></p>
+        </div>
+    </template>
+
+	<template id="contact_template">
+		<div class="contact">
+			<div class="initial flex align-center">S</div>
+			<h4 class="name"></h4>
+            <h5 class="address"></h5>
+            <sm-menu align-options="right" set-context="true">
+                <sm-menu-option class="send-mail-option">Send mail</sm-menu-option>
+                <sm-menu-option>Copy FLO ID</sm-menu-option>
+            </sm-menu>
+		</div>
+	</template>
+
+	<template id="message_template">
+		<div class="message">
+			<p class="message-body"></p>
+			<div class="time"></div>
+		</div>
+	</template>
+
 	<main id="main" class="grid">
 		<nav id="main_navbar" class="flex">
-			<div class="logo-section">			
+			<div class="logo-section hide-on-mobile">			
 				<svg class="main-logo" viewBox="0 0 27.25 32">
 					<title>RanchiMall</title>
 					<path
 						d="M27.14,30.86c-.74-2.48-3-4.36-8.25-6.94a20,20,0,0,1-4.2-2.49,6,6,0,0,1-1.25-1.67,4,4,0,0,1,0-2.26c.37-1.08.79-1.57,3.89-4.55a11.66,11.66,0,0,0,3.34-4.67,6.54,6.54,0,0,0,.05-2.82C20,3.6,18.58,2,16.16.49c-.89-.56-1.29-.64-1.3-.24a3,3,0,0,1-.3.72l-.3.55L13.42.94C13,.62,12.4.26,12.19.15c-.4-.2-.73-.18-.72.05a9.39,9.39,0,0,1-.61,1.33s-.14,0-.27-.13C8.76.09,8-.27,8,.23A11.73,11.73,0,0,1,6.76,2.6C4.81,5.87,2.83,7.49.77,7.49c-.89,0-.88,0-.61,1,.22.85.33.92,1.09.69A5.29,5.29,0,0,0,3,8.33c.23-.17.45-.29.49-.26a2,2,0,0,1,.22.63A1.31,1.31,0,0,0,4,9.34a5.62,5.62,0,0,0,2.27-.87L7,8l.13.55c.19.74.32.82,1,.65a7.06,7.06,0,0,0,3.46-2.47l.6-.71-.06.64c-.17,1.63-1.3,3.42-3.39,5.42L6.73,14c-3.21,3.06-3,5.59.6,8a46.77,46.77,0,0,0,4.6,2.41c.28.13,1,.52,1.59.87,3.31,2,4.95,3.92,4.95,5.93a2.49,2.49,0,0,0,.07.77h0c.09.09,0,.1.9-.14a2.61,2.61,0,0,0,.83-.32,3.69,3.69,0,0,0-.55-1.83A11.14,11.14,0,0,0,17,26.81a35.7,35.7,0,0,0-5.1-2.91C9.37,22.64,8.38,22,7.52,21.17a3.53,3.53,0,0,1-1.18-2.48c0-1.38.71-2.58,2.5-4.23,2.84-2.6,3.92-3.91,4.67-5.65a3.64,3.64,0,0,0,.42-2A3.37,3.37,0,0,0,13.61,5l-.32-.74.29-.48c.17-.27.37-.63.46-.8l.15-.3.44.64a5.92,5.92,0,0,1,1,2.81,5.86,5.86,0,0,1-.42,1.94c0,.12-.12.3-.15.4a9.49,9.49,0,0,1-.67,1.1,28,28,0,0,1-4,4.29C8.62,15.49,8.05,16.44,8,17.78a3.28,3.28,0,0,0,1.11,2.76c.95,1,2.07,1.74,5.25,3.32,3.64,1.82,5.22,2.9,6.41,4.38A4.78,4.78,0,0,1,21.94,31a3.21,3.21,0,0,0,.14.92,1.06,1.06,0,0,0,.43-.05l.83-.22.46-.12-.06-.46c-.21-1.53-1.62-3.25-3.94-4.8a37.57,37.57,0,0,0-5.22-2.82A13.36,13.36,0,0,1,11,21.19a3.36,3.36,0,0,1-.8-4.19c.41-.85.83-1.31,3.77-4.15,2.39-2.31,3.43-4.13,3.43-6a5.85,5.85,0,0,0-2.08-4.29c-.23-.21-.44-.43-.65-.65A2.5,2.5,0,0,1,15.27.69a10.6,10.6,0,0,1,2.91,2.78A4.16,4.16,0,0,1,19,6.16a4.91,4.91,0,0,1-.87,3c-.71,1.22-1.26,1.82-4.27,4.67a9.47,9.47,0,0,0-2.07,2.6,2.76,2.76,0,0,0-.33,1.54,2.76,2.76,0,0,0,.29,1.47c.57,1.21,2.23,2.55,4.65,3.73a32.41,32.41,0,0,1,5.82,3.24c2.16,1.6,3.2,3.16,3.2,4.8a1.94,1.94,0,0,0,.09.76,4.54,4.54,0,0,0,1.66-.4C27.29,31.42,27.29,31.37,27.14,30.86ZM6.1,7h0a3.77,3.77,0,0,1-1.46.45L4,7.51l.68-.83a25.09,25.09,0,0,0,3-4.82A12,12,0,0,1,8.28.76c.11-.12.77.32,1.53,1l.63.58-.57.84A10.34,10.34,0,0,1,6.1,7Zm5.71-1.78A9.77,9.77,0,0,1,9.24,7.18h0a5.25,5.25,0,0,1-1.17.28l-.58,0,.65-.78a21.29,21.29,0,0,0,2.1-3.12c.22-.41.42-.76.44-.79s.5.43.9,1.24L12,5ZM13.41,3a2.84,2.84,0,0,1-.45.64,11,11,0,0,1-.9-.91l-.84-.9.19-.45c.34-.79.39-.8,1-.31A9.4,9.4,0,0,1,13.8,2.33q-.18.34-.39.69Z" />
 				</svg>
-				<h5 class="label">RanchiMall</h5>
+                <h5 class="label">RanchiMall</h5>
+                <h4 class="label">Messenger</h4>
 			</div>
 			<div class="navbar-item flex align-center active" id="chat_page_button" data-target="chat_page">
 				<svg class="icon" viewBox="0 0 64 64">
@@ -211,12 +312,10 @@
 			</div>
 			<div class="navbar-item flex align-center"  data-target="mail_page">
 				<svg class="icon" viewBox="0 0 64 64">
-					<path
-						d="M60.38,1,32.8,33.23a1.77,1.77,0,0,0,1.34,2.92h9.63a.79.79,0,0,1,.71,1.13L33,61.36A1.49,1.49,0,0,0,35.49,63l27.58-32.2a1.77,1.77,0,0,0-1.34-2.92H52.1a.79.79,0,0,1-.71-1.13L62.85,2.64A1.49,1.49,0,0,0,60.38,1Z" />
-					<line x1="10" y1="16" x2="29" y2="16" />
-					<line y1="32" x2="19" y2="32" />
-					<line x1="7" y1="50" x2="26" y2="50" />
-				</svg>
+					<title>mail</title>
+					<path d="M63.5,34.58V49.67A5.36,5.36,0,0,1,58.14,55H5.86A5.36,5.36,0,0,1,.5,49.67V34.58"/>
+					<path d="M63.5,14.33V17.2l-32,20.38L.5,17.19V14.33A5.36,5.36,0,0,1,5.86,9H58.14A5.36,5.36,0,0,1,63.5,14.33Z"/>
+					</svg>
 				<h5 class="label">Mail</h5>
 			</div>
 			<div class="navbar-item flex align-center"  data-target="settings_page">
@@ -231,89 +330,123 @@
 				<h5 class="label">Settings</h5>
 			</div>
 		</nav>
-		<section id="chat_page" class="grid hide-completely">
+		<section id="chat_page" class="grid page hide-completely">
 			<div id="contacts" class="grid">
 				<header class="flex align-center">
-					<h4>Contacts</h4>
-					<sm-button variant="primary" id="add_contact_button">
-						<svg class="icon" viewBox="0 0 64 64">
-							<line x1="32" x2="32" y2="64" />
-							<line x1="64" y1="32" y2="32" />
-						</svg>
-						Add Contact
-					</sm-button>
+                    <h4>Contacts</h4>
+                    <sm-button onclick="refresh()">
+                        <svg class="icon refresh" viewBox="0 0 64 64">
+                            <polyline points="42.99 0.16 50.25 21.23 28.78 27.7"/>
+                            <path d="M56.61,44.63A24.65,24.65,0,0,1,50,56.24a25.1,25.1,0,0,1-35.31,0,24.67,24.67,0,0,1,0-35,25.1,25.1,0,0,1,35.31,0"/>
+                        </svg>
+                        Refresh
+                    </sm-button>
 				</header>
+                <sm-button variant="primary" id="show_contact_popup_button" class="fab">
+                    <svg class="icon" viewBox="0 0 64 64">
+                        <line x1="32" x2="32" y2="64" />
+                        <line x1="64" y1="32" y2="32" />
+                    </svg>
+                    Add Contact
+                </sm-button>
 				<div id="contacts_container" class="flex">
-					<div class="contact">
-						<div class="initial flex align-center">S</div>
-						<h4 class="name">Sairaj mote</h4>
-						<h5 class="address">F51fdg6515df61g6d5f1gd56f1gdsg</h5>
-					</div>
 				</div>
 			</div>
-			<div id="chat" class="grid">
-				<header>
-					<h4>Sairaj mote</h4>
+			<div id="chat" class="grid hide-on-mobile hide-completely">
+				<header class="flex align-center">
+					<svg class="icon hide-on-desktop back-button" onclick="goto('chats')" viewBox="0 0 64 64">
+						<title>Go to main page</title>
+						<polyline points="48.01 0.35 16.35 32 48.01 63.65"/>
+					</svg>
+					<div class="flex rest direction-column">
+						<h4 id="receiver_name"></h4>
+						<h5 id="receiver_floID" class="text-overflow"></h5>
+                    </div>
+                    <sm-menu align-options="right">
+                        <sm-menu-option onclick="refresh()">Refresh</sm-menu-option>
+                    </sm-menu>
 				</header>
 				<section id="chat_container" class="flex">
-					<div class="message sent">
-						<p class="message-body">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Libero eligendi unde, illum assumenda numquam id nemo. Eligendi sint esse non?</p>
-						<div class="time">21:16pm</div>
-					</div>
-					<div class="message received">
-						<p class="message-body">Lorem ipsum dolor sit.</p>
-						<div class="time">21:17pm</div>
-					</div>
+                    <h5 id="warn_no_encryption">Messages are not encrypted until receiver replies</h5>
 				</section>
-				<footer>
-					<sm-input id="type_message" placeholder="Type a message"></sm-input>
+				<footer class="flex align-center">
+                    <sm-input id="type_message" placeholder="Type a message" class="rest"></sm-input>
+                    <sm-button onclick="sendMessage()">Send</sm-button>
 				</footer>
 			</div>
 		</section>
 		<section class="page grid" id="mail_page">
 			<div id="mails" class="grid">
 				<header class="flex align-center">
-					<H4>Inbox</H4>
-					<sm-button variant="primary" id="new_mail_button">
-						<svg class="icon" viewBox="0 0 64 64">
-							<path
-								d="M46.73,14.81l7,7,7.65-7.6A7.15,7.15,0,0,0,61.39,4L60.11,2.77a7.23,7.23,0,0,0-10.19,0L3.87,48.57a5,5,0,0,0-1.39,2.6L.53,61.27a1.74,1.74,0,0,0,2,2l10.15-1.94A5.06,5.06,0,0,0,15.34,60L49.6,25.9" />
-						</svg>
-						New Mail
-					</sm-button>
+                    <sm-tab-header variant="tab" target="all_mail_container">
+                        <sm-tab>Inbox</sm-tab>
+                        <sm-tab>Sent</sm-tab>
+                    </sm-tab-header>
+                    <sm-button onclick="refresh()">
+                        <svg class="icon refresh" viewBox="0 0 64 64">
+                            <polyline points="42.99 0.16 50.25 21.23 28.78 27.7"/>
+                            <path d="M56.61,44.63A24.65,24.65,0,0,1,50,56.24a25.1,25.1,0,0,1-35.31,0,24.67,24.67,0,0,1,0-35,25.1,25.1,0,0,1,35.31,0"/>
+                        </svg>
+                        Refresh
+                    </sm-button>
 				</header>
-				<div id="mails_container" class="flex">
-					<div class="mail">
-						<h5 class="sender">F51fdg6515df61g6d5f1gd56f1gdsg</h5>
-						<h4 class="subject">Sairaj mote</h4>
-						<p class="description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque sit ad, facere quasi voluptates ipsum voluptatum animi explicabo neque magnam?</p>
-					</div>
+                <sm-button variant="primary" id="new_mail_button" class="fab">
+                    <svg class="icon" viewBox="0 0 64 64">
+                        <path
+                            d="M46.73,14.81l7,7,7.65-7.6A7.15,7.15,0,0,0,61.39,4L60.11,2.77a7.23,7.23,0,0,0-10.19,0L3.87,48.57a5,5,0,0,0-1.39,2.6L.53,61.27a1.74,1.74,0,0,0,2,2l10.15-1.94A5.06,5.06,0,0,0,15.34,60L49.6,25.9" />
+                    </svg>
+                    New Mail
+                </sm-button>
+                <sm-tab-panels id="all_mail_container">
+                    <sm-panel id="inbox_mail_container" class="flex">
+                    </sm-panel>
+                    <sm-panel id="sent_mail_container" class="flex"></sm-panel>
+                </sm-tab-panels>
+			</div>
+			<div id="mail" class="flex hide-on-mobile hide-completely">
+				<div id="mail_container" class="rest">
+				</div>
+				<div class="flex">
+					<sm-button id="prev_mail" variant="outlined">View Previous Mail</sm-button>
+					<sm-button id="reply_mail" variant="outlined">reply</sm-button>
 				</div>
 			</div>
-			<div id="mail" class="grid">
-				<header>
-					<h4 id="subject">Something</h4>
-				</header>
-				<p id="mail_body"></p>
-				<sm-button variant="outlined">reply</sm-button>
-			</div>
 		</section>
-		<section id="settings_page" class="hide-completely">
+		<section id="settings_page" class="page hide-completely">
 			<header>
 				<h3>User</h3>
 				<p>Manage settings and personal information.</p>
-			</header>
+            </header>
+            <div class="flex align-center">
+                <h5>FLO ID</h5>
+                <sm-button class="small">copy</sm-button>
+            </div>
+			<h4 id="greet_tag"></h4>
+			<div>
+				<sm-button id="backup-data" >&#x25BC; Backup Data</sm-button>
+				<label for="restore-data">&#x25B2; Restore Data</label>
+				<input type="file" id="restore-data" accept=".json" />
+				<span id="backup-info"></span>
+			</div>
+			<div>
+				<input type="text" id="view_private_key" title="Click to Copy" placeholder="&#x25C9; View Private Key" readonly/>
+				<sm-button id="secure_key">Secure Private Key</sm-button>
+			</div>
+			<div>
+				<sm-button id="sign_out">Sign Out</sm-button>
+				<sm-button id="clear_data">Clear Data</sm-button>
+			</div>
 		</section>
 	</main>
 	<script>
 		//Checks for internet connection status
 		if (!navigator.onLine)
-			notify('There seems to be a problem connecting to the internet.', 'error', true)
+			showMessage('There seems to be a problem connecting to the internet.', 'error', true)
 		window.addEventListener('offline', () => {
-			notify('There seems to be a problem connecting to the internet.', 'error', true)
+			showMessage('There seems to be a problem connecting to the internet.', 'error', true)
 		})
 		window.addEventListener('online', () => {
-			notify('We are back online.')
+			showMessage('We are back online.')
 		})
 
 		function askConfirmation(message) {
@@ -334,18 +467,148 @@
 	</script>
 	<script>
 		let isSignInOpen = false,
-			openSignInButton = document.getElementById('open_sign_in_button'),
-			closeSignInButton = document.getElementById('close_sign_in_button'),
-			signInPopup = document.getElementById('sign_in_popup'),
-			signInLanding = document.getElementById('sign_in'),
 			activePage = {	page: document.getElementById('chat_page'),
-							button: document.getElementById('chat_page_button')},
-			mailPopup = document.getElementById('compose_mail_popup'),
-			addContactPopup = document.getElementById('add_contact_popup')
+				button: document.getElementById('chat_page_button')},
+			activeChatPage = document.getElementById('contacts'),
+            activeMailPage = document.getElementById('mails'),
+            activeChat,
+            activeMail;
+
+
+		const	openSignInButton = document.getElementById('open_sign_in_button'),
+				closeSignInButton = document.getElementById('close_sign_in_button'),
+				signInButton = document.getElementById('sign_in_button'),
+				guestLoginButton = document.getElementById('guest_login_button'),
+				signInLanding = document.getElementById('sign_in'),
+				privateKeyInputField = document.getElementById('private_key_field_input')
+		
+		const   allmailsSection = document.getElementById('mails'),
+				allContactsSection = document.getElementById('contacts'),
+				mailSection = document.getElementById('mail'),		
+				chatSection = document.getElementById('chat'),
+				mainNavbar = document.getElementById('main_navbar')	
+
+		const	mainPage = document.getElementById('main'),
+				contactsContainer = document.getElementById("contacts_container"),
+				inboxMailContainer = document.getElementById("inbox_mail_container"),
+				sentMailContainer = document.getElementById("sent_mail_container"),
+				addContactButton = document.getElementById('add_contact_button'),
+				addContactName = document.getElementById('add_contact_name'),
+				addContactFloID = document.getElementById('add_contact_floID'),
+				signInPopup = document.getElementById('sign_in_popup'),
+				composeMailPopup = document.getElementById('compose_mail_popup'),
+				sendMailTo = document.getElementById('send_mail_to'),
+				addContactPopup = document.getElementById('add_contact_popup'),
+				allInputs = document.querySelectorAll('sm-popup sm-input, sm-popup textarea')
+
+		// render elements 
+		const mailCardTemplate = document.getElementById('mail_card_template'),
+				contactTemplate = document.getElementById('contact_template'),
+                messageTemplate = document.getElementById('message_template'),
+                mailTemplate = document.getElementById('mail_template')
+		const render = {
+			mailCard(mailRef, subject, timestamp, category, floID, content, markUnread){
+                let card = mailCardTemplate.content.cloneNode(true),
+                    cardContainer = card.querySelector('.mail-card'),
+                    time = new Date(timestamp).toString(),
+                    dateTime
+                let mailSummery = content.split(' ')
+                if(new Date().getDate() === new Date(timestamp).getDate())
+                    dateTime = time.slice(16, 21);
+                else
+                    dateTime = time.slice(4, 10)
+                mailSummery.splice(12)
+                mailSummery = mailSummery.join(' ')
+                cardContainer.setAttribute("name", mailRef);
+                if (Array.isArray(floID))
+                    floID = floID.join(",");
+                if(markUnread)
+                    cardContainer.classList.add('unread')
+                card.querySelector('.sender').textContent = floGlobals.contacts[floID] || floID
+                card.querySelector('.subject').textContent = subject
+                card.querySelector('.date').textContent = dateTime
+                card.querySelector('.description').textContent = mailSummery
+                return card
+            },
+            mail(senderName, floID, timestamp, category, subject, content){
+                let card = mailTemplate.content.cloneNode(true),
+                    cardContainer = card.querySelector('.mail'),
+                    time = new Date(timestamp).toString(),
+                    dateTime
+                if(new Date().getDate() === new Date(timestamp).getDate())
+                    dateTime = time.slice(16, 21);
+                else
+                    dateTime = time.slice(4, 10)
+                if (Array.isArray(floID))
+                    floID = floID.join(",");
+                if(category === 'receivedFrom')
+                    card.querySelector('.sender-name').textContent = `From : ${senderName}`
+                if(category === 'sentTo')
+                    card.querySelector('.sender-name').textContent = `To : ${senderName}`
+                card.querySelector('.flo-id').textContent = floID
+                card.querySelector('.mail-subject').textContent = subject
+                card.querySelector('.date').textContent = dateTime;
+                card.querySelector('.mail-content').textContent = content
+                return card
+            },
+            contactCard(floID, name){
+                let card = contactTemplate.content.cloneNode(true),
+                        cardContainer = card.querySelector('.contact')
+                cardContainer.setAttribute("name", floID)
+                card.querySelector('.name').textContent = name
+                card.querySelector('.address').textContent = floID
+                let initial = card.querySelector('.initial')
+                initial.textContent = name.charAt(0)
+                let randomColor = randomHsl(90, 40)
+                initial.setAttribute(`style`, `color: ${randomColor}`)
+                contactsContainer.appendChild(card);
+            },
+            messageBubble(floID, message, timestamp, category){
+                let card = messageTemplate.content.cloneNode(true),
+                    cardContainer = card.querySelector('.message'),
+                    time = new Date(timestamp).toString(),
+                    dateTime
+                if(new Date().getDate() === new Date(timestamp).getDate())
+                    dateTime = time.slice(16, 21);
+                else
+                    dateTime = `${time.slice(16, 21)} ${time.slice(4, 10)}`
+                cardContainer.classList.add(category)
+                card.querySelector('.message-body').textContent = message
+                card.querySelector('.time').textContent = dateTime
+                return card
+			},
+		}
+
+		function randomHsl(saturation = 90, lightness = 50) {
+			return `hsla( ${(Math.random() * 360)}, ${saturation}%, ${lightness}%, 1)`;
+		}
 
 		openSignInButton.addEventListener('clicked', () => {
 			isSignInOpen = true;
 			signInPopup.show()
+		})
+
+		function checkInput(element){
+			let parent = element.closest('sm-popup'),
+				inputs = parent.querySelectorAll('sm-input, textarea')
+			if([...inputs].every(input => {
+				if(input.tagName === 'SM-INPUT' && input.isValid){
+					return true
+				}	
+				else if(input.tagName !== 'SM-INPUT' && input.checkValidity()){
+					return true
+				}
+			})){
+				parent.querySelector('sm-button[variant="primary"]').disabled = false
+			}
+			else
+				parent.querySelector('sm-button[variant="primary"]').disabled = true
+		}
+
+		document.addEventListener('input', e => {
+			if(e.target.closest('sm-popup')){
+				checkInput(e.target)
+			}
 		})
 
 		addEventListener('keyup', e => {
@@ -367,14 +630,932 @@
 				activePage.page = targetPage;
 			}
 			if(e.target.closest('#new_mail_button')){
-				mailPopup.show()
-			}
-			if(e.target.closest('#add_contact_button')){
-				addContactPopup.show()
+				composeMailPopup.show()
 			}
 		})
 	</script>
 	<script src="components.js"></script>
+	<script id="UI">
+
+		function goto(page){
+			if(page === 'chats'){
+				chatSection.classList.add('hide-on-mobile')
+				allContactsSection.classList.remove('hide-on-mobile')
+				activeChatPage = allContactsSection
+			}
+			if(page === 'mails'){
+				mailSection.classList.add('hide-on-mobile')
+				allmailsSection.classList.remove('hide-on-mobile')
+				activeMailPage = allmailsSection
+			}
+			mainNavbar.classList.remove('hide-on-mobile')
+		}
+
+        document.getElementById("mails").addEventListener('click', function (e) {
+			if (e.target.closest(".mail-card")){
+                mailSection.classList.remove('hide-completely')
+                e.target.closest(".mail-card").classList.remove('unread')
+                viewMail(e.target.closest(".mail-card").getAttribute("name"));
+                if(activeMail)
+                    activeMail.classList.remove('active')
+                e.target.closest(".mail-card").classList.add('active')
+                activeMail = e.target.closest(".mail-card")
+				if(activeMailPage.id === 'mails'){
+                    mailSection.classList.remove('hide-on-mobile')
+					allmailsSection.classList.add('hide-on-mobile')
+                    activeMailPage = mailSection
+                    mainNavbar.classList.add('hide-on-mobile')
+				}
+			}
+        })
+
+        document.getElementById("prev_mail").addEventListener('click', function (e) {
+            viewMail(this.dataset["value"], false);
+        })
+
+        document.getElementById("contacts_container").addEventListener('click', function (e) {
+			if (!e.target.closest("sm-menu") && e.target.closest(".contact")){
+                chatSection.classList.remove('hide-completely')
+                e.target.closest(".contact").classList.remove('unread')
+                viewConversation(e.target.closest(".contact").getAttribute("name"))
+                if(activeChat)
+                    activeChat.classList.remove('active')
+                e.target.closest(".contact").classList.add('active')
+                activeChat = e.target.closest(".contact")
+				if(activeChatPage.id === 'contacts'){
+                    chatSection.classList.remove('hide-on-mobile')
+					allContactsSection.classList.add('hide-on-mobile')
+                    activeChatPage = chatSection
+					mainNavbar.classList.add('hide-on-mobile')
+				}
+			}
+        });
+
+        document.getElementById("contacts_container").addEventListener("click", (e) => {
+			e.preventDefault();
+            let floID;
+            if (e.target.closest(".send-mail-option")){
+				composeMailPopup.show()
+				floID = e.target.closest(".contact").getAttribute("name");
+				let tmp = sendMailTo.value.trim();
+				if (!tmp.includes(floID)) {
+					if (tmp == '')
+						tmp = floID;
+					else
+						tmp += `, ${floID}`;
+				}
+				sendMailTo.value = tmp;
+				return false;
+			}
+        });
+
+        document.getElementById("sign_out").addEventListener('click', function (e) {
+            getConfirmation('Sign Out?',
+                '**Remember to store your PRIVATE-KEY** \nAre you sure you want to Sign out?', "Sign-Out",
+                "Stay Signed-In").then(
+                result => {
+                    floDapps.logout().then(result => {
+                        showMessage("Successfully Signed out")
+                        setTimeout(onLoadStartUp, 2000)
+                    }).catch(error => showMessage("Signout Unsuccessful", "error", error))
+                }).catch(error => {})
+        });
+
+        /*document.forms["sign-in-box"]["remove-account"].addEventListener('click', function (e) {
+            getConfirmation('Remove Account?',
+                '**Remember to store your PRIVATE-KEY**\n*Private-Key will be needed to signIn again*\nAre you sure you want to remove account?',
+                "Remove").then(result => {
+                floDapps.logout().then(result => {
+                    showMessage("Removed Account")
+                    setTimeout(onLoadStartUp, 2000)
+                }).catch(error => showMessage("Remove Unsuccessful", "error", error))
+            }).catch(error => {})
+        });*/
+
+        document.getElementById("secure_key").addEventListener('click', function (e) {
+            getPromptInput("Secure Private-Key", 'Enter Password', false).then(value => {
+                floDapps.securePrivKey(value).then(result => {
+                    privKeyNotSecured = false;
+                    showMessage("Private Key secured");
+                }).catch(error => showMessage("Securing Failed", "error", error))
+            }).catch(error => {})
+        });
+
+        document.getElementById("clear_data").addEventListener('click', function (e) {
+            getConfirmation('Clear Data?',
+                `Are you sure you want to clear stored data from the browser? \n**This can't be undone**\nMake sure you have stored the PRIVATE-KEY and Backuped the data.`,
+                "Clear").then(
+                result => {
+                    floDapps.clearUserData().then(result => {
+                        showMessage("Successfully Cleared local data")
+                        setTimeout(onLoadStartUp, 2000)
+                    }).catch(error => showMessage(error, "error"))
+                }).catch(error => {})
+        });
+
+        document.getElementById('show_contact_popup_button').addEventListener("click", function (e) {
+            document.getElementById("add_contact_popup").show()
+		})
+		
+        document.getElementById('add_contact_button').addEventListener("click", addContact)
+
+        function refresh(){
+            messenger.refreshInbox().then(data => {
+                    renderMessages(data.messages)
+                    renderMailList(data.mails)
+                    showMessage(
+                        `${Object.keys(data.messages).length} New Messages And ${Object.keys(data.mails).length} New Mails`
+                    )
+                    if(privKeyNotSecured)
+                    setTimeout( () => showMessage("Private key is not secured with password. Remember to secure the private key in settings", "warn"), 5000)
+                }).catch(error => showMessage(error, "error"))
+        }
+
+        document.getElementById("view_private_key").addEventListener("mouseover", function (e) {
+            this.value = myPrivKey;
+        })
+
+        document.getElementById("view_private_key").addEventListener("mouseout", function (e) {
+            this.value = "";
+        });
+
+        document.getElementById("view_private_key").addEventListener("click", function (e) {
+            this.select();
+            this.setSelectionRange(0, 52);
+            document.execCommand("copy");
+            showMessage("Private Key copied to clipboard!", "warn")
+        });
+
+        document.getElementById("backup-data").addEventListener("click", function (e) {
+            let backupInfoText = document.getElementById("backup-info")
+            backupInfoText.classList.remove("error")
+            backupInfoText.textContent = `Generating the backup file! Please wait...`;
+            messenger.backupData().then(blob => {
+                let anchor = document.createElement('a')
+                anchor.setAttribute("download", `BackupFor_${myFloID}_${Date.now()}.json`)
+                anchor.setAttribute("href", URL.createObjectURL(blob))
+                backupInfoText.textContent =
+                    `Backup file generated! If the download didn't start automatically, click `;
+                anchor.textContent = `here.`;
+                backupInfoText.appendChild(anchor);
+                anchor.click();
+            }).catch(error => {
+                backupInfoText.classList.add("error")
+                backupInfoText.textContent = `Unable to generate backup file! Try again later...`;
+                showMessage("Backup data Unsuccessful!", "error", error);
+            })
+        })
+
+        document.getElementById("restore-data").addEventListener("change", function (e) {
+            let file = this.files[0]
+            let restoreInfoText = document.getElementById("backup-info");
+            restoreInfoText.classList.remove("error");
+            restoreInfoText.textContent = `Retrieving backup data! Please wait...`;
+            if (!file) {
+                restoreInfoText.classList.add("error")
+                restoreInfoText.textContent = `No files selected!`;
+                return;
+            }
+            messenger.parseBackup(file).then(data => {
+                getConfirmation('Restore Data?',
+                    `Found:\n ${Object.keys(data.contacts).length} Contacts,\n ${Object.keys(data.messages).length} Messages,\n ${Object.keys(data.mails).length} Mails\nRestore Data?`,
+                    "Restore"
+                ).then(result => {
+                    restoreInfoText.textContent = `Restoring data! Please wait...`;
+                    messenger.restoreData(data).then(result => {
+                        restoreInfoText.textContent =
+                            `Data restore completed successful! Initiating reload, Please wait...`;
+                        showMessage("Successfully restored data")
+                        setTimeout(onLoadStartUp, 2000)
+                    }).catch(error => {
+                        restoreInfoText.classList.add("error")
+                        restoreInfoText.textContent =
+                            `Failed to restore data! Try again later...`;
+                        showMessage("Restore data Unsuccessful!", "error", error);
+                    });
+                }).catch(error => {
+                    restoreInfoText.classList.add("error")
+                    restoreInfoText.textContent = `User cancelled to restore data!`;
+                    showMessage("Restore data Cancelled!", "warn");
+                });
+            }).catch(error => {
+                restoreInfoText.classList.add("error")
+                restoreInfoText.textContent = `${error}`;
+                showMessage("Retrive data Unsuccessful!", "error", error);
+            })
+        })
+
+        function sendMessage() {
+            let receiver = document.getElementById("receiver_floID").textContent;
+            let input = document.getElementById('type_message'),
+                container;
+            let message = input.value;
+			input.value = ''
+			if(message.trim() === '') return
+            messenger.sendMessage(message, receiver).then(data => {
+                getConversationElement(floID).appendChild(render.messageBubble(data.floID, data.message, data.time, data.category));
+                container.lastElementChild.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"})
+            }).catch(error => showMessage(error, "error"));
+        }
+
+        function removeElement(element) {
+            element.parentNode.removeChild(element);
+        }
+
+        function clearElement(element) {
+            element.innerHTML = '';
+            return element;
+        }
+
+        function getConfirmation(title, message, trueBtn = "Ok", falseBtn = "Cancel") {
+            let confirmation = document.getElementById("confirmation");
+            confirmation.getElementsByTagName("legend")[0].textContent = title;
+            confirmation.getElementsByTagName("span")[0].textContent = message;
+            confirmation.show()
+            let options = confirmation.getElementsByTagName("sm-button");
+            options[0].textContent = trueBtn;
+            options[1].textContent = falseBtn;
+            return new Promise((resolve, reject) => {
+                /*let interval = setInterval(() => {
+                    if (confirmation.parentNode.classList.contains("hide")) {
+                        options[0].onclick = null;
+                        options[1].onclick = null;
+                        clearInterval(interval);
+                        reject(false);
+                    }
+                }, 1000)*/
+                options[0].onclick = () => {
+                    confirmation.hide()
+                    resolve(true)
+                }
+                options[1].onclick = () => {
+                    confirmation.hide()
+                    reject(true)
+                }
+            })
+        }
+
+        function getPromptInput(title, message, showText = true, trueBtn = "Ok", falseBtn = "Cancel") {
+            let promptInput = document.getElementById("prompt-input");
+            promptInput.getElementsByTagName("legend")[0].textContent = title;
+            promptInput.parentNode.classList.remove("hide");
+            let inputs = promptInput.getElementsByTagName("input");
+            inputs[0].setAttribute("placeholder", message)
+            if (showText)
+                inputs[0].setAttribute("type", "text")
+            else
+                inputs[0].setAttribute("type", "password")
+            inputs[1].value = trueBtn;
+            inputs[2].value = falseBtn;
+            return new Promise((resolve, reject) => {
+                let interval = setInterval(() => {
+                    if (promptInput.parentNode.classList.contains("hide")) {
+                        inputs[1].onclick = null;
+                        inputs[2].onclick = null;
+                        clearInterval(interval);
+                        reject(false);
+                    }
+                }, 1000)
+                inputs[1].onclick = () => {
+                    clearInterval(interval);
+                    let value = inputs[0].value;
+                    inputs[0].value = '';
+                    promptInput.parentNode.classList.add("hide")
+                    resolve(value)
+                }
+                inputs[2].onclick = () => {
+                    clearInterval(interval);
+                    promptInput.parentNode.classList.add("hide")
+                    reject(true)
+                }
+            })
+			}
+		
+		const notifications = document.getElementById('notifications')
+
+		function showMessage(message, mode = "normal", log = "") {
+            if (mode === "error")
+                console.error(message, log)
+            else if (mode === "warn")
+                console.warn(message, log)
+            else
+                console.log(mode.toUpperCase(), message, log)
+			notifications.push(message, mode)
+        }
+
+        function addContact() {
+            let floID = addContactFloID.value.trim();
+            let name = addContactName.value.trim();
+            messenger.storeContact(floID, name).then(result => {
+                getConversationElement(floID, name)
+                addContactPopup.hide()
+                showMessage(`Added Contact: ${floID}`)
+            }).catch(error => showMessage(error, "error"));
+        }
+
+        function renderContactList(contactList = {}) {
+            for (floID in contactList)
+                getConversationElement(floID, contactList[floID])
+        }
+
+        function renderMarked(data) {
+            for (let d in data) {
+                let element = document.getElementsByName(d)[0]
+                data[d].forEach(mark => element.classList.add(mark))
+            }
+        }
+
+        function getConversationElement(floID, name = "#null") {
+            let element = document.getElementById(floID)
+            if (!element) {
+                element = document.createElement("div");
+				element.setAttribute("id", floID)
+				element.classList.add('flex', 'direction-column')
+                document.getElementById("chat_container").appendChild(element)
+                render.contactCard(floID, name)
+			}
+            return element;
+        }
+
+        let frag = document.createDocumentFragment()
+
+        function renderMessages(data, markUnread = true) {
+            for (m in data) {
+                frag.append(render.messageBubble(data[m].floID, data[m].message, data[m].time, data[m].category))
+                if (markUnread)
+                    document.getElementsByName(data[m].floID)[0].classList.add("unread");
+            }
+            let container = getConversationElement(floID)
+            container.appendChild(frag)
+            if(container.lastElementChild)
+                container.lastElementChild.scrollIntoView(false)
+        }
+
+        function viewConversation(floID) {
+            let currentConversation = document.getElementById("receiver_floID").textContent;
+            console.log(floID, floGlobals.contacts[floID], currentConversation)
+            if (currentConversation != "")
+                document.getElementById(currentConversation).style.display = "none";
+            let currentChat = document.getElementById(floID)
+            currentChat.style.display = "flex";
+            document.getElementById("receiver_name").textContent = floGlobals.contacts[floID] || ' ';
+            document.getElementById("receiver_floID").textContent = floID;
+            /*if (floGlobals.pubKeys[floID])
+                document.getElementById("warn_no_encryption").classList.add("hide-completely");
+            else
+                document.getElementById("warn_no_encryption").classList.remove("hide-completely");*/
+            if(currentChat.lastElementChild)
+                currentChat.lastElementChild.scrollIntoView(false)
+            messenger.removeMark(floID, "unread");
+        }
+
+        /*function renderMailCard(mailRef, subject, timestamp, category, floID) {
+            let mailCard = document.createElement("div");
+            mailCard.setAttribute("class", "mail-card");
+            mailCard.setAttribute("name", mailRef);
+            let dateTime = new Date(timestamp).toString();
+            let dateTag = document.createElement("span");
+            dateTag.textContent = dateTime.slice(4, 10);
+            mailCard.appendChild(dateTag);
+            let subjectTag = document.createElement("span");
+            subjectTag.textContent = subject;
+            mailCard.appendChild(subjectTag);
+            let timeTag = document.createElement("span");
+            timeTag.textContent = dateTime.slice(16, 21);
+            mailCard.appendChild(timeTag);
+            if (Array.isArray(floID))
+                floID = floID.join(",");
+            let categoryTag = document.createElement("span");
+            categoryTag.textContent = `${category}: ${floID}`;
+            mailCard.appendChild(categoryTag);
+            let mailList = document.getElementById("inbox_mail_container");
+            mailList.insertBefore(mailCard, mailList.firstChild);
+        }*/
+        let sentMailFrag = document.createDocumentFragment()
+        function renderMailList(mails, markUnread = true) {
+            for (m in mails) {
+                let { ref, subject, time, category, floID, content} = mails[m]
+                if(category === 'receivedFrom')
+                    frag.prepend(render.mailCard(ref, subject, time, category, floID, content, markUnread));
+                if(category === 'sentTo')
+                    sentMailFrag.prepend(render.mailCard(ref, subject, time, category, floID, content, markUnread));
+            }
+            inboxMailContainer.append(frag)
+            sentMailContainer.append(sentMailFrag)
+        }
+
+        function viewMail(mailRef, newView = true) {
+            //clear the container and display popup (if needed)
+            if (newView)
+                clearElement(document.getElementById("mail_container"))
+
+            messenger.getMail(mailRef).then(result => {
+                let {floID, time, category, subject, content} = result
+                //add name (if available)  
+                let senderName = floGlobals.contacts[result.floID] || ' ';
+                //append the contents to mail container
+                document.getElementById("mail_container").appendChild(render.mail(senderName, floID, time, category, subject, content));
+                //add prop for previous mail (if available)
+                let prevMail = document.getElementById("prev_mail");
+                prevMail.dataset["value"] = result.prevRef;
+                prevMail.style.display = result.prevRef ? 'block' : 'none';
+                //set values for reply mail form if new view
+                /*if (newView) {
+                    if (result.floID.includes(','))
+                        document.getElementById("reply_mail").classList.add("hide");
+                    else {
+                        let replyForm = document.forms["reply_mail-form"];
+                        replyForm.reset();
+                        replyForm.dataset["to"] = result.floID;
+                        replyForm.dataset["prevRef"] = mailRef;
+                        replyForm["subject"].value = result.subject.startsWith("Re: ") ? result
+                            .subject : `Re: ${result.subject}`;
+                        document.getElementById("reply_mail").classList.remove("hide");
+                    }
+                }*/
+                messenger.removeMark(mailRef, "unread");
+            }).catch(error => showMessage("Unable to read mail", "error", error))
+		}
+		
+		document.getElementById('send_mail_button').addEventListener('clicked', sendMail)
+
+        function sendMail() {
+            let to = sendMailTo.value.split(",");
+            let subject = document.getElementById('subject_of_mail').value;
+            let content = document.getElementById('mail_content').value
+            let recipients = [];
+            try {
+                to.forEach(id => {
+                    let tmp = id.trim();
+                    if (!floCrypto.validateAddr(tmp))
+                        throw "Invalid Address: " + tmp
+                    if (!recipients.includes(tmp))
+                        recipients.push(tmp);
+                })
+                messenger.sendMail(subject, content, recipients).then(result => {
+                    console.log(result);
+                    let sucessCount = Object.keys(result.success).length;
+                    let errorCount = Object.keys(result.error).length
+                    if (!sucessCount)
+                        showMessage("Failed to send mail!", "error", result)
+                    else {
+                        if (errorCount)
+                            showMessage(
+                                `${Object.keys(result.success).length} Mail(s) sent! (${Object.keys(result.error).length} failed)`,
+                                "warn", {
+                                    sent: result.success,
+                                    failed: result.error
+                                });
+                        else
+                            showMessage(`${Object.keys(result.success).length} Mail(s) sent!`)
+                        let {ref, subject, time, category, floID, content} = result.data
+                        sentMailContainer.prepend(render.mailCard(ref, subject, time, category, floID, content));
+                        composeMailPopup.hide()
+                    }
+                }).catch(error => showMessage("Failed to send mail!", "error", error))
+            } catch (error) {
+                showMessage(error, "error")
+            }
+        }
+
+        function replyMail() {
+            let form = document.forms["reply_mail-form"];
+            let recipient = form.dataset.to;
+            let subject = form["subject"].value;
+            let content = form["content"].value;
+            let prevRef = form.dataset.prevRef;
+            messenger.replyMail(prevRef, subject, content, recipient).then(data => {
+                showMessage(`Mail replied!`);
+                let {ref, subject, time, category, floID, content} = data
+                sentMailContainer.prepend(render.mailCard(ref, subject, time, category, floID, content));
+            }).catch(error => showMessage("Failed to send mail!", "error", error))
+        }
+    </script>
+
+<script src="default.js"></script>
+<script id="messenger">
+    const messenger = {
+
+        util: {
+
+            sendRaw(message, receiver, type) {
+                return new Promise((resolve, reject) => {
+                    if (!floCrypto.validateAddr(receiver))
+                        return reject("Invalid Receiver floID");
+                    var data = {
+                        senderID: myFloID,
+                        receiverID: receiver,
+                        pubKey: myPubKey,
+                        message: message,
+                        sign: floCrypto.signData(JSON.stringify(message), myPrivKey),
+                        application: floGlobals.application,
+                        type: type,
+                        comment: ""
+                    }
+                    floSupernode.sendData(JSON.stringify(data), data.receiverID)
+                        .then(result => resolve(result))
+                        .catch(error => reject(error))
+                })
+            },
+
+            sendEncoded(message, receiver) {
+                return new Promise((resolve, reject) => {
+                    try {
+                        let unencrytedData = btoa(unescape(encodeURIComponent(JSON.stringify(message))))
+                        this.sendRaw(unencrytedData, receiver, "ENCODED")
+                            .then(result => resolve(result))
+                            .catch(error => reject(error))
+                    } catch (error) {
+                        reject(error.message)
+                    }
+                })
+            },
+
+            sendEncrypted(message, receiver) {
+                return new Promise((resolve, reject) => {
+                    try {
+                        if (!(receiver in floGlobals.pubKeys))
+                            throw Error("pubKey of receiver not found")
+                        let encryptedData = floCrypto.encryptData(JSON.stringify(message), floGlobals
+                            .pubKeys[receiver])
+                        encryptedData = btoa(unescape(encodeURIComponent(JSON.stringify(
+                            encryptedData))))
+                        this.sendRaw(encryptedData, receiver, "ENCRYPTED")
+                            .then(result => resolve(result))
+                            .catch(error => reject(error))
+                    } catch (error) {
+                        reject(error.message)
+                    }
+                })
+            },
+
+        },
+
+        sendMessage(message, receiver) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    if (receiver in floGlobals.pubKeys)
+                        await this.util.sendEncrypted(message, receiver);
+                    else
+                        await this.util.sendEncoded(message, receiver);
+                    let data = {
+                        time: Date.now(),
+                        floID: receiver,
+                        category: "sent",
+                        message: Crypto.AES.encrypt(message, floGlobals.appendix.AESKey)
+                    }
+                    compactIDB.addData("messages", JSON.parse(JSON.stringify(data)), `${data.time}`)
+                    data.message = message;
+                    resolve(data)
+                } catch (error) {
+                    reject(error)
+                }
+            })
+        },
+
+        sendMail(subject, content, recipients) {
+            return new Promise(async (resolve, reject) => {
+                let result = {
+                    success: {},
+                    error: {}
+                }
+                let mail = {
+                    subject: subject,
+                    content: content,
+                    ref: floCrypto.randString(32, true)
+                }
+                for (let i = 0; i < recipients.length; i++) {
+                    try {
+                        if (recipients[i] in floGlobals.pubKeys)
+                            result.success[recipients[i]] = await this.util.sendEncrypted(mail,
+                                recipients[i]);
+                        else
+                            result.success[recipients[i]] = await this.util.sendEncoded(mail,
+                                recipients[i]);
+                    } catch (error) {
+                        result.error[recipients[i]] = error;
+                    }
+                }
+                let data = {
+                    time: Date.now(),
+                    floID: Object.keys(result.success),
+                    category: "sentTo",
+                    subject: subject,
+                    content: Crypto.AES.encrypt(content, floGlobals.appendix.AESKey),
+                    ref: mail.ref
+                }
+                compactIDB.addData("mails", data, `${data.time}`)
+                compactIDB.addData("mailRef", `${data.time}`, mail.ref)
+                result.data = data
+                resolve(result)
+            })
+        },
+
+        replyMail(prevRef, subject, content, recipient) {
+            return new Promise(async (resolve, reject) => {
+                let mail = {
+                    prevRef: prevRef,
+                    subject: subject,
+                    content: content,
+                    ref: floCrypto.randString(32, true)
+                }
+                try {
+                    if (recipient in floGlobals.pubKeys)
+                        await this.util.sendEncrypted(mail, recipient);
+                    else
+                        await this.util.sendEncoded(mail, recipient);
+                    let data = {
+                        time: Date.now(),
+                        floID: recipient,
+                        category: "replyTo",
+                        prevRef: prevRef,
+                        subject: subject,
+                        content: Crypto.AES.encrypt(content,floGlobals.appendix.AESKey),
+                        ref: mail.ref
+                    }
+                    compactIDB.addData("mails", data, `${data.time}`)
+                    compactIDB.addData("mailRef", `${data.time}`, mail.ref)
+                    resolve(data)
+                } catch (error) {
+                    reject(error)
+                }
+            })
+        },
+
+        refreshInbox() {
+            return new Promise((resolve, reject) => {
+                var request = {
+                    receiverID: myFloID,
+                    application: floGlobals.application,
+                    lowerVectorClock: floGlobals.appendix.lastReceived + 1,
+                }
+                floSupernode.requestData(JSON.stringify(request), request.receiverID).then(response => {
+                    let dataSet = JSON.parse(response);
+                    console.log(dataSet)
+                    let newInbox = {
+                        messages: {},
+                        mails: {}
+                    }
+                    for (vc in dataSet) {
+                        try {
+                            //check for validity of message
+                            if (floCrypto.getFloIDfromPubkeyHex(dataSet[vc].pubKey) != dataSet[
+                                    vc]
+                                .senderID || !floCrypto.verifySign(JSON.stringify(dataSet[vc]
+                                        .message),
+                                    dataSet[vc].sign, dataSet[vc].pubKey))
+                                continue;
+                            //store the pubKey if not stored already
+                            if (!(dataSet[vc].senderID in floGlobals.pubKeys)) {
+                                floGlobals.pubKeys[dataSet[vc].senderID] = dataSet[vc].pubKey
+                                compactIDB.writeData("pubKeys", dataSet[vc].pubKey, dataSet[vc]
+                                    .senderID)
+                            }
+                            let data = {
+                                time: parseInt(vc.split("_")[0]),
+                                floID: dataSet[vc].senderID,
+                            }
+                            let tmp;
+                            switch (dataSet[vc].type) {
+                                case "ENCODED":
+                                    tmp = JSON.parse(decodeURIComponent(escape(atob(dataSet[vc]
+                                        .message))))
+                                    break;
+                                case "ENCRYPTED":
+                                    tmp = JSON.parse(floCrypto.decryptData(JSON.parse(
+                                        decodeURIComponent(escape(atob(dataSet[vc]
+                                            .message)))), myPrivKey))
+                                    break;
+                                default:
+                                    tmp = dataSet[vc].message
+                            }
+                            if (typeof tmp === "string") {
+                                //process as message
+                                data.category = "received"
+                                data.message = Crypto.AES.encrypt(tmp, floGlobals.appendix.AESKey);
+                                newInbox.messages[vc] = data;
+                                compactIDB.addData("messages", JSON.parse(JSON.stringify(data)), vc)
+                                data.message = tmp;
+                                this.addMark(data.floID, "unread")
+                            } else if (typeof tmp === "object") {
+                                //process as mail
+                                data.subject = tmp.subject;
+                                data.ref = tmp.ref;
+                                data.content = Crypto.AES.encrypt(tmp.content, floGlobals.appendix.AESKey);
+                                if (tmp.prevRef) {
+                                    data.prevRef = tmp.prevRef;
+                                    data.category = "replyFrom";
+                                } else
+                                    data.category = "receivedFrom"
+                                newInbox.mails[vc] = data;
+                                compactIDB.addData("mails", data, vc);
+                                compactIDB.addData("mailRef", vc, data.ref)
+                                this.addMark(data.ref, "unread")
+                            }
+                        } catch (error) {
+                            console.error(error)
+                        } finally {
+                            floGlobals.appendix.lastReceived = vc;
+                        }
+                    }
+                    compactIDB.writeData("appendix", floGlobals.appendix.lastReceived,
+                        "lastReceived");
+                    resolve(newInbox)
+                }).catch(error => reject(error))
+            })
+        },
+
+        getMail(mailRef) {
+            return new Promise((resolve, reject) => {
+                compactIDB.readData("mailRef", mailRef).then(mailIndex => {
+                    compactIDB.readData("mails", mailIndex).then(result => {
+                        result.content = Crypto.AES.decrypt(result.content, floGlobals.appendix.AESKey)
+                        resolve(result)
+                    }).catch(error => reject(error))
+                }).catch(error => reject(error))
+            });
+        },
+
+        addMark(key, mark) {
+            return new Promise((resolve, reject) => {
+                compactIDB.readData("marked", key).then(result => {
+                    if (!result)
+                        result = [mark];
+                    else if (!result.includes(mark))
+                        result.push(mark);
+                    else
+                        return resolve("Mark already exist");
+                    compactIDB.writeData("marked", result, key)
+                        .then(result => resolve(result))
+                        .catch(error => reject(error))
+                }).catch(error => reject(error))
+            })
+        },
+
+        removeMark(key, mark) {
+            return new Promise((resolve, reject) => {
+                compactIDB.readData("marked", key).then(result => {
+                    if (!result || !result.includes(mark))
+                        return resolve("Mark doesnot exist")
+                    else {
+                        result.splice(result.indexOf(mark), 1); //remove the mark from the list of marks
+                        compactIDB.writeData("marked", result, key)
+                            .then(result => resolve("Mark removed"))
+                            .catch(error => reject(error))
+                    }
+                }).catch(error => reject(error))
+            })
+        },
+
+        storeContact(floID, name) {
+            return new Promise((resolve, reject) => {
+                if (!floCrypto.validateAddr(floID))
+                    reject("Invalid floID!")
+                else
+                    compactIDB.writeData("contacts", name, floID)
+                    .then(result => resolve(result))
+                    .catch(error => reject(error))
+            });
+        },
+
+        loadDataFromIDB() {
+            return new Promise((resolve, reject) => {
+                let loadData = ["contacts", "pubKeys", "messages", "mails", "marked", "appendix"]
+                let promises = []
+                for (var i = 0; i < loadData.length; i++)
+                    promises[i] = compactIDB.readAllData(loadData[i])
+                Promise.all(promises).then(results => {
+                    let data = {}
+                    for (var i = 0; i < loadData.length; i++)
+                        data[loadData[i]] = results[i]
+                    data.appendix.lastReceived = data.appendix.lastReceived || '0'
+                    if (data.appendix.AESKey) {
+                        try {
+                            let AESKey = floCrypto.decryptData(data.appendix.AESKey, myPrivKey);
+                            data.appendix.AESKey = AESKey;
+                            for (let m in data.messages) {
+                                let decrypted = Crypto.AES.decrypt(data.messages[m].message,
+                                    AESKey)
+                                    
+                                data.messages[m].message = decrypted;
+                            }
+                            for (let m in data.mails) {
+                                let decrypted = Crypto.AES.decrypt(data.mails[m].content,
+                                    AESKey)
+                                data.mails[m].content = decrypted;
+                            }
+
+                            resolve(data)
+                        } catch (error) {
+                            reject("Corrupted AES Key");
+                        }
+                    } else {
+                        if (Object.keys(data.messages).length)
+                            return reject("AES Key not Found")
+                        let AESKey = floCrypto.randString(32);
+                        let encryptedKey = floCrypto.encryptData(AESKey, myPubKey);
+                        compactIDB.addData("appendix", encryptedKey, "AESKey").then(result => {
+                            data.appendix.AESKey = AESKey;
+                            resolve(data);
+                        }).catch(error => reject("Unable to Generate AES Key"))
+                    }
+                }).catch(error => reject(error))
+            })
+        },
+
+        backupData() {
+            return new Promise((resolve, reject) => {
+                let obs = ["contacts", "pubKeys", "messages", "mails", "mailRef", "marked", "appendix"]
+                let promises = [];
+                obs.forEach(o => promises.push(compactIDB.readAllData(o)))
+                Promise.all(promises).then(results => {
+                    let data = {}
+                    for (let i = 0; i < obs.length; i++)
+                        data[obs[i]] = results[i]
+                    results = undefined;
+                    data = btoa(unescape(encodeURIComponent(JSON.stringify(data))))
+                    data = {
+                        floID: myFloID,
+                        pubKey: myPubKey,
+                        data: floCrypto.encryptData(data, myPubKey),
+                    }
+                    data.sign = floCrypto.signData(JSON.stringify(data.data), myPrivKey);
+                    resolve(new Blob([JSON.stringify(data)], {
+                        type: 'application/json'
+                    }));
+                }).catch(error => reject(error))
+            })
+        },
+
+        parseBackup(blob) {
+            return new Promise((resolve, reject) => {
+                if (blob instanceof Blob || blob instanceof File) {
+                    let reader = new FileReader();
+                    reader.onload = evt => {
+                        var data = JSON.parse(evt.target.result);
+                        if (!floCrypto.verifySign(JSON.stringify(data.data), data.sign, data.pubKey))
+                            reject("Corrupted Backup file: Signature verification failed");
+                        else if (myFloID !== data.floID || myPubKey !== data.pubKey)
+                            reject("Invalid Backup file: Incorrect floID");
+                        else {
+                            try {
+                                data = floCrypto.decryptData(data.data, myPrivKey);
+                                try {
+                                    data = JSON.parse(decodeURIComponent(escape(atob(data))));
+                                    resolve(data)
+                                } catch (e) {
+                                    reject("Corrupted Backup file: Parse failed");
+                                }
+                            } catch (e) {
+                                reject("Corrupted Backup file: Decryption failed");
+                            }
+                        }
+                    }
+                    reader.readAsText(blob);
+                } else
+                    reject("Backup is not a valid File (or) Blob")
+            })
+        },
+
+        restoreData(arg) {
+            return new Promise((resolve, reject) => {
+                let parseData;
+                if (arg instanceof Blob || arg instanceof File)
+                    parseData = this.parseBackup
+                else
+                    parseData = data => new Promise((res, rej) => res(data))
+                parseData(arg).then(data => {
+                    if (data.appendix.lastReceived < floGlobals.appendix.lastReceived)
+                        data.appendix.lastReceived = floGlobals.appendix.lastReceived;
+                    let AESKey = floCrypto.decryptData(data.appendix.AESKey, myPrivKey);
+                    if (AESKey !== floGlobals.appendix.AESKey) {
+                        for (let m in data.messages) {
+                            let decrypted = Crypto.AES.decrypt(data.messages[m].message, AESKey)
+                            let encrypted = Crypto.AES.encrypt(decrypted, floGlobals.appendix
+                                .AESKey)
+                            data.messages[m].message = encrypted;
+                        }
+                        for (let m in data.mails) {
+                            let decrypted = Crypto.AES.decrypt(data.mails[m].content, AESKey)
+                            let encrypted = Crypto.AES.encrypt(decrypted, floGlobals.appendix
+                                .AESKey)
+                            data.mails[m].content = encrypted;
+                        }
+                    }
+                    delete data.appendix.AESKey;
+                    let promises = [];
+                    for (obs in data)
+                        for (value in data[obs])
+                            promises.push(compactIDB.writeData(obs, data[obs][value], value));
+                    Promise.all(promises)
+                        .then(results => resolve("Restore Successful"))
+                        .catch(error => reject("Restore Failed: Unable to write to IDB"))
+                }).catch(error => reject(error))
+            })
+        },
+
+    }
+</script>
 </body>
 
 </html>

@@ -22,12 +22,15 @@ smButton.innerHTML = `
             }
             :host([variant='outlined']) .button{
                 box-shadow: 0 0 0 1px rgba(var(--text-color), 0.2) inset;
-                background: rgba(var(--foreground-color), 1); 
+                background: transparent; 
                 color: var(--accent-color);
             }
             :host([variant='no-outline']) .button{
                 background: rgba(var(--foreground-color), 1); 
                 color: var(--accent-color);
+            }
+            :host(.small) .button{
+                padding: 0.4rem 0.8rem;
             }
             .button {
                 display: flex;
@@ -39,6 +42,7 @@ smButton.innerHTML = `
                 justify-content: center;
                 transition: box-shadow 0.3s;
                 text-transform: capitalize;
+                font-size: 0.9em;
                 font-weight: 500;
                 color: rgba(var(--text-color), 0.9);
                 font-family: var(--font-family);
@@ -101,7 +105,7 @@ customElements.define('sm-button',
                 this.setAttribute('disabled', '')
                 this.button.removeAttribute('tabindex')
             }
-            else if (this.isDisabled) {
+            else if (!value && this.isDisabled) {
                 this.isDisabled = false
                 this.removeAttribute('disabled')
             }
@@ -203,6 +207,7 @@ smInput.innerHTML = `
             font-family: var(--font-family);
             width: 100%
             outline: none;
+            min-width: 0;
         }
 
         input:focus{
@@ -308,6 +313,8 @@ customElements.define('sm-input',
 
         set value(val) {
             this.shadowRoot.querySelector('input').value = val;
+            this.checkInput()
+            this.fireEvent()
         }
 
         get placeholder() {
@@ -333,6 +340,15 @@ customElements.define('sm-input',
             }
         }
 
+        fireEvent() {
+            let event = new Event('input', {
+                bubbles: true,
+                cancelable: true,
+                composed: true
+            });
+            this.dispatchEvent(event);
+        }
+
         checkInput() {
             if (!this.hasAttribute('placeholder') || this.getAttribute('placeholder') === '')
                 return;
@@ -350,7 +366,7 @@ customElements.define('sm-input',
                     this.label.classList.remove('hide')
                 this.clearBtn.classList.add('hide')
             }
-            if (this.valueChanged) {
+            /*if (this.valueChanged) {
                 if (this.input.checkValidity()) {
                     this.helperText.classList.add('hide')
                     this.inputParent.style.boxShadow = ``
@@ -359,8 +375,9 @@ customElements.define('sm-input',
                     this.helperText.classList.remove('hide')
                     this.inputParent.style.boxShadow = `0 0 0 0.1rem ${this.computedStyle.getPropertyValue('--error-color')}`
                 }
-            }
+            }*/
         }
+        
 
         connectedCallback() {
             this.inputParent = this.shadowRoot.querySelector('.input')
@@ -375,6 +392,9 @@ customElements.define('sm-input',
             if (this.hasAttribute('value')) {
                 this.input.value = this.getAttribute('value')
                 this.checkInput()
+            }
+            if (this.hasAttribute('required')) {
+                this.input.setAttribute('required', '')
             }
             if (this.hasAttribute('helper-text')) {
                 this.helperText.textContent = this.getAttribute('helper-text')
@@ -395,16 +415,15 @@ customElements.define('sm-input',
             this.input.addEventListener('input', e => {
                 this.checkInput()
             })
-            this.input.addEventListener('change', e => {
+            /*this.input.addEventListener('change', e => {
                 this.valueChanged = true;
                 if (this.input.checkValidity())
                     this.helperText.classList.add('hide')
                 else
                     this.helperText.classList.remove('hide')
-            })
+            })*/
             this.clearBtn.addEventListener('click', e => {
-                this.input.value = ''
-                this.checkInput()
+                this.value = ''
             })
         }
 
@@ -2022,6 +2041,15 @@ customElements.define('sm-popup', class extends HTMLElement {
         else {
             this.resumeScrolling()
         }
+
+        if (this.inputFields.length) {
+            this.inputFields.forEach(field => {
+                if (field.type === 'radio' || field.tagName === 'SM-CHECKBOX')
+                    field.checked = false
+                if (field.tagName === 'SM-INPUT' || field.tagName === 'TEXTAREA')
+                    field.value = ''
+            })
+        }
     }
 
     handleTouchStart(e) {
@@ -2070,6 +2098,7 @@ customElements.define('sm-popup', class extends HTMLElement {
         this.popupStack
         this.popupContainer = this.shadowRoot.querySelector('.popup-container')
         this.popup = this.shadowRoot.querySelector('.popup')
+        this.popupBodySlot = this.shadowRoot.querySelector('.popup-body slot')
         this.offset
         this.popupHeader = this.shadowRoot.querySelector('.popup-top')
         this.touchStartY = 0
@@ -2078,13 +2107,17 @@ customElements.define('sm-popup', class extends HTMLElement {
         this.touchEndTime = 0
         this.threshold = this.popup.getBoundingClientRect().height * 0.3
         this.touchEndAnimataion;
-
+        
         if (this.hasAttribute('open'))
             this.show()
         this.popupContainer.addEventListener('mousedown', e => {
             if (e.target === this.popupContainer && !this.pinned) {
                 this.hide()
             }
+        })
+        
+        this.popupBodySlot.addEventListener('slotchange', () => {
+            this.inputFields = this.popupBodySlot.assignedElements().filter(element => element.tagName === 'SM-INPUT' || element.tagName === 'SM-CHECKBOX' || element.tagName === 'TEXTAREA' || element.type === 'radio')
         })
 
         this.popupHeader.addEventListener('touchstart', (e) => {
@@ -2351,24 +2384,22 @@ smNotifications.innerHTML = `
         overflow: hidden auto;
         overscroll-behavior: contain;
     }
-    .inner-body{
-        padding: 1rem 1.5rem;
-    }
     .no-transformations{
         transform: none;
         opacity: 1;
     }
     .notification{
+        display: flex;
         opacity: 0;
+        padding: 1rem 1.5rem;
         transform: translateY(-1rem);
         position: relative;
         border-radius: 0.3rem;
-        box-shadow: 0.1rem 0.2rem 0.2rem rgba(0, 0, 0, 0.1),
+        box-shadow: 0 0.1rem 0.2rem rgba(0, 0, 0, 0.1),
                     0.5rem 1rem 2rem rgba(0, 0, 0, 0.1);
         background: rgba(var(--foreground-color), 1);
         transition: height 0.3s, transform 0.3s, opacity 0.3s;
         overflow: hidden;
-        border-bottom: 1px solid rgba(var(--text-color), 0.2);
     }
     h4:first-letter,
     p:first-letter{
@@ -2379,17 +2410,13 @@ smNotifications.innerHTML = `
     }
     p{
         line-height: 1.6;
-        color: rgba(var(--text-color), 0.8);
+        flex: 1;
+        color: rgba(var(--text-color), 0.9);
         overflow-wrap: break-word;
+        word-wrap: break-word;
     }
     .notification:last-of-type{
         margin-bottom: 0;
-    }
-    header{
-        display: flex;
-        align-items: center;
-        margin-bottom: 0.4rem;
-        width: 100%;
     }
     .icon {
         fill: none;
@@ -2401,7 +2428,6 @@ smNotifications.innerHTML = `
         border-radius: 1rem;
         stroke-linejoin: round;
         cursor: pointer;
-        min-width: 0;
     }
     .error-icon{
         stroke: #E53935;
@@ -2410,21 +2436,24 @@ smNotifications.innerHTML = `
         stroke: #00C853;
     }
     .close{
-        margin-left: auto;
+        margin-left: 1rem;
         padding: 0.5rem;
         stroke-width: 10;
     }
     .notification-icon{
-        height: 1.2rem;
-        width: 1.2rem;
+        height: 1.4rem;
+        width: 1.4rem;
         margin-right: 0.6rem;
         stroke-width: 6;
     }
     @media screen and (min-width: 640px){
         .notification-panel{
             width: 40vw;
+            justify-content: flex-end;
         }
         .notification{
+            justify-self: end;
+            width: auto;
             margin-right: 1.5rem;
             margin-bottom: 1rem;
             border-bottom: none;
@@ -2456,6 +2485,7 @@ customElements.define('sm-notifications', class extends HTMLElement {
     }
 
     handleTouchMove(e) {
+        e.preventDefault()
         if (this.touchStartX < e.changedTouches[0].clientX) {
             this.offset = e.changedTouches[0].clientX - this.touchStartX;
             this.touchEndAnimataion = requestAnimationFrame(this.movePopup)
@@ -2467,7 +2497,7 @@ customElements.define('sm-notifications', class extends HTMLElement {
     }
 
     handleTouchEnd(e) {
-        this.notification.style.transition = 'height 0.3s, transform 0.3s, opacity 0.3s'
+        this.notification.style.transition = 'transform 0.3s, opacity 0.3s'
         this.touchEndTime = e.timeStamp
         cancelAnimationFrame(this.touchEndAnimataion)
         this.touchEndX = e.changedTouches[0].clientX
@@ -2492,7 +2522,7 @@ customElements.define('sm-notifications', class extends HTMLElement {
         }
     }
 
-    movePopup() {
+    movePopup = () => {
         this.notification.style.transform = `translateX(${this.offset}px)`
     }
 
@@ -2500,17 +2530,12 @@ customElements.define('sm-notifications', class extends HTMLElement {
         this.notification.style.transform = `translateX(0)`
     }
 
-    push(messageHeader, messageBody, options) {
+    push(messageBody, type, pinned) {
         let notification = document.createElement('div'),
-            composition = ``,
-            { pinned, type } = options;
+            composition = ``
         notification.classList.add('notification')
         if (pinned)
             notification.classList.add('pinned')
-        composition += `
-                            <div class="inner-body">
-                        <header>
-        `
         if (type === 'error') {
             composition += `
             <svg class="notification-icon icon error-icon" viewBox="0 0 64 64">
@@ -2527,15 +2552,12 @@ customElements.define('sm-notifications', class extends HTMLElement {
             `
         }
         composition += `
-                            <h4>${messageHeader}</h4>
+                            <p>${messageBody}</p>
                             <svg class="icon close" viewBox="0 0 64 64">
                                 <title>Close</title>
                                 <line x1="64" y1="0" x2="0" y2="64"/>
                                 <line x1="64" y1="64" x2="0" y2="0"/>
-                            </svg>
-                        </header>
-                        <p>${messageBody}</p>
-                    </div>`
+                            </svg>`
         notification.innerHTML = composition
         this.notificationPanel.prepend(notification)
         if (window.innerWidth > 640) {
@@ -2561,7 +2583,6 @@ customElements.define('sm-notifications', class extends HTMLElement {
     }
 
     removeNotification(notification, toLeft) {
-        notification.style.height = notification.scrollHeight + 'px';
         if (!this.offset)
             this.offset = 0;
 
@@ -2576,7 +2597,7 @@ customElements.define('sm-notifications', class extends HTMLElement {
                     opacity: '0'
                 }
             ], this.animationOptions).onfinish = () => {
-                notification.setAttribute('style', `height: 0; margin-bottom: 0`);
+                notification.remove()
             }
         else {
             notification.animate([
@@ -2589,12 +2610,9 @@ customElements.define('sm-notifications', class extends HTMLElement {
                     opacity: '0'
                 }
             ], this.animationOptions).onfinish = () => {
-                notification.setAttribute('style', `height: 0; margin-bottom: 0`);
+                notification.remove()
             }
         }
-        setTimeout(() => {
-            notification.remove()
-        }, this.animationOptions.duration * 2)
     }
 
     connectedCallback() {
@@ -2709,7 +2727,7 @@ smMenu.innerHTML = `
                 overflow: hidden auto;
                 position: absolute;
                 display: flex;
-                min-width: 100%;
+                min-width: max-content;
                 transform: translateY(-1rem);
                 flex-direction: column;
                 background: rgba(var(--foreground-color), 1);
@@ -2768,14 +2786,14 @@ customElements.define('sm-menu', class extends HTMLElement {
     set value(val) {
         this.setAttribute('value', val)
     }
-    expand() {
+    expand = () => {
         if (!this.open) {
-            if (this.containerDimensions.left > this.containerDimensions.width) {
-                this.optionList.style.right = 0
+            /*if (this.containerDimensions.left > this.containerDimensions.width) {
+                this.optionList.setAttribute('style', 'right: 0')
             }
             else {
-                this.optionList.style.right = 'auto'
-            }
+                this.optionList.setAttribute('style', 'left: 0')
+            }*/
             this.optionList.classList.remove('hide')
             this.optionList.classList.add('no-transformations')
             this.open = true
@@ -2839,12 +2857,12 @@ customElements.define('sm-menu', class extends HTMLElement {
             this.availableOptions = slot.assignedElements()
             this.containerDimensions = this.optionList.getBoundingClientRect()
             this.menuDimensions = menu.getBoundingClientRect()
-            if (this.containerDimensions.left > this.containerDimensions.width) {
+            /*if (this.containerDimensions.left > this.containerDimensions.width) {
                 this.optionList.style.right = 0
             }
             else {
                 this.optionList.style.right = 'auto'
-            }
+            }*/
         });
         window.addEventListener('mousedown', e => {
             if (!this.contains(e.target) && e.button !== 2) {
@@ -2859,25 +2877,26 @@ customElements.define('sm-menu', class extends HTMLElement {
                 }
             })
         }
-        const intersectionObserver = new IntersectionObserver(entries => {
+       /* const intersectionObserver = new IntersectionObserver(entries => {
             entries.forEach(entry => {
-                if (!entry.isIntersecting && this.open) {
+                if (this.open && !entry.isIntersecting) {
                     if (window.innerHeight - entry.intersectionRect.top < this.containerDimensions.height)
                         this.optionList.classList.add('moveUp')
                     else
                         this.optionList.classList.remove('moveUp')
+                    console.log(entry.intersectionRect.left > this.containerDimensions.width)
                     if (entry.intersectionRect.left > this.containerDimensions.width) {
-                        this.optionList.style.right = 0
+                        this.optionList.setAttribute('style', 'right: 0')
                     }
                     else {
-                        this.optionList.style.right = 'auto'
+                        this.optionList.setAttribute('style', 'left: 0')
                     }
                 }
             })
         }, {
             threshold: 1
         })
-        intersectionObserver.observe(this.optionList)
+        intersectionObserver.observe(this.optionList)*/
     }
 })
 
@@ -2895,7 +2914,7 @@ smMenuOption.innerHTML = `
             }
             .option{
                 min-width: 100%;
-                padding: 0.8rem 1.6rem;
+                padding: 0.6rem 1.6rem;
                 cursor: pointer;
                 overflow-wrap: break-word;
                 white-space: nowrap;
@@ -3119,7 +3138,6 @@ smTabPanels.innerHTML = `
     box-sizing: border-box;
 } 
 :host{
-    display: grid;
     width: 100%;
 }
 .panel-container{
