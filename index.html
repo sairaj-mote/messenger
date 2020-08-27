@@ -57,7 +57,7 @@
 					}
 					if (type === "PRIVATE_KEY") {
 						privateKeyInputField.setAttribute("placeholder", "Private Key")
-						//signInBox["remove-account"].classList.add("hide");
+						document.getElementById("remove_account").classList.add("hide-completely");
 						guestLoginButton.onclick = () => {
 							signInPopup.hide()
 							signInLanding.classList.add('hide-completely')
@@ -66,7 +66,7 @@
 						}
 					} else if (type === "PIN/Password") {
 						privateKeyInputField.setAttribute("placeholder", "Password")
-						//signInBox["remove-account"].classList.remove("hide");
+						document.getElementById("remove_account").classList.remove("hide-completely");
 						privKeyNotSecured = false;
 					}
 				})
@@ -199,20 +199,19 @@
 						Please enter your FLO private key to continue.
 					</p>
 					<sm-input id="private_key_input_field" placeholder="private key"></sm-input>
-					<sm-button id="sign_in_button" width="cover" variant="primary">continue</sm-button>
+                    <sm-button id="sign_in_button" width="cover" variant="primary">continue</sm-button>
+                    <sm-button id="remove_account" variant="outlined">Remove Account</sm-button>
 				</div>
 			</sm-popup>
 		</div>
 	</div>
 	<sm-popup id="confirmation">
-		<fieldset>
-			<legend></legend>
-			<span></span>
-			<div class="input-container i-2">
-				<sm-button type="submit">ok</sm-button>
-				<sm-button type="reset">cancel</sm-button>
-			</div>
-		</fieldset>
+        <h4 class="title"></h4>
+        <p class="message"></p>
+        <div class="flex">
+            <sm-button class="justify-right">ok</sm-button>
+            <sm-button>cancel</sm-button>
+        </div>
 	</sm-popup>
 	<sm-popup id="add_contact_popup">
 		<header class="flex align-center" slot="header">
@@ -241,6 +240,19 @@
 		<sm-input id="subject_of_mail" placeholder="Subject" animate></sm-input>
 		<textarea id="mail_content" placeholder="Type a mail" name="" id="" rows="10" required></textarea>
 	</sm-popup>
+	<sm-popup id="reply_mail_popup">
+		<header class="flex align-center" slot="header">
+			<svg class="icon" viewBox="0 0 64 64" onclick="this.closest('sm-popup').hide()">
+				<title>Close</title>
+				<line x1="64" y1="0" x2="0" y2="64" />
+				<line x1="64" y1="64" x2="0" y2="0" />
+			</svg>
+			<h4>Reply</h4>
+			<sm-button id="reply_mail_button" variant="primary" disabled>Send</sm-button>
+		</header>
+		<sm-input id="subject_of_reply_mail" placeholder="Subject" animate></sm-input>
+		<textarea id="reply_mail_content" placeholder="Type a mail" name="" id="" rows="10" required></textarea>
+	</sm-popup>
 
 	<!-- Templates -->
 
@@ -250,7 +262,7 @@
 				<h5 class="sender"></h5>
 				<h5 class="date"></h5>
 			</div>
-			<h4 class="subject"></h4>
+			<h4 class="subject text-overflow"></h4>
 			<p class="description"></p>
 		</div>
     </template>
@@ -324,18 +336,18 @@
 						d="M41,62.92a1.7,1.7,0,0,1-1.45-.83L37,57.7a2.63,2.63,0,0,0-2.27-1.34h-.26a23.91,23.91,0,0,1-5,0h-.26A2.63,2.63,0,0,0,27,57.7l-2.54,4.39a1.67,1.67,0,0,1-1.44.83,1.72,1.72,0,0,1-.83-.22L10.33,55.86a1.67,1.67,0,0,1-.61-2.27l2.54-4.41a2.61,2.61,0,0,0-.12-2.85A23.77,23.77,0,0,1,9.65,42,2.65,2.65,0,0,0,7.24,40.5H2.17A1.67,1.67,0,0,1,.5,38.83V25.17A1.67,1.67,0,0,1,2.17,23.5H7.24A2.64,2.64,0,0,0,9.65,22a25,25,0,0,1,2.49-4.31,2.63,2.63,0,0,0,.12-2.85l-2.54-4.4a1.67,1.67,0,0,1,.61-2.27L22.17,1.3A1.72,1.72,0,0,1,23,1.08a1.67,1.67,0,0,1,1.44.83L27,6.3a2.63,2.63,0,0,0,2.27,1.34h.26a23.91,23.91,0,0,1,5,0h.26A2.63,2.63,0,0,0,37,6.3l2.53-4.39A1.7,1.7,0,0,1,41,1.08a1.72,1.72,0,0,1,.83.22L53.67,8.14a1.67,1.67,0,0,1,.61,2.27l-2.54,4.41a2.61,2.61,0,0,0,.12,2.85A24.46,24.46,0,0,1,54.35,22a2.65,2.65,0,0,0,2.41,1.52h5.07a1.67,1.67,0,0,1,1.67,1.67V38.83a1.67,1.67,0,0,1-1.67,1.67H56.76A2.63,2.63,0,0,0,54.35,42a24.63,24.63,0,0,1-2.49,4.31,2.63,2.63,0,0,0-.12,2.85l2.54,4.4a1.68,1.68,0,0,1-.61,2.27L41.83,62.7A1.72,1.72,0,0,1,41,62.92Z" />
 					<path
 						d="M23,1.58h0a1.16,1.16,0,0,1,1,.58l2.54,4.39a3.14,3.14,0,0,0,2.7,1.59l.31,0C30.37,8,31.19,8,32,8s1.63,0,2.44.12l.31,0a3.14,3.14,0,0,0,2.7-1.59L40,2.16a1.16,1.16,0,0,1,1-.58,1.1,1.1,0,0,1,.58.16L53.42,8.57a1.16,1.16,0,0,1,.42,1.59L51.3,14.57a3.15,3.15,0,0,0,.15,3.4,23.69,23.69,0,0,1,2.45,4.21A3.12,3.12,0,0,0,56.76,24h5.07A1.17,1.17,0,0,1,63,25.17V38.83A1.17,1.17,0,0,1,61.83,40H56.76a3.11,3.11,0,0,0-2.86,1.82,24.33,24.33,0,0,1-2.44,4.23,3.11,3.11,0,0,0-.15,3.39l2.53,4.4a1.13,1.13,0,0,1,.12.88,1.17,1.17,0,0,1-.54.71L41.58,62.26a1.08,1.08,0,0,1-.58.16,1.16,1.16,0,0,1-1-.58l-2.54-4.39a3.14,3.14,0,0,0-2.7-1.59l-.31,0C33.63,56,32.81,56,32,56s-1.63,0-2.44-.12l-.31,0a3.14,3.14,0,0,0-2.7,1.59L24,61.84a1.16,1.16,0,0,1-1,.58,1.1,1.1,0,0,1-.58-.16L10.58,55.43a1.16,1.16,0,0,1-.42-1.59l2.54-4.41a3.15,3.15,0,0,0-.15-3.4,23.69,23.69,0,0,1-2.45-4.21A3.12,3.12,0,0,0,7.24,40H2.17A1.17,1.17,0,0,1,1,38.83V25.17A1.17,1.17,0,0,1,2.17,24H7.24a3.11,3.11,0,0,0,2.86-1.82A24.33,24.33,0,0,1,12.54,18a3.11,3.11,0,0,0,.15-3.39l-2.53-4.4a1.16,1.16,0,0,1,.42-1.59L22.42,1.74A1.08,1.08,0,0,1,23,1.58m0-1a2.11,2.11,0,0,0-1.08.29L10.08,7.7a2.17,2.17,0,0,0-.79,3l2.54,4.4a2.15,2.15,0,0,1-.1,2.31,24.92,24.92,0,0,0-2.54,4.4A2.13,2.13,0,0,1,7.24,23H2.17A2.17,2.17,0,0,0,0,25.17V38.83A2.17,2.17,0,0,0,2.17,41H7.24a2.13,2.13,0,0,1,1.95,1.23,25.25,25.25,0,0,0,2.55,4.39,2.13,2.13,0,0,1,.09,2.31L9.29,53.34a2.17,2.17,0,0,0,.79,3l11.84,6.83a2.11,2.11,0,0,0,1.08.29,2.17,2.17,0,0,0,1.88-1.08L27.41,58a2.14,2.14,0,0,1,1.84-1.09h.21a24.88,24.88,0,0,0,5.08,0h.21A2.14,2.14,0,0,1,36.59,58l2.53,4.39A2.17,2.17,0,0,0,41,63.42a2.11,2.11,0,0,0,1.08-.29L53.92,56.3a2.17,2.17,0,0,0,.79-3l-2.54-4.4a2.15,2.15,0,0,1,.1-2.31,24.92,24.92,0,0,0,2.54-4.4A2.13,2.13,0,0,1,56.76,41h5.07A2.17,2.17,0,0,0,64,38.83V25.17A2.17,2.17,0,0,0,61.83,23H56.76a2.13,2.13,0,0,1-1.95-1.23,25.25,25.25,0,0,0-2.55-4.39,2.13,2.13,0,0,1-.09-2.31l2.54-4.41a2.17,2.17,0,0,0-.79-3L42.08.87A2.11,2.11,0,0,0,41,.58a2.17,2.17,0,0,0-1.88,1.08L36.59,6.05a2.14,2.14,0,0,1-1.84,1.09h-.21a24.88,24.88,0,0,0-5.08,0h-.21a2.14,2.14,0,0,1-1.84-1.09L24.88,1.66A2.17,2.17,0,0,0,23,.58Z" />
-					<circle class="a" cx="32" cy="32" r="11.5" />
+					<circle cx="32" cy="32" r="11.5" />
 					<path d="M32,21A11,11,0,1,1,21,32,11,11,0,0,1,32,21m0-1A12,12,0,1,0,44,32,12,12,0,0,0,32,20Z" />
 				</svg>
 				<h5 class="label">Settings</h5>
 			</div>
 		</nav>
-		<section id="chat_page" class="grid page hide-completely">
+		<section id="chat_page" class="grid page">
 			<div id="contacts" class="grid">
 				<header class="flex align-center">
                     <h4>Contacts</h4>
                     <sm-button onclick="refresh()">
-                        <svg class="icon refresh" viewBox="0 0 64 64">
+                        <svg class="icon" viewBox="0 0 64 64">
                             <polyline points="42.99 0.16 50.25 21.23 28.78 27.7"/>
                             <path d="M56.61,44.63A24.65,24.65,0,0,1,50,56.24a25.1,25.1,0,0,1-35.31,0,24.67,24.67,0,0,1,0-35,25.1,25.1,0,0,1,35.31,0"/>
                         </svg>
@@ -371,11 +383,15 @@
 				</section>
 				<footer class="flex align-center">
                     <sm-input id="type_message" placeholder="Type a message" class="rest"></sm-input>
-                    <sm-button onclick="sendMessage()">Send</sm-button>
+                    <sm-button variant="round" id="send_message_button" disabled>
+                        <svg class="icon" viewBox="-4 0 64 64">
+                            <path d="M35.32,32.09,19.74,32a1.66,1.66,0,0,1-1.36-.82L.91,4.19c-1.15-1.78.31-4.36,2-3.53L31.63,14.78,62.37,29.9a2.51,2.51,0,0,1,0,4.2L31.63,49.22,2.92,63.34c-1.7.83-3.16-1.75-2-3.53L9.07,47.2"/>
+                        </svg>
+                    </sm-button>
 				</footer>
 			</div>
 		</section>
-		<section class="page grid" id="mail_page">
+		<section class="page grid hide-completely" id="mail_page">
 			<div id="mails" class="grid">
 				<header class="flex align-center">
                     <sm-tab-header variant="tab" target="all_mail_container">
@@ -383,7 +399,7 @@
                         <sm-tab>Sent</sm-tab>
                     </sm-tab-header>
                     <sm-button onclick="refresh()">
-                        <svg class="icon refresh" viewBox="0 0 64 64">
+                        <svg class="icon" viewBox="0 0 64 64">
                             <polyline points="42.99 0.16 50.25 21.23 28.78 27.7"/>
                             <path d="M56.61,44.63A24.65,24.65,0,0,1,50,56.24a25.1,25.1,0,0,1-35.31,0,24.67,24.67,0,0,1,0-35,25.1,25.1,0,0,1,35.31,0"/>
                         </svg>
@@ -408,7 +424,7 @@
 				</div>
 				<div class="flex">
 					<sm-button id="prev_mail" variant="outlined">View Previous Mail</sm-button>
-					<sm-button id="reply_mail" variant="outlined">reply</sm-button>
+					<sm-button id="show_reply_popup" variant="outlined">reply</sm-button>
 				</div>
 			</div>
 		</section>
@@ -417,24 +433,29 @@
 				<h3>User</h3>
 				<p>Manage settings and personal information.</p>
             </header>
-            <div class="flex align-center">
-                <h5>FLO ID</h5>
-                <sm-button class="small">copy</sm-button>
+            <div class="card">
+                <div class="flex align-center">
+                    <h5>FLO ID</h5>
+                    <sm-button class="small justify-right">copy</sm-button>
+                </div>
+                <h4 id="greet_tag" class="text-overflow"></h4>
+                <div>
+                    <sm-input id="view_private_key" title="Click to Copy" placeholder="&#x25C9; View Private Key" readonly/></sm-input>
+                    <sm-button id="secure_key">Set Pin/Password</sm-button>
+                </div>
+                <h4>Clear Data</h4>
+                <p><strong>This can't be undone.</strong> Make sure you have stored the PRIVATE KEY and backed up the data.</p>
+                <sm-button id="clear_data">Clear Data</sm-button>
+                
+                <h4>Sign Out</h4>
+                <p>*Remember to store your <strong>PRIVATE KEY </strong> before signing out.</p>
+                <sm-button id="sign_out">Sign Out</sm-button>
             </div>
-			<h4 id="greet_tag"></h4>
-			<div>
+			<div class="card">
 				<sm-button id="backup-data" >&#x25BC; Backup Data</sm-button>
 				<label for="restore-data">&#x25B2; Restore Data</label>
 				<input type="file" id="restore-data" accept=".json" />
 				<span id="backup-info"></span>
-			</div>
-			<div>
-				<input type="text" id="view_private_key" title="Click to Copy" placeholder="&#x25C9; View Private Key" readonly/>
-				<sm-button id="secure_key">Secure Private Key</sm-button>
-			</div>
-			<div>
-				<sm-button id="sign_out">Sign Out</sm-button>
-				<sm-button id="clear_data">Clear Data</sm-button>
 			</div>
 		</section>
 	</main>
@@ -449,21 +470,6 @@
 			showMessage('We are back online.')
 		})
 
-		function askConfirmation(message) {
-			return new Promise(resolve => {
-				let popup = document.getElementById('confirmation');
-				showPopup('confirmation')
-				popup.children[0].textContent = message;
-				popup.children[1].firstElementChild.onclick = () => {
-					hidePopup()
-					resolve(false)
-				}
-				popup.children[1].children[1].onclick = () => {
-					hidePopup()
-					resolve(true)
-				}
-			})
-		}
 	</script>
 	<script>
 		let isSignInOpen = false,
@@ -494,12 +500,19 @@
 				sentMailContainer = document.getElementById("sent_mail_container"),
 				addContactButton = document.getElementById('add_contact_button'),
 				addContactName = document.getElementById('add_contact_name'),
+				chatContainer = document.getElementById('chat_container'),
+				typeMessage = document.getElementById('type_message'),
 				addContactFloID = document.getElementById('add_contact_floID'),
 				signInPopup = document.getElementById('sign_in_popup'),
 				composeMailPopup = document.getElementById('compose_mail_popup'),
 				sendMailTo = document.getElementById('send_mail_to'),
 				addContactPopup = document.getElementById('add_contact_popup'),
 				allInputs = document.querySelectorAll('sm-popup sm-input, sm-popup textarea')
+                
+        const   replyMailPopup = document.getElementById('reply_mail_popup'),
+                subjectOfReplyMail = document.getElementById('subject_of_reply_mail'),
+                replyMailContent = document.getElementById('reply_mail_content'),
+                replyMailButton = document.getElementById('reply_mail_button')
 
 		// render elements 
 		const mailCardTemplate = document.getElementById('mail_card_template'),
@@ -517,7 +530,7 @@
                     dateTime = time.slice(16, 21);
                 else
                     dateTime = time.slice(4, 10)
-                mailSummery.splice(12)
+                mailSummery.splice(16)
                 mailSummery = mailSummery.join(' ')
                 cardContainer.setAttribute("name", mailRef);
                 if (Array.isArray(floID))
@@ -561,7 +574,7 @@
                 initial.textContent = name.charAt(0)
                 let randomColor = randomHsl(90, 40)
                 initial.setAttribute(`style`, `color: ${randomColor}`)
-                contactsContainer.appendChild(card);
+                contactsContainer.append(card);
             },
             messageBubble(floID, message, timestamp, category){
                 let card = messageTemplate.content.cloneNode(true),
@@ -652,7 +665,7 @@
 		}
 
         document.getElementById("mails").addEventListener('click', function (e) {
-			if (e.target.closest(".mail-card")){
+			if (e.target.closest(".mail-card") && e.target.closest(".mail-card") !== activeMail){
                 mailSection.classList.remove('hide-completely')
                 e.target.closest(".mail-card").classList.remove('unread')
                 viewMail(e.target.closest(".mail-card").getAttribute("name"));
@@ -671,6 +684,19 @@
 
         document.getElementById("prev_mail").addEventListener('click', function (e) {
             viewMail(this.dataset["value"], false);
+        })
+
+        document.getElementById('send_message_button').addEventListener('clicked', sendMessage)
+
+        typeMessage.addEventListener('input', e => {
+            if(typeMessage.value.trim() !== '')
+                document.getElementById('send_message_button').disabled = false
+            else   
+                document.getElementById('send_message_button').disabled = true
+        })
+        typeMessage.addEventListener('keydown', e => {
+            if(e.code === "Enter" && typeMessage.value.trim() !== '')
+                sendMessage()
         })
 
         document.getElementById("contacts_container").addEventListener('click', function (e) {
@@ -711,8 +737,8 @@
 
         document.getElementById("sign_out").addEventListener('click', function (e) {
             getConfirmation('Sign Out?',
-                '**Remember to store your PRIVATE-KEY** \nAre you sure you want to Sign out?', "Sign-Out",
-                "Stay Signed-In").then(
+                'Are you sure you want to Sign out?', "Sign Out",
+                "Stay Signed In").then(
                 result => {
                     floDapps.logout().then(result => {
                         showMessage("Successfully Signed out")
@@ -721,7 +747,7 @@
                 }).catch(error => {})
         });
 
-        /*document.forms["sign-in-box"]["remove-account"].addEventListener('click', function (e) {
+        document.getElementById("remove_account").addEventListener('click', function (e) {
             getConfirmation('Remove Account?',
                 '**Remember to store your PRIVATE-KEY**\n*Private-Key will be needed to signIn again*\nAre you sure you want to remove account?',
                 "Remove").then(result => {
@@ -730,7 +756,7 @@
                     setTimeout(onLoadStartUp, 2000)
                 }).catch(error => showMessage("Remove Unsuccessful", "error", error))
             }).catch(error => {})
-        });*/
+        });
 
         document.getElementById("secure_key").addEventListener('click', function (e) {
             getPromptInput("Secure Private-Key", 'Enter Password', false).then(value => {
@@ -743,11 +769,10 @@
 
         document.getElementById("clear_data").addEventListener('click', function (e) {
             getConfirmation('Clear Data?',
-                `Are you sure you want to clear stored data from the browser? \n**This can't be undone**\nMake sure you have stored the PRIVATE-KEY and Backuped the data.`,
-                "Clear").then(
+                `Are you sure you want to clear stored data?`, "Clear").then(
                 result => {
                     floDapps.clearUserData().then(result => {
-                        showMessage("Successfully Cleared local data")
+                        showMessage("Successfully Cleared local data", 'success')
                         setTimeout(onLoadStartUp, 2000)
                     }).catch(error => showMessage(error, "error"))
                 }).catch(error => {})
@@ -758,6 +783,12 @@
 		})
 		
         document.getElementById('add_contact_button').addEventListener("click", addContact)
+
+        document.getElementById('show_reply_popup').addEventListener("click", () => {
+            replyMailPopup.show()
+        })
+        
+        replyMailButton.addEventListener("click", replyMail)
 
         function refresh(){
             messenger.refreshInbox().then(data => {
@@ -780,10 +811,8 @@
         });
 
         document.getElementById("view_private_key").addEventListener("click", function (e) {
-            this.select();
-            this.setSelectionRange(0, 52);
-            document.execCommand("copy");
-            showMessage("Private Key copied to clipboard!", "warn")
+            navigator.clipboard.writeText(this.value)
+            showMessage("Private Key copied to clipboard!", "success")
         });
 
         document.getElementById("backup-data").addEventListener("click", function (e) {
@@ -797,7 +826,7 @@
                 backupInfoText.textContent =
                     `Backup file generated! If the download didn't start automatically, click `;
                 anchor.textContent = `here.`;
-                backupInfoText.appendChild(anchor);
+                backupInfoText.append(anchor);
                 anchor.click();
             }).catch(error => {
                 backupInfoText.classList.add("error")
@@ -847,14 +876,16 @@
 
         function sendMessage() {
             let receiver = document.getElementById("receiver_floID").textContent;
-            let input = document.getElementById('type_message'),
+            let input = typeMessage,
                 container;
+                console.log(receiver)
             let message = input.value;
 			input.value = ''
 			if(message.trim() === '') return
             messenger.sendMessage(message, receiver).then(data => {
-                getConversationElement(floID).appendChild(render.messageBubble(data.floID, data.message, data.time, data.category));
-                container.lastElementChild.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"})
+                container = getConversationElement(data.floID)
+                container.append(render.messageBubble(data.floID, data.message, data.time, data.category));
+                chatContainer.scrollTo({left: 0, top: chatContainer.scrollHeight, behavior: 'smooth'})
             }).catch(error => showMessage(error, "error"));
         }
 
@@ -869,8 +900,8 @@
 
         function getConfirmation(title, message, trueBtn = "Ok", falseBtn = "Cancel") {
             let confirmation = document.getElementById("confirmation");
-            confirmation.getElementsByTagName("legend")[0].textContent = title;
-            confirmation.getElementsByTagName("span")[0].textContent = message;
+            confirmation.querySelector('.title').textContent = title;
+            confirmation.querySelector('.message').textContent = message;
             confirmation.show()
             let options = confirmation.getElementsByTagName("sm-button");
             options[0].textContent = trueBtn;
@@ -961,7 +992,8 @@
         function renderMarked(data) {
             for (let d in data) {
                 let element = document.getElementsByName(d)[0]
-                data[d].forEach(mark => element.classList.add(mark))
+                if(element)
+                    data[d].forEach(mark => element.classList.add(mark))
             }
         }
 
@@ -971,7 +1003,7 @@
                 element = document.createElement("div");
 				element.setAttribute("id", floID)
 				element.classList.add('flex', 'direction-column')
-                document.getElementById("chat_container").appendChild(element)
+                chatContainer.append(element)
                 render.contactCard(floID, name)
 			}
             return element;
@@ -986,9 +1018,8 @@
                     document.getElementsByName(data[m].floID)[0].classList.add("unread");
             }
             let container = getConversationElement(floID)
-            container.appendChild(frag)
-            if(container.lastElementChild)
-                container.lastElementChild.scrollIntoView(false)
+            container.append(frag)
+            chatContainer.scrollTo(0, chatContainer.scrollHeight)
         }
 
         function viewConversation(floID) {
@@ -1004,44 +1035,21 @@
                 document.getElementById("warn_no_encryption").classList.add("hide-completely");
             else
                 document.getElementById("warn_no_encryption").classList.remove("hide-completely");*/
-            if(currentChat.lastElementChild)
-                currentChat.lastElementChild.scrollIntoView(false)
+            chatContainer.scrollTo(0, chatContainer.scrollHeight)
             messenger.removeMark(floID, "unread");
         }
 
-        /*function renderMailCard(mailRef, subject, timestamp, category, floID) {
-            let mailCard = document.createElement("div");
-            mailCard.setAttribute("class", "mail-card");
-            mailCard.setAttribute("name", mailRef);
-            let dateTime = new Date(timestamp).toString();
-            let dateTag = document.createElement("span");
-            dateTag.textContent = dateTime.slice(4, 10);
-            mailCard.appendChild(dateTag);
-            let subjectTag = document.createElement("span");
-            subjectTag.textContent = subject;
-            mailCard.appendChild(subjectTag);
-            let timeTag = document.createElement("span");
-            timeTag.textContent = dateTime.slice(16, 21);
-            mailCard.appendChild(timeTag);
-            if (Array.isArray(floID))
-                floID = floID.join(",");
-            let categoryTag = document.createElement("span");
-            categoryTag.textContent = `${category}: ${floID}`;
-            mailCard.appendChild(categoryTag);
-            let mailList = document.getElementById("inbox_mail_container");
-            mailList.insertBefore(mailCard, mailList.firstChild);
-        }*/
         let sentMailFrag = document.createDocumentFragment()
         function renderMailList(mails, markUnread = true) {
             for (m in mails) {
                 let { ref, subject, time, category, floID, content} = mails[m]
                 if(category === 'receivedFrom')
                     frag.prepend(render.mailCard(ref, subject, time, category, floID, content, markUnread));
-                if(category === 'sentTo')
+                if(category === 'sentTo' || category === 'replyTo')
                     sentMailFrag.prepend(render.mailCard(ref, subject, time, category, floID, content, markUnread));
             }
-            inboxMailContainer.append(frag)
-            sentMailContainer.append(sentMailFrag)
+            inboxMailContainer.prepend(frag)
+            sentMailContainer.prepend(sentMailFrag)
         }
 
         function viewMail(mailRef, newView = true) {
@@ -1054,25 +1062,23 @@
                 //add name (if available)  
                 let senderName = floGlobals.contacts[result.floID] || ' ';
                 //append the contents to mail container
-                document.getElementById("mail_container").appendChild(render.mail(senderName, floID, time, category, subject, content));
+                document.getElementById("mail_container").append(render.mail(senderName, floID, time, category, subject, content));
                 //add prop for previous mail (if available)
                 let prevMail = document.getElementById("prev_mail");
                 prevMail.dataset["value"] = result.prevRef;
                 prevMail.style.display = result.prevRef ? 'block' : 'none';
                 //set values for reply mail form if new view
-                /*if (newView) {
+                if (newView) {
                     if (result.floID.includes(','))
-                        document.getElementById("reply_mail").classList.add("hide");
+                        document.getElementById("show_reply_popup").classList.add("hide-completely");
                     else {
-                        let replyForm = document.forms["reply_mail-form"];
-                        replyForm.reset();
-                        replyForm.dataset["to"] = result.floID;
-                        replyForm.dataset["prevRef"] = mailRef;
-                        replyForm["subject"].value = result.subject.startsWith("Re: ") ? result
+                        replyMailPopup.dataset["to"] = result.floID;
+                        replyMailPopup.dataset["prevRef"] = mailRef;
+                        subjectOfReplyMail.value = result.subject.startsWith("Re: ") ? result
                             .subject : `Re: ${result.subject}`;
-                        document.getElementById("reply_mail").classList.remove("hide");
+                        document.getElementById("show_reply_popup").classList.remove("hide-completely");
                     }
-                }*/
+                }
                 messenger.removeMark(mailRef, "unread");
             }).catch(error => showMessage("Unable to read mail", "error", error))
 		}
@@ -1119,13 +1125,13 @@
         }
 
         function replyMail() {
-            let form = document.forms["reply_mail-form"];
-            let recipient = form.dataset.to;
-            let subject = form["subject"].value;
-            let content = form["content"].value;
-            let prevRef = form.dataset.prevRef;
+            let recipient = replyMailPopup.dataset.to;
+            let subject = subjectOfReplyMail.value;
+            let content = replyMailContent.value;
+            let prevRef = replyMailPopup.dataset.prevRef;
             messenger.replyMail(prevRef, subject, content, recipient).then(data => {
                 showMessage(`Mail replied!`);
+                replyMailPopup.hide()
                 let {ref, subject, time, category, floID, content} = data
                 sentMailContainer.prepend(render.mailCard(ref, subject, time, category, floID, content));
             }).catch(error => showMessage("Failed to send mail!", "error", error))

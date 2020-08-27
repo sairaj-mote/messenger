@@ -23,7 +23,7 @@ body{
     --lightness: 41%;
     font-size: 16px;
     color: rgba(var(--text-color), 1);
-    background: linear-gradient(320deg, crimson, var(--secondary-color)) no-repeat;
+    background: url(monogatari.jpg), linear-gradient(red, violet);
     background-size: cover;
 }
 body[data-theme='dark']{
@@ -129,9 +129,6 @@ textarea{
         margin-right: 0.5rem;
     }
 }
-.refresh{
-    stroke-width: 8 !important;
-}
 a:any-link{
     text-decoration: none;
     color: var(--accent-color);
@@ -163,10 +160,12 @@ a:any-link{
     backdrop-filter: blur(1rem);
 }
 .card{
-    margin-right: 1rem;
-    min-width: 33%;
-    padding: 1.5rem;
-    background: rgba(var(--text-color), 0.1);
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.5rem;
+    border-radius: 0.8rem;
+    background: rgba(var(--foreground-color), 0.7);
+    box-shadow: 0 0.1rem 0.1rem #00000010;
 }
 sm-button{
     --font-family: 'Poppins', sans-serif;
@@ -181,26 +180,14 @@ sm-input{
 sm-button[variant="primary"]{
     .icon{
         align-self: center;
-        height: 0.8rem;
-        width: 0.8rem;
+        height: 1rem;
+        width: 1rem;
         margin-left: 0.8rem;
-        stroke-width: 10;
+        stroke-width: 6;
         stroke: rgba(var(--foreground-color), 1);
     }
 }
-.icon{
-    fill: none;
-    height: 1rem;
-    width: 1rem;
-    stroke: rgba(var(--text-color), 0.7);
-    stroke-width: 6;
-    overflow: visible;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    &.primary{
-        stroke: var(--accent-color);
-    }
-}
+
 .back-button{
     margin-right: 1rem;
 }
@@ -209,7 +196,7 @@ sm-button[variant="primary"]{
     position: relative;
     align-items: center;
     height: max-content;
-    margin: 1rem 0;
+    margin: 0.5rem 0;
     h4{
         font-weight: 500;
         line-height: 1;
@@ -222,6 +209,21 @@ sm-button[variant="primary"]{
         margin-right: 0.4rem;
         fill: rgba(var(--text-color), 1);
         stroke: none;
+    }
+}
+#confirmation{
+    p{
+        max-width: 50ch;
+    }
+    h4{
+        margin-block-end: 1rem;
+    }
+    sm-button{
+        margin-block-start: 1.5rem;
+        margin-bottom: 0;
+    }
+    sm-button:first-of-type{
+        margin-inline-end: 0.5rem;
     }
 }
 #sign_in{
@@ -380,6 +382,14 @@ sm-button[variant="primary"]{
         grid-area: menu;
     }
 }
+#send_message_button{
+    .icon{
+        margin: 0;
+        height: 1.2rem;
+        width: 1.2rem;
+        stroke: rgba(var(--foreground-color), 1);
+    }
+}
 .mail-card.unread::before,
 .contact.unread::before{
     content: '';
@@ -441,6 +451,20 @@ sm-button[variant="primary"]{
     width: 100%;
 }
 .mail{
+    position: relative;
+    &:not(:first-of-type){
+        margin-top: 2rem;
+        padding-inline-start: 1rem;
+    }
+    &:not(:first-of-type)::before{
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 0.2rem;
+        height: 100%;
+        background: rgba(var(--text-color), 0.2);
+    }
     header{
         align-self: start;
         margin-bottom: 1rem;
@@ -453,6 +477,11 @@ sm-button[variant="primary"]{
             font-weight: 400;
             max-width: 90%;
         }
+    }
+    .mail-subject,
+    .mail-content{
+        overflow-wrap: break-word;
+        word-wrap: break-word;
     }
     .mail-subject{
         margin-bottom: 0.4em;
@@ -476,6 +505,7 @@ sm-button[variant="primary"]{
     flex-wrap: wrap;
     width: 100%;
     background: rgba(var(--foreground-color), 0.7);
+    backdrop-filter: blur(1rem);
     box-shadow: 0 -0.2rem 1rem #00000016;
     height: 3.5rem;
     align-items: center;
@@ -500,7 +530,7 @@ sm-button[variant="primary"]{
         }
     }
 }
-#compose_mail_popup, #add_contact_popup{
+#compose_mail_popup, #add_contact_popup, #reply_mail_popup{
     header{
         width: 100%;
         padding: 0 1.5rem;
@@ -533,6 +563,9 @@ sm-button[variant="primary"]{
             }
         }
     }
+}
+#settings_page{
+    height: calc(100vh - 3.5rem);
 }
 #chat{
     height: 100vh;
@@ -596,7 +629,8 @@ sm-button[variant="primary"]{
     }
 }
 #chat_container{
-    padding: 1rem;
+    padding: 0 1rem;
+    margin-bottom: 1rem;
 }
 #contacts_container,
 #chat_container,
@@ -628,7 +662,20 @@ sm-tab-header{
     align-items: flex-start;
 }
 #settings_page{
+    overflow-y: auto;
     padding: 1.5rem;
+    h4{
+        margin-bottom: 0.3rem;
+    }
+    .card h4:not(:first-of-type){
+        margin-top: 1.5rem;
+    }
+    p{
+        max-width: 60ch;
+    }
+    header{
+        margin-bottom: 1.5rem;
+    }
 }
 @media screen and (max-width: 640px){
     .hide-on-mobile{
@@ -649,9 +696,9 @@ sm-tab-header{
     }
     
     ::-webkit-scrollbar-thumb{
-        background: rgba(var(--text-color), 0.3);
+        background: rgba(var(--text-color), 0.2);
         &:hover{
-            background: rgba(var(--text-color), 0.6);
+            background: rgba(var(--text-color), 0.5);
         }
     }
     .hide-on-desktop{
@@ -659,9 +706,6 @@ sm-tab-header{
     }
     .page{
         padding-bottom: 0;
-    }
-    #confirmation{
-        width: 24rem;
     }
     .logo-section{
         padding: 2rem 3rem;
@@ -725,7 +769,7 @@ sm-tab-header{
             display: none;
         }
     }
-    #compose_mail_popup, #add_contact_popup{
+    #compose_mail_popup, #add_contact_popup, #reply_mail_popup{
         header{
             padding: 1.5rem 1.5rem 0 1.5rem;
         }
@@ -733,7 +777,8 @@ sm-tab-header{
     #add_contact_popup::part(popup){
         min-width: 24rem;
     }
-    #compose_mail_popup::part(popup){
+    #compose_mail_popup::part(popup),
+    #reply_mail_popup::part(popup){
         min-width: 36rem;
     }
     #main{
@@ -748,13 +793,17 @@ sm-tab-header{
     #chat_page, #mail_page{
         grid-template-columns: 22rem 1fr;
     }
-    #contacts, #mails{
+    #contacts, #mails, #settings_page{
         height: 100vh;
         //background: rgba(var(--text-color), 0.06);
     }
     .contact.active,
     .mail-card.active{
         background: rgba(var(--text-color), 0.06);
+    }
+    .card{
+        display: inline-flex;
+        width: auto;
     }
 }
 @media only screen and (min-width: 1280px){
@@ -767,7 +816,6 @@ sm-tab-header{
     }
     #main_navbar{
         align-items: flex-start;
-        padding: 0.5rem 0;
         .navbar-item{
             padding: 1rem 0.8rem;
             width: 100%;

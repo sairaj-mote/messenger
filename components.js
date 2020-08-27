@@ -11,14 +11,19 @@ smButton.innerHTML = `
                 display: inline-flex;
             }
             :host([disabled]) .button{
-                cursor: default;
+                cursor: not-allowed;
                 opacity: 1;
-                background: rgba(var(--text-color), 0.4) !important;
+                background: rgba(var(--text-color), 0.3) !important;
                 color: rgba(var(--foreground-color), 1);
             }
-            :host([variant='primary']) .button{
+            :host([variant='primary']) .button,
+            :host([variant='round']) .button{
                 background: hsl(var(--hue), var(--saturation), var(--lightness));
                 color: rgba(var(--foreground-color), 1);
+            }
+            :host([variant='round']) .button{
+                border-radius: 50%;
+                padding: 0.8rem;
             }
             :host([variant='outlined']) .button{
                 box-shadow: 0 0 0 1px rgba(var(--text-color), 0.2) inset;
@@ -69,10 +74,12 @@ smButton.innerHTML = `
                 :host([variant='outlined']) .button:hover{
                     box-shadow: 0 0 0 1px rgba(var(--text-color), 0.2) inset, 0 0.1rem 0.1rem rgba(0, 0, 0, 0.1), 0 0.4rem 0.8rem rgba(0, 0, 0, 0.12);
                 }
-                :host([variant="primary"]:not([disabled])) .button:active{
+                :host([variant="primary"]:not([disabled])) .button:active,
+                :host([variant="round"]:not([disabled])) .button:active{
                     background: hsl(var(--hue), var(--saturation), calc(var(--lightness) - 20%)) !important;
                 }
-                :host([variant="primary"]:not([disabled])) .button:hover{
+                :host([variant="primary"]:not([disabled])) .button:hover,
+                :host([variant="round"]:not([disabled])) .button:hove{
                     background: hsl(var(--hue), var(--saturation), calc(var(--lightness) - 10%));
                 }
             }
@@ -357,14 +364,16 @@ customElements.define('sm-input',
                     this.inputParent.classList.add('animate-label')
                 else
                     this.label.classList.add('hide')
-                this.clearBtn.classList.remove('hide')
+                if(!this.readonly)
+                    this.clearBtn.classList.remove('hide')
             }
             else {
                 if (this.animate)
                     this.inputParent.classList.remove('animate-label')
                 else
                     this.label.classList.remove('hide')
-                this.clearBtn.classList.add('hide')
+                if(!this.readonly)
+                    this.clearBtn.classList.add('hide')
             }
             /*if (this.valueChanged) {
                 if (this.input.checkValidity()) {
@@ -386,6 +395,7 @@ customElements.define('sm-input',
             this.label = this.shadowRoot.querySelector('.label')
             this.helperText = this.shadowRoot.querySelector('.helper-text')
             this.valueChanged = false;
+            this.readonly = false
             this.animate = this.hasAttribute('animate')
             this.input = this.shadowRoot.querySelector('input')
             this.shadowRoot.querySelector('.label').textContent = this.getAttribute('placeholder')
@@ -395,6 +405,10 @@ customElements.define('sm-input',
             }
             if (this.hasAttribute('required')) {
                 this.input.setAttribute('required', '')
+            }
+            if (this.hasAttribute('readonly')) {
+                this.input.setAttribute('readonly', '')
+                this.readonly = true
             }
             if (this.hasAttribute('helper-text')) {
                 this.helperText.textContent = this.getAttribute('helper-text')
