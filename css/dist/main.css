@@ -25,7 +25,6 @@ body {
   --lightness: 41%;
   font-size: 16px;
   color: rgba(var(--text-color), 1);
-  background: url(monogatari.jpg), linear-gradient(red, violet);
   background-size: cover;
 }
 
@@ -195,10 +194,7 @@ a:any-link {
 .card {
   display: flex;
   flex-direction: column;
-  padding: 1rem 1.5rem;
-  border-radius: 0.8rem;
-  background: rgba(var(--foreground-color), 0.7);
-  box-shadow: 0 0.1rem 0.1rem #00000010;
+  margin: 1rem 0;
 }
 
 sm-button {
@@ -247,17 +243,21 @@ sm-button[variant=primary] .icon {
   stroke: none;
 }
 
-#confirmation p {
+.select-file input[type=file] {
+  display: none;
+}
+
+#confirmation p, #prompt p {
   max-width: 50ch;
 }
-#confirmation h4 {
+#confirmation h4, #prompt h4 {
   margin-block-end: 1rem;
 }
-#confirmation sm-button {
+#confirmation sm-button, #prompt sm-button {
   margin-block-start: 1.5rem;
   margin-bottom: 0;
 }
-#confirmation sm-button:first-of-type {
+#confirmation sm-button:first-of-type, #prompt sm-button:first-of-type {
   margin-inline-end: 0.5rem;
 }
 
@@ -289,9 +289,10 @@ sm-button[variant=primary] .icon {
   color: rgba(var(--foreground-color), 1);
 }
 #sign_in .left .title-font {
+  font-kerning: normal;
   text-transform: uppercase;
   line-height: 1;
-  font-weight: 700;
+  font-weight: 900;
 }
 #sign_in .left sm-button {
   margin-top: 3rem;
@@ -312,7 +313,13 @@ sm-button[variant=primary] .icon {
 }
 
 #sign_in_page {
+  height: 100vh;
+  width: 100vw;
+  background: rgba(var(--foreground-color), 1);
   overflow: hidden;
+}
+#sign_in_page header {
+  padding: 1.5rem;
 }
 
 #sign_in_illustration {
@@ -419,6 +426,21 @@ sm-button[variant=primary] .icon {
 }
 .contact sm-menu {
   grid-area: menu;
+}
+
+#warn_no_encryption, .date-card {
+  padding: 0.4rem 0.8rem;
+  background: rgba(var(--text-color), 0.1);
+  margin: 1rem 0;
+  justify-self: center;
+  align-self: flex-start;
+  font-weight: 500;
+  border-radius: 0.4rem;
+  color: rgba(var(--text-color), 0.8);
+}
+
+.date-card {
+  align-self: center;
 }
 
 #send_message_button .icon {
@@ -608,8 +630,8 @@ sm-button[variant=primary] .icon {
   margin-right: 0.8rem;
 }
 
-#settings_page {
-  height: calc(100vh - 3.5rem);
+#chat_page {
+  overflow-y: hidden;
 }
 
 #chat {
@@ -619,6 +641,12 @@ sm-button[variant=primary] .icon {
 #chat header {
   padding: 0.5rem 1rem;
   box-shadow: 0 0.2rem 0.6rem #00000010;
+}
+#chat header .back-button {
+  margin-right: 0.2rem;
+}
+#chat header .initial {
+  margin-right: 1rem;
 }
 #chat header h4 {
   font-weight: 500;
@@ -642,18 +670,17 @@ sm-button[variant=primary] .icon {
 #chat .message {
   position: relative;
   display: inline-flex;
+  flex-direction: column;
   padding: 0.4rem 0.8rem;
   width: 100%;
-  font-size: 0.9rem;
+  font-size: 0.94rem;
   max-width: max-content;
   margin-bottom: 0.4rem;
   margin-top: 0.8rem;
   box-shadow: 0 0 0.2rem #00000020;
 }
-#chat .message .message-body {
-  max-width: 60ch;
-}
 #chat .message .time {
+  align-self: flex-end;
   margin-top: auto;
   margin-left: 0.4rem;
   font-size: 0.8em;
@@ -714,13 +741,14 @@ sm-tab-header {
 }
 
 #settings_page {
+  height: calc(100vh - 3.5rem);
   overflow-y: auto;
   padding: 1.5rem;
 }
 #settings_page h4 {
   margin-bottom: 0.3rem;
 }
-#settings_page .card h4:not(:first-of-type) {
+#settings_page h4:not(:first-of-type) {
   margin-top: 1.5rem;
 }
 #settings_page p {
@@ -728,6 +756,13 @@ sm-tab-header {
 }
 #settings_page header {
   margin-bottom: 1.5rem;
+}
+#settings_page .flex sm-button {
+  margin: 0;
+  margin-left: 1rem;
+}
+#settings_page sm-button {
+  width: 100%;
 }
 
 @media screen and (max-width: 640px) {
@@ -743,6 +778,14 @@ sm-tab-header {
 
   #sign_in_illustration {
     grid-area: illustration;
+  }
+
+  #chat header h5 {
+    width: calc(100vw - 12rem);
+  }
+  #chat .message {
+    width: auto;
+    max-width: 90%;
   }
 }
 @media only screen and (min-width: 640px) {
@@ -851,12 +894,29 @@ sm-tab-header {
     box-shadow: -0.2rem 0 1rem #00000010;
   }
 
+  #chat .message .message-body {
+    max-width: 50ch;
+  }
+
   #chat_page, #mail_page {
     grid-template-columns: 22rem 1fr;
   }
 
   #contacts, #mails, #settings_page {
     height: 100vh;
+  }
+
+  #settings_page {
+    padding: 1.5rem 3rem;
+  }
+  #settings_page section {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 3rem;
+    grid-auto-flow: column;
+  }
+  #settings_page sm-button {
+    width: max-content;
   }
 
   .contact.active,

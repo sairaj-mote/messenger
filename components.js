@@ -2057,12 +2057,14 @@ customElements.define('sm-popup', class extends HTMLElement {
         }
 
         if (this.inputFields.length) {
-            this.inputFields.forEach(field => {
-                if (field.type === 'radio' || field.tagName === 'SM-CHECKBOX')
-                    field.checked = false
-                if (field.tagName === 'SM-INPUT' || field.tagName === 'TEXTAREA')
-                    field.value = ''
-            })
+            setTimeout(() => {         
+                this.inputFields.forEach(field => {
+                    if (field.type === 'radio' || field.tagName === 'SM-CHECKBOX')
+                        field.checked = false
+                    if (field.tagName === 'SM-INPUT' || field.tagName === 'TEXTAREA')
+                        field.value = ''
+                })
+            }, 300);
         }
     }
 
@@ -2927,8 +2929,9 @@ smMenuOption.innerHTML = `
                 display: flex;
             }
             .option{
+                opacity: 0.7;
                 min-width: 100%;
-                padding: 0.6rem 1.6rem;
+                padding: 0.6rem 2rem;
                 cursor: pointer;
                 overflow-wrap: break-word;
                 white-space: nowrap;
@@ -2943,6 +2946,7 @@ smMenuOption.innerHTML = `
             }
             @media (hover: hover){
                 .option:hover{
+                    opacity: 1;
                     background: rgba(var(--text-color), 0.1);
                 }
             }

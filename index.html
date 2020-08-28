@@ -37,41 +37,41 @@
 			privKeyNotSecured = true;
 			//display loading screen
 			//clear Rendered Elements
-			let elementsToReset = ["startup-load-msg", 'inbox_mail_container', 'contacts_container', 'chat_container',
+			let elementsToReset = ["startup-load-msg", 'inbox_mail_container', 'sent_mail_container', 'contacts_container', 'chat_container',
 				'receiver_floID', 'receiver_name'
 			]
-			//, "backup-info"
+			//, "backup_info"
 			elementsToReset.forEach(e => clearElement(document.getElementById(e)))
-			//set the custom Privkey input
-			floDapps.setCustomPrivKeyInput((type) => {
-				return new Promise((resolve, reject) => {
-					mainPage.classList.add('hide-completely')
-					signInLanding.classList.remove('hide-completely')
-					signInPopup.show()
-					signInButton.onclick = () => {
-						let key = privateKeyInputField.value;
-						signInPopup.hide()
-						signInLanding.classList.add('hide-completely')
-						mainPage.classList.remove('hide-completely')
-						resolve(key)
-					}
-					if (type === "PRIVATE_KEY") {
-						privateKeyInputField.setAttribute("placeholder", "Private Key")
-						document.getElementById("remove_account").classList.add("hide-completely");
-						guestLoginButton.onclick = () => {
-							signInPopup.hide()
-							signInLanding.classList.add('hide-completely')
-							mainPage.classList.remove('hide-completely')
-							reject(null)
-						}
-					} else if (type === "PIN/Password") {
-						privateKeyInputField.setAttribute("placeholder", "Password")
-						document.getElementById("remove_account").classList.remove("hide-completely");
-						privKeyNotSecured = false;
-					}
-				})
-			})
-			//invoke the startup functions
+            
+            floDapps.setCustomPrivKeyInput((type) => {
+                return new Promise((resolve, reject) => {
+                    mainPage.classList.add('hide-completely')
+                    signInLanding.classList.remove('hide-completely')
+                    signInButton.onclick = () => {
+                        let key = privateKeyInputField.value;
+                        signInPopup.hide()
+                        console.log(key)
+                        signInLanding.classList.add('hide-completely')
+                        mainPage.classList.remove('hide-completely')
+                        resolve(key)
+                    }
+                    guestLoginButton.onclick = () => {
+                        signInLanding.classList.add('hide-completely')
+                        mainPage.classList.remove('hide-completely')
+                        reject(null)
+                    }
+                    if (type === "PRIVATE_KEY") {
+                        privateKeyInputField.setAttribute("placeholder", "Private Key")
+                        document.getElementById("remove_account").classList.add("hide-completely");
+                    } else if (type === "PIN/Password") {
+                        privateKeyInputField.setAttribute("placeholder", "Password")
+                        document.getElementById("remove_account").classList.remove("hide-completely");
+                        privKeyNotSecured = false;
+                    }
+                })
+            })
+            
+            //invoke the startup functions
 			floDapps.launchStartUp().then(result => {
 				console.log(result)
 				document.getElementById("greet_tag").textContent = myFloID
@@ -106,10 +106,7 @@
 	</audio>
 	<div id="startup-load-msg" class="hide-completely"></div>
 	<sm-notifications id="notifications"></sm-notifications>
-    <div id="show-message" class="hide-completely">
-        <span>Message</span>
-        <button> &#x2716;</span>
-    </div>
+
 	<div id="sign_in_page" class="page hide-completely">
 		<header class="logo-section">
 			<svg class="main-logo" viewBox="0 0 27.25 32">
@@ -198,7 +195,7 @@
 					<p class="light-text">
 						Please enter your FLO private key to continue.
 					</p>
-					<sm-input id="private_key_input_field" placeholder="private key"></sm-input>
+					<sm-input id="private_key_input_field" type="password" placeholder="private key"></sm-input>
                     <sm-button id="sign_in_button" width="cover" variant="primary">continue</sm-button>
                     <sm-button id="remove_account" variant="outlined">Remove Account</sm-button>
 				</div>
@@ -212,7 +209,15 @@
             <sm-button class="justify-right">ok</sm-button>
             <sm-button>cancel</sm-button>
         </div>
-	</sm-popup>
+    </sm-popup>
+    <sm-popup id="prompt">
+        <h4 class="title"></h4>
+       <sm-input></sm-input>
+        <div class="flex align-center">
+            <sm-button class="justify-right">Ok</sm-button>
+            <sm-button>Cancel</sm-button>
+        </div>
+    </sm-popup>
 	<sm-popup id="add_contact_popup">
 		<header class="flex align-center" slot="header">
 			<svg class="icon" viewBox="0 0 64 64" onclick="this.closest('sm-popup').hide()">
@@ -287,7 +292,7 @@
 
 	<template id="contact_template">
 		<div class="contact">
-			<div class="initial flex align-center">S</div>
+			<div class="initial flex align-center"></div>
 			<h4 class="name"></h4>
             <h5 class="address"></h5>
             <sm-menu align-options="right" set-context="true">
@@ -369,7 +374,8 @@
 					<svg class="icon hide-on-desktop back-button" onclick="goto('chats')" viewBox="0 0 64 64">
 						<title>Go to main page</title>
 						<polyline points="48.01 0.35 16.35 32 48.01 63.65"/>
-					</svg>
+                    </svg>
+                    <div id="receiver_initial" class="initial flex align-center"></div>
 					<div class="flex rest direction-column">
 						<h4 id="receiver_name"></h4>
 						<h5 id="receiver_floID" class="text-overflow"></h5>
@@ -378,8 +384,8 @@
                         <sm-menu-option onclick="refresh()">Refresh</sm-menu-option>
                     </sm-menu>
 				</header>
+                <h5 id="warn_no_encryption">Messages are not encrypted until receiver replies</h5>
 				<section id="chat_container" class="flex">
-                    <h5 id="warn_no_encryption">Messages are not encrypted until receiver replies</h5>
 				</section>
 				<footer class="flex align-center">
                     <sm-input id="type_message" placeholder="Type a message" class="rest"></sm-input>
@@ -433,30 +439,46 @@
 				<h3>User</h3>
 				<p>Manage settings and personal information.</p>
             </header>
-            <div class="card">
-                <div class="flex align-center">
-                    <h5>FLO ID</h5>
-                    <sm-button class="small justify-right">copy</sm-button>
+            <section>
+                <div class="card">
+                    <h4>My FLO ID</h4>
+                    <div class="flex align-center">
+                        <p id="greet_tag" class="text-overflow"></p>
+                        <sm-button class="small justify-right" onclick="copyToClipboard('#greet_tag', 'FLO ID Copied')">copy</sm-button>
+                    </div>
+                    
+                    <h4>Private Key</h4>
+                    <sm-input id="view_private_key" title="Click to Copy" placeholder="&#x25C9; View Private Key. Click to copy" readonly/></sm-input>
+                    
+                    <h4>Set Password</h4>
+                    <p>
+                        You can opt-in for a password instead of using FLO ID next time you sign in.<br>
+                        <strong>This password will only be stored on this device locally, so this password won't work on other devices.</strong>
+                    </p>
+                    <sm-button id="secure_key">Set Password</sm-button>
+                    
+                    <h4>Clear Data</h4>
+                    <p><strong>This can't be undone.</strong> Make sure you have stored the PRIVATE KEY and backed up the data.</p>
+                    <sm-button id="clear_data">Clear Data</sm-button>
+                    
+                    <h4>Sign Out</h4>
+                    <p>*Remember to store your <strong>PRIVATE KEY </strong> before signing out.</p>
+                    <sm-button id="sign_out">Sign Out</sm-button>
                 </div>
-                <h4 id="greet_tag" class="text-overflow"></h4>
-                <div>
-                    <sm-input id="view_private_key" title="Click to Copy" placeholder="&#x25C9; View Private Key" readonly/></sm-input>
-                    <sm-button id="secure_key">Set Pin/Password</sm-button>
+                <div class="card">
+                    <h4>Backup Data</h4>
+                    <p>Create a backup of contacts, conversations and mails. Which can later be used to restore these in case of data is cleared. </p>
+                    <sm-button id="backup_data" >Backup Data</sm-button>
+                    
+                    <h4>Restore Backup</h4>
+                    <p>Select backup file with extension '.json'. Which was downloaded when backup was performed.</p>
+                    <label class="select-file">
+                        <sm-button >Select File</sm-button>
+                        <input type="file" id="restore_data" accept=".json" />
+                    </label>
+                    <span id="backup_info"></span>
                 </div>
-                <h4>Clear Data</h4>
-                <p><strong>This can't be undone.</strong> Make sure you have stored the PRIVATE KEY and backed up the data.</p>
-                <sm-button id="clear_data">Clear Data</sm-button>
-                
-                <h4>Sign Out</h4>
-                <p>*Remember to store your <strong>PRIVATE KEY </strong> before signing out.</p>
-                <sm-button id="sign_out">Sign Out</sm-button>
-            </div>
-			<div class="card">
-				<sm-button id="backup-data" >&#x25BC; Backup Data</sm-button>
-				<label for="restore-data">&#x25B2; Restore Data</label>
-				<input type="file" id="restore-data" accept=".json" />
-				<span id="backup-info"></span>
-			</div>
+            </section>
 		</section>
 	</main>
 	<script>
@@ -485,8 +507,8 @@
 				closeSignInButton = document.getElementById('close_sign_in_button'),
 				signInButton = document.getElementById('sign_in_button'),
 				guestLoginButton = document.getElementById('guest_login_button'),
-				signInLanding = document.getElementById('sign_in'),
-				privateKeyInputField = document.getElementById('private_key_field_input')
+				signInLanding = document.getElementById('sign_in_page'),
+				privateKeyInputField = document.getElementById('private_key_input_field')
 		
 		const   allmailsSection = document.getElementById('mails'),
 				allContactsSection = document.getElementById('contacts'),
@@ -494,7 +516,7 @@
 				chatSection = document.getElementById('chat'),
 				mainNavbar = document.getElementById('main_navbar')	
 
-		const	mainPage = document.getElementById('main'),
+		const	mainPage = document.querySelector('main'),
 				contactsContainer = document.getElementById("contacts_container"),
 				inboxMailContainer = document.getElementById("inbox_mail_container"),
 				sentMailContainer = document.getElementById("sent_mail_container"),
@@ -524,12 +546,17 @@
                 let card = mailCardTemplate.content.cloneNode(true),
                     cardContainer = card.querySelector('.mail-card'),
                     time = new Date(timestamp).toString(),
+                    minutes = String(new Date(timestamp).getMinutes()),
+                    hours = new Date(timestamp).getHours(),
                     dateTime
-                let mailSummery = content.split(' ')
+                minutes = minutes.length === 1 ? `0${minutes}` : minutes  
+                let finalHours = hours - 12 > 0 ? `${hours - 12}:${minutes} PM` : `${hours}:${minutes} AM`
+
                 if(new Date().getDate() === new Date(timestamp).getDate())
-                    dateTime = time.slice(16, 21);
+                    dateTime = finalHours
                 else
                     dateTime = time.slice(4, 10)
+                let mailSummery = content.split(' ')
                 mailSummery.splice(16)
                 mailSummery = mailSummery.join(' ')
                 cardContainer.setAttribute("name", mailRef);
@@ -547,9 +574,15 @@
                 let card = mailTemplate.content.cloneNode(true),
                     cardContainer = card.querySelector('.mail'),
                     time = new Date(timestamp).toString(),
+                    minutes = String(new Date(timestamp).getMinutes()),
+                    hours = new Date(timestamp).getHours(),
                     dateTime
+                console.log(minutes.length)
+                minutes = minutes.length === 1 ? `0${minutes}` : minutes  
+                let finalHours = hours - 12 > 0 ? `${hours - 12}:${minutes} PM` : `${hours}:${minutes} AM`
+
                 if(new Date().getDate() === new Date(timestamp).getDate())
-                    dateTime = time.slice(16, 21);
+                    dateTime = finalHours
                 else
                     dateTime = time.slice(4, 10)
                 if (Array.isArray(floID))
@@ -567,12 +600,14 @@
             contactCard(floID, name){
                 let card = contactTemplate.content.cloneNode(true),
                         cardContainer = card.querySelector('.contact')
-                cardContainer.setAttribute("name", floID)
+                cardContainer.setAttribute("name", name)
+                cardContainer.setAttribute("flo-id", floID)
                 card.querySelector('.name').textContent = name
                 card.querySelector('.address').textContent = floID
                 let initial = card.querySelector('.initial')
                 initial.textContent = name.charAt(0)
                 let randomColor = randomHsl(90, 40)
+                cardContainer.setAttribute("text-color", randomColor)
                 initial.setAttribute(`style`, `color: ${randomColor}`)
                 contactsContainer.append(card);
             },
@@ -580,17 +615,30 @@
                 let card = messageTemplate.content.cloneNode(true),
                     cardContainer = card.querySelector('.message'),
                     time = new Date(timestamp).toString(),
-                    dateTime
-                if(new Date().getDate() === new Date(timestamp).getDate())
-                    dateTime = time.slice(16, 21);
-                else
-                    dateTime = `${time.slice(16, 21)} ${time.slice(4, 10)}`
+                    minutes = String(new Date(timestamp).getMinutes()),
+                    hours = new Date(timestamp).getHours()
+                minutes = minutes.length === 1 ? `0${minutes}` : minutes  
+                let finalHours = hours - 12 > 0 ? `${hours - 12}:${minutes} PM` : `${hours}:${minutes} AM`
+
                 cardContainer.classList.add(category)
                 card.querySelector('.message-body').textContent = message
-                card.querySelector('.time').textContent = dateTime
-                return card
+                card.querySelector('.time').textContent = finalHours
+                if(currentFloID !== floID){
+                    currentDate = null
+                    currentFloID = floID
+                }
+                if(time.slice(4, 10) !== currentDate){
+                    let dateCard = document.createElement('h5')
+                    dateCard.classList.add('date-card')
+                    dateCard.textContent = time.slice(4, 10)
+                    getConversationElement(floID).appendChild(dateCard)
+                    currentDate = time.slice(4, 10)
+                }
+                getConversationElement(floID).appendChild(card)
 			},
-		}
+        }
+        
+        let currentDate, currentFloID
 
 		function randomHsl(saturation = 90, lightness = 50) {
 			return `hsla( ${(Math.random() * 360)}, ${saturation}%, ${lightness}%, 1)`;
@@ -604,7 +652,8 @@
 		function checkInput(element){
 			let parent = element.closest('sm-popup'),
 				inputs = parent.querySelectorAll('sm-input, textarea')
-			if([...inputs].every(input => {
+            if(!parent.querySelector('sm-button[variant="primary"]')) return
+            if([...inputs].every(input => {
 				if(input.tagName === 'SM-INPUT' && input.isValid){
 					return true
 				}	
@@ -645,7 +694,24 @@
 			if(e.target.closest('#new_mail_button')){
 				composeMailPopup.show()
 			}
-		})
+        })
+
+        function copyToClipboard(target, message){
+            let copyText, copyTarget = target;
+            if(typeof target === 'string'){
+                copyTarget = document.querySelector(target)
+            }
+            if(copyTarget.tagName === 'SM-INPUT' || copyTarget.tagName === 'INPUT' || copyTarget.tagName === 'TEXTAREA')
+                copyText = copyTarget.value
+            else
+                copyText = copyTarget.textContent
+            navigator.clipboard.writeText(copyText).then(() => {
+                showMessage(`${message}`, 'success')
+            })
+            .catch(error => {
+                showMessage(error, 'error')
+            })
+        }
 	</script>
 	<script src="components.js"></script>
 	<script id="UI">
@@ -703,7 +769,7 @@
 			if (!e.target.closest("sm-menu") && e.target.closest(".contact")){
                 chatSection.classList.remove('hide-completely')
                 e.target.closest(".contact").classList.remove('unread')
-                viewConversation(e.target.closest(".contact").getAttribute("name"))
+                viewConversation(e.target.closest(".contact"))
                 if(activeChat)
                     activeChat.classList.remove('active')
                 e.target.closest(".contact").classList.add('active')
@@ -722,7 +788,7 @@
             let floID;
             if (e.target.closest(".send-mail-option")){
 				composeMailPopup.show()
-				floID = e.target.closest(".contact").getAttribute("name");
+				floID = e.target.closest(".contact").getAttribute("flo-id");
 				let tmp = sendMailTo.value.trim();
 				if (!tmp.includes(floID)) {
 					if (tmp == '')
@@ -741,7 +807,7 @@
                 "Stay Signed In").then(
                 result => {
                     floDapps.logout().then(result => {
-                        showMessage("Successfully Signed out")
+                        showMessage("Successfully Signed out", 'success')
                         setTimeout(onLoadStartUp, 2000)
                     }).catch(error => showMessage("Signout Unsuccessful", "error", error))
                 }).catch(error => {})
@@ -759,10 +825,10 @@
         });
 
         document.getElementById("secure_key").addEventListener('click', function (e) {
-            getPromptInput("Secure Private-Key", 'Enter Password', false).then(value => {
+            getPromptInput("Secure Private Key", 'Enter Password', false).then(value => {
                 floDapps.securePrivKey(value).then(result => {
                     privKeyNotSecured = false;
-                    showMessage("Private Key secured");
+                    showMessage("Private Key secured", 'success');
                 }).catch(error => showMessage("Securing Failed", "error", error))
             }).catch(error => {})
         });
@@ -811,12 +877,11 @@
         });
 
         document.getElementById("view_private_key").addEventListener("click", function (e) {
-            navigator.clipboard.writeText(this.value)
-            showMessage("Private Key copied to clipboard!", "success")
+            copyToClipboard(this, "Private Key copied to clipboard")
         });
 
-        document.getElementById("backup-data").addEventListener("click", function (e) {
-            let backupInfoText = document.getElementById("backup-info")
+        document.getElementById("backup_data").addEventListener("click", function (e) {
+            let backupInfoText = document.getElementById("backup_info")
             backupInfoText.classList.remove("error")
             backupInfoText.textContent = `Generating the backup file! Please wait...`;
             messenger.backupData().then(blob => {
@@ -835,41 +900,29 @@
             })
         })
 
-        document.getElementById("restore-data").addEventListener("change", function (e) {
+        document.getElementById("restore_data").addEventListener("change", function (e) {
             let file = this.files[0]
-            let restoreInfoText = document.getElementById("backup-info");
-            restoreInfoText.classList.remove("error");
-            restoreInfoText.textContent = `Retrieving backup data! Please wait...`;
+            showMessage(`Retrieving backup data! Please wait.`);
             if (!file) {
-                restoreInfoText.classList.add("error")
-                restoreInfoText.textContent = `No files selected!`;
+               showMessage(`No files selected!`);
                 return;
             }
             messenger.parseBackup(file).then(data => {
                 getConfirmation('Restore Data?',
-                    `Found:\n ${Object.keys(data.contacts).length} Contacts,\n ${Object.keys(data.messages).length} Messages,\n ${Object.keys(data.mails).length} Mails\nRestore Data?`,
+                    `Found: ${Object.keys(data.contacts).length} Contacts,\n ${Object.keys(data.messages).length} Messages, ${Object.keys(data.mails).length} Mails.`,
                     "Restore"
                 ).then(result => {
-                    restoreInfoText.textContent = `Restoring data! Please wait...`;
+                    showMessage(`Restoring data! Please wait.`);
                     messenger.restoreData(data).then(result => {
-                        restoreInfoText.textContent =
-                            `Data restore completed successful! Initiating reload, Please wait...`;
-                        showMessage("Successfully restored data")
+                        showMessage("Data restore completed successful! Initiating reload, Please wait")
                         setTimeout(onLoadStartUp, 2000)
                     }).catch(error => {
-                        restoreInfoText.classList.add("error")
-                        restoreInfoText.textContent =
-                            `Failed to restore data! Try again later...`;
-                        showMessage("Restore data Unsuccessful!", "error", error);
+                        showMessage("Failed to restore data! Try again later", "error", error);
                     });
                 }).catch(error => {
-                    restoreInfoText.classList.add("error")
-                    restoreInfoText.textContent = `User cancelled to restore data!`;
                     showMessage("Restore data Cancelled!", "warn");
                 });
             }).catch(error => {
-                restoreInfoText.classList.add("error")
-                restoreInfoText.textContent = `${error}`;
                 showMessage("Retrive data Unsuccessful!", "error", error);
             })
         })
@@ -883,8 +936,7 @@
 			input.value = ''
 			if(message.trim() === '') return
             messenger.sendMessage(message, receiver).then(data => {
-                container = getConversationElement(data.floID)
-                container.append(render.messageBubble(data.floID, data.message, data.time, data.category));
+                render.messageBubble(data.floID, data.message, data.time, data.category)
                 chatContainer.scrollTo({left: 0, top: chatContainer.scrollHeight, behavior: 'smooth'})
             }).catch(error => showMessage(error, "error"));
         }
@@ -927,40 +979,30 @@
         }
 
         function getPromptInput(title, message, showText = true, trueBtn = "Ok", falseBtn = "Cancel") {
-            let promptInput = document.getElementById("prompt-input");
-            promptInput.getElementsByTagName("legend")[0].textContent = title;
-            promptInput.parentNode.classList.remove("hide");
-            let inputs = promptInput.getElementsByTagName("input");
-            inputs[0].setAttribute("placeholder", message)
+            let prompt = document.getElementById("prompt");
+            prompt.show()
+            prompt.querySelector('.title').textContent = title;
+            let input = prompt.querySelector("sm-input");
+            input.setAttribute("placeholder", message)
+            let buttons = prompt.querySelectorAll("sm-button");
             if (showText)
-                inputs[0].setAttribute("type", "text")
+                input.setAttribute("type", "text")
             else
-                inputs[0].setAttribute("type", "password")
-            inputs[1].value = trueBtn;
-            inputs[2].value = falseBtn;
+                input.setAttribute("type", "password")
+            buttons[0].textContent = trueBtn;
+            buttons[1].textContent = falseBtn;
             return new Promise((resolve, reject) => {
-                let interval = setInterval(() => {
-                    if (promptInput.parentNode.classList.contains("hide")) {
-                        inputs[1].onclick = null;
-                        inputs[2].onclick = null;
-                        clearInterval(interval);
-                        reject(false);
-                    }
-                }, 1000)
-                inputs[1].onclick = () => {
-                    clearInterval(interval);
-                    let value = inputs[0].value;
-                    inputs[0].value = '';
-                    promptInput.parentNode.classList.add("hide")
+                buttons[0].onclick = () => {
+                    let value = input.value;
+                    prompt.hide()
                     resolve(value)
                 }
-                inputs[2].onclick = () => {
-                    clearInterval(interval);
-                    promptInput.parentNode.classList.add("hide")
+                buttons[1].onclick = () => {
+                    prompt.hide()
                     reject(true)
                 }
             })
-			}
+		}
 		
 		const notifications = document.getElementById('notifications')
 
@@ -998,11 +1040,11 @@
         }
 
         function getConversationElement(floID, name = "#null") {
-            let element = document.getElementById(floID)
+            let element = chatContainer.querySelector(`#${floID}`)
             if (!element) {
                 element = document.createElement("div");
 				element.setAttribute("id", floID)
-				element.classList.add('flex', 'direction-column')
+				element.classList.add('flex', 'direction-column', 'hide-completely')
                 chatContainer.append(element)
                 render.contactCard(floID, name)
 			}
@@ -1012,29 +1054,38 @@
         let frag = document.createDocumentFragment()
 
         function renderMessages(data, markUnread = true) {
+            let floID
             for (m in data) {
-                frag.append(render.messageBubble(data[m].floID, data[m].message, data[m].time, data[m].category))
+                floID = data[m].floID
+                render.messageBubble(data[m].floID, data[m].message, data[m].time, data[m].category)
                 if (markUnread)
-                    document.getElementsByName(data[m].floID)[0].classList.add("unread");
+                    allContactsSection.querySelector(`[flo-id='${floID}']`).classList.add("unread");
             }
-            let container = getConversationElement(floID)
-            container.append(frag)
             chatContainer.scrollTo(0, chatContainer.scrollHeight)
         }
 
-        function viewConversation(floID) {
+        const   receiverInitial = document.getElementById("receiver_initial"),
+                receiverName = document.getElementById("receiver_name"),
+                receiverFloID = document.getElementById("receiver_floID"),
+                noEncryption = document.getElementById("warn_no_encryption")
+        function viewConversation(contact) {
+            let floID = contact.getAttribute("flo-id"),
+                name = contact.getAttribute('name'),
+                textColor = contact.getAttribute('text-color')
             let currentConversation = document.getElementById("receiver_floID").textContent;
             console.log(floID, floGlobals.contacts[floID], currentConversation)
             if (currentConversation != "")
-                document.getElementById(currentConversation).style.display = "none";
+                document.getElementById(currentConversation).classList.add('hide-completely')
             let currentChat = document.getElementById(floID)
-            currentChat.style.display = "flex";
-            document.getElementById("receiver_name").textContent = floGlobals.contacts[floID] || ' ';
-            document.getElementById("receiver_floID").textContent = floID;
-            /*if (floGlobals.pubKeys[floID])
-                document.getElementById("warn_no_encryption").classList.add("hide-completely");
+            currentChat.classList.remove('hide-completely');
+            receiverInitial.textContent = floGlobals.contacts[floID].charAt(0) || name.charAt(0) || ' ';
+            receiverInitial.setAttribute('style', `color: ${textColor}`)
+            receiverName.textContent = floGlobals.contacts[floID] || name || ' ';
+            receiverFloID.textContent = floID;
+            if (floGlobals.pubKeys[floID])
+                noEncryption.classList.add("hide-completely");
             else
-                document.getElementById("warn_no_encryption").classList.remove("hide-completely");*/
+                noEncryption.classList.remove("hide-completely");
             chatContainer.scrollTo(0, chatContainer.scrollHeight)
             messenger.removeMark(floID, "unread");
         }
@@ -1139,6 +1190,7 @@
     </script>
 
 <script src="default.js"></script>
+
 <script id="messenger">
     const messenger = {
 

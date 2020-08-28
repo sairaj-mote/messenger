@@ -23,7 +23,7 @@ body{
     --lightness: 41%;
     font-size: 16px;
     color: rgba(var(--text-color), 1);
-    background: url(monogatari.jpg), linear-gradient(red, violet);
+    //background: linear-gradient( 135deg, cyan, purple ,crimson, var(--accent-color));
     background-size: cover;
 }
 body[data-theme='dark']{
@@ -162,10 +162,10 @@ a:any-link{
 .card{
     display: flex;
     flex-direction: column;
-    padding: 1rem 1.5rem;
-    border-radius: 0.8rem;
-    background: rgba(var(--foreground-color), 0.7);
-    box-shadow: 0 0.1rem 0.1rem #00000010;
+    margin: 1rem 0;
+    //border-radius: 0.8rem;
+    //background: rgba(var(--foreground-color), 0.7);
+    //box-shadow: 0 0.1rem 0.1rem #00000010;
 }
 sm-button{
     --font-family: 'Poppins', sans-serif;
@@ -211,7 +211,12 @@ sm-button[variant="primary"]{
         stroke: none;
     }
 }
-#confirmation{
+.select-file{
+    input[type="file"]{
+        display: none;
+    }
+}
+#confirmation, #prompt{
     p{
         max-width: 50ch;
     }
@@ -252,9 +257,10 @@ sm-button[variant="primary"]{
             color: rgba(var(--foreground-color), 1);
         }
         .title-font{
+            font-kerning: normal;
             text-transform: uppercase;
             line-height: 1;
-            font-weight: 700;
+            font-weight: 900;
         }
         sm-button{
             margin-top: 3rem;
@@ -278,7 +284,13 @@ sm-button[variant="primary"]{
     }
 }
 #sign_in_page{
+    height: 100vh;
+    width: 100vw;
+    background: rgba(var(--foreground-color), 1);
     overflow: hidden;
+    header{
+        padding: 1.5rem;
+    }
 }
 #sign_in_illustration{
     position: relative;
@@ -381,6 +393,19 @@ sm-button[variant="primary"]{
     sm-menu{
         grid-area: menu;
     }
+}
+#warn_no_encryption, .date-card{
+    padding: 0.4rem 0.8rem;
+    background: rgba(var(--text-color), 0.1);
+    margin: 1rem 0;
+    justify-self: center;
+    align-self: flex-start;
+    font-weight: 500;
+    border-radius: 0.4rem;
+    color: rgba(var(--text-color), 0.8);
+}
+.date-card{
+    align-self: center;
 }
 #send_message_button{
     .icon{
@@ -564,8 +589,8 @@ sm-button[variant="primary"]{
         }
     }
 }
-#settings_page{
-    height: calc(100vh - 3.5rem);
+#chat_page{
+    overflow-y: hidden;
 }
 #chat{
     height: 100vh;
@@ -573,6 +598,12 @@ sm-button[variant="primary"]{
     header{
         padding: 0.5rem 1rem;
         box-shadow: 0 0.2rem 0.6rem #00000010;
+        .back-button{
+            margin-right: 0.2rem;
+        }
+        .initial{
+            margin-right: 1rem;
+        }
         h4{
             font-weight: 500;
         }
@@ -596,17 +627,16 @@ sm-button[variant="primary"]{
     .message{
         position: relative;
         display: inline-flex;
+        flex-direction: column;
         padding: 0.4rem 0.8rem;
         width: 100%;
-        font-size: 0.9rem;
+        font-size: 0.94rem;
         max-width: max-content;
         margin-bottom: 0.4rem;
         margin-top: 0.8rem;
         box-shadow: 0 0 0.2rem #00000020;
-        .message-body{
-            max-width: 60ch;
-        }
         .time{
+            align-self: flex-end;
             margin-top: auto;
             margin-left: 0.4rem;
             font-size: 0.8em;
@@ -662,12 +692,13 @@ sm-tab-header{
     align-items: flex-start;
 }
 #settings_page{
+    height: calc(100vh - 3.5rem);
     overflow-y: auto;
     padding: 1.5rem;
     h4{
         margin-bottom: 0.3rem;
     }
-    .card h4:not(:first-of-type){
+    h4:not(:first-of-type){
         margin-top: 1.5rem;
     }
     p{
@@ -675,6 +706,13 @@ sm-tab-header{
     }
     header{
         margin-bottom: 1.5rem;
+    }
+    .flex sm-button{
+        margin: 0;
+        margin-left: 1rem;
+    }
+    sm-button{
+        width: 100%;
     }
 }
 @media screen and (max-width: 640px){
@@ -688,6 +726,17 @@ sm-tab-header{
     }
     #sign_in_illustration{
         grid-area: illustration;
+    }
+    #chat{
+        header{
+            h5{
+                width: calc(100vw - 12rem);
+            }
+        }
+        .message{
+            width: auto;
+            max-width: 90%;
+        }
     }
 }
 @media only screen and (min-width: 640px){
@@ -790,12 +839,31 @@ sm-tab-header{
     #chat, #mail{
         box-shadow: -0.2rem 0 1rem #00000010;
     }
+    #chat{
+        .message{
+            .message-body{
+                max-width: 50ch ;
+            }
+        }
+    }
     #chat_page, #mail_page{
         grid-template-columns: 22rem 1fr;
     }
     #contacts, #mails, #settings_page{
         height: 100vh;
         //background: rgba(var(--text-color), 0.06);
+    }
+    #settings_page{
+        padding: 1.5rem 3rem;
+        section{
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 3rem;
+            grid-auto-flow: column;
+        }
+        sm-button{
+            width: max-content;
+        }
     }
     .contact.active,
     .mail-card.active{
