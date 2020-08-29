@@ -23,7 +23,7 @@ body{
     --lightness: 41%;
     font-size: 16px;
     color: rgba(var(--text-color), 1);
-    //background: linear-gradient( 135deg, cyan, purple ,crimson, var(--accent-color));
+    background: url(yosemite.jpg) ,linear-gradient( 135deg, cyan, purple ,crimson, var(--accent-color));
     background-size: cover;
 }
 body[data-theme='dark']{
@@ -32,6 +32,11 @@ body[data-theme='dark']{
     --text-color-light: 170, 170, 170;
     --foreground-color: 20, 20, 20;
     --lightness: 60%;
+    .initial{
+        background: rgba(var(--text-color), 0.1);
+        color: rgba(var(--text-color), 1) !important;
+        box-shadow: 0 0.1rem 0.1rem #00000016, 0 0.1rem 0.3rem #00000040;
+    }
 }
 p{
     line-height: 1.6;
@@ -326,17 +331,67 @@ sm-button[variant="primary"]{
         z-index: -2;
     }
 }
-#sign_in_box{
+#sign_in_popup{
     width: 100%;
     sm-button, sm-input{
         display: flex;
         min-width: 100%;
+    }
+    h4{
+        margin-top: 10rem;
+        line-height: 0.6;
+        font-weight: 500;
     }
     h2{
         margin-bottom: 2rem;
     }
     p{
         margin-bottom: 1rem;
+    }
+}
+#loading_page{
+    height: 100vh;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    svg{
+        transform-origin: bottom;
+        height: 6rem;
+        width: 6rem;
+        animation: bounce 0.6s infinite alternate ease-in;
+    }
+    .shadow{
+        width: 5rem;
+        height: 2rem;
+        background: rgba(var(--text-color), 0.1);
+        border-radius: 50%;
+        animation:  scale 0.6s infinite alternate ease-in;
+        margin-left: 1rem;
+    }
+    h4{
+        margin-top: 2rem;
+    }
+}
+@keyframes bounce{
+    0%{
+        transform: scaleY(1) translateY(-4rem);
+    }
+    90%{
+        transform: scaleY(1) translateY(0);
+    }
+    100%{
+        transform: scaleY(0.8) ; 
+    }
+}
+@keyframes scale{
+    0%{
+        transform: scale(0.5);
+    }
+    90%{
+        transform: scale(1.05);
+    }
+    100%{
+        transform: scale(1);
     }
 }
 .contact-list{
@@ -373,6 +428,7 @@ sm-button[variant="primary"]{
     grid-template-columns: auto 1fr auto;
     grid-template-areas: 'dp . menu' 'dp . menu';
     padding: 0.8rem 1.5rem;
+    width: 100%;
     .initial{
         grid-area: dp;
     }
@@ -397,12 +453,12 @@ sm-button[variant="primary"]{
 #warn_no_encryption, .date-card{
     padding: 0.4rem 0.8rem;
     background: rgba(var(--text-color), 0.1);
-    margin: 1rem 0;
-    justify-self: center;
-    align-self: flex-start;
     font-weight: 500;
     border-radius: 0.4rem;
     color: rgba(var(--text-color), 0.8);
+    margin: 1rem 0;
+    justify-self: center;
+    align-self: flex-start;
 }
 .date-card{
     align-self: center;
@@ -433,6 +489,7 @@ sm-button[variant="primary"]{
     font-weight: 600;
 }
 .mail-card{
+    width: 100%;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -667,6 +724,7 @@ sm-button[variant="primary"]{
 #inbox_mail_container,
 #sent_mail_container,
 #mail{
+    width: 100%;
     flex-direction: column;
     height: 100%;
     overflow-y: auto;
@@ -707,6 +765,9 @@ sm-tab-header{
     header{
         margin-bottom: 1.5rem;
     }
+    .flex{
+        margin-top: 1rem;
+    }
     .flex sm-button{
         margin: 0;
         margin-left: 1rem;
@@ -734,7 +795,7 @@ sm-tab-header{
             }
         }
         .message{
-            width: auto;
+            width: fit-content;
             max-width: 90%;
         }
     }
@@ -784,7 +845,7 @@ sm-tab-header{
             height: 140vh;
         }
     }
-    #sign_in_box{
+    #sign_in_popup{
         .icon{
             width: 1.2rem;
             height: 1.2rem;

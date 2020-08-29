@@ -34,8 +34,10 @@
 	</script>
 	<script id="onLoadStartUp">
 		function onLoadStartUp() {
-			privKeyNotSecured = true;
-			//display loading screen
+            privKeyNotSecured = true;
+            
+            //display loading screen
+            loadingPage.classList.remove("hide-completely")
 			//clear Rendered Elements
 			let elementsToReset = ["startup-load-msg", 'inbox_mail_container', 'sent_mail_container', 'contacts_container', 'chat_container',
 				'receiver_floID', 'receiver_name'
@@ -46,18 +48,19 @@
             floDapps.setCustomPrivKeyInput((type) => {
                 return new Promise((resolve, reject) => {
                     mainPage.classList.add('hide-completely')
+                    loadingPage.classList.add('hide-completely')
                     signInLanding.classList.remove('hide-completely')
-                    signInButton.onclick = () => {
+                    signInButton.addEventListener('clicked', () => {
                         let key = privateKeyInputField.value;
                         signInPopup.hide()
                         console.log(key)
                         signInLanding.classList.add('hide-completely')
-                        mainPage.classList.remove('hide-completely')
+                        loadingPage.classList.remove('hide-completely')
                         resolve(key)
-                    }
+                    })
                     guestLoginButton.onclick = () => {
                         signInLanding.classList.add('hide-completely')
-                        mainPage.classList.remove('hide-completely')
+                        loadingPage.classList.remove('hide-completely')
                         reject(null)
                     }
                     if (type === "PRIVATE_KEY") {
@@ -87,10 +90,12 @@
 					renderMailList(data.mails, false)
 					renderMarked(data.marked)
 					reactor.dispatchEvent("startUpSuccessLog", `Load Successful!`)
-					//hide loading screen
-					//document.getElementById("loading-screen").classList.add("hide")
 					refresh()
-				}).catch(error => {
+					//hide loading screen
+					loadingPage.classList.add("hide-completely")
+                    mainPage.classList.remove('hide-completely')
+                    document.getElementById('chat_page_button').click()
+                }).catch(error => {
 					reactor.dispatchEvent("startUpErrorLog", `Failed to load data`)
 					showMessage(error, "error")
 				})
@@ -190,18 +195,66 @@
 				<div class="circle"></div>
 			</div>
 			<sm-popup id="sign_in_popup">
-				<div id="sign_in_box" class="">
-					<h2>Welcome Back!</h2>
-					<p class="light-text">
-						Please enter your FLO private key to continue.
-					</p>
-					<sm-input id="private_key_input_field" type="password" placeholder="private key"></sm-input>
-                    <sm-button id="sign_in_button" width="cover" variant="primary">continue</sm-button>
-                    <sm-button id="remove_account" variant="outlined">Remove Account</sm-button>
-				</div>
+                <h4 class="accent-color">Sign In</h4>
+                <h2>Welcome Back!</h2>
+                <p class="light-text">
+                    Please enter your FLO private key to continue.
+                </p>
+                <sm-input id="private_key_input_field" type="password" placeholder="private key"></sm-input>
+                <sm-button id="sign_in_button" width="cover" variant="primary" disabled>continue</sm-button>
+                <sm-button id="remove_account" variant="outlined">Remove Account</sm-button>
 			</sm-popup>
 		</div>
-	</div>
+    </div>
+    <div id="loading_page" class="page hide-completely">
+        <svg viewBox="0 0 512 512">
+            <defs>
+                <style>
+                    .a {
+                        fill: #fff;
+                    }
+        
+                    .b {
+                        fill: #ccc;
+                    }
+        
+                    .c {
+                        fill: none;
+                    }
+        
+                    .c,
+                    .d,
+                    .e {
+                        stroke: #000;
+                        stroke-miterlimit: 10;
+                        stroke-width: 20;
+                    }
+        
+                    .d {
+                        fill: #ed1c24;
+                    }
+        
+                    .e {
+                        fill: #d30d41;
+                    }
+                </style>
+            </defs>
+            <title>mascot</title>
+            <path class="a"
+                d="M506,367.94v51.19a52,52,0,0,1-52,52H130.4a52,52,0,0,1-52-52V183.69L9.58,40.88,454,43.24a52,52,0,0,1,52,52.05V225.38" />
+            <path class="b"
+                d="M506,98.69V431.58c.57,56.06-149.95,44-149.95,44a52,52,0,0,0,52-52V44.86L454,46.65A52,52,0,0,1,506,98.69Z" />
+            <line class="c" x1="506" y1="273.75" x2="506" y2="327.21" />
+            <path class="c"
+                d="M506,367.94v51.19a52,52,0,0,1-52,52H130.4a52,52,0,0,1-52-52V183.69L9.58,40.88,454,43.24a52,52,0,0,1,52,52.05V225.38" />
+            <path class="d" d="M361.83,340a69.63,69.63,0,1,1-139.26,0C222.57,301.5,361.83,301.5,361.83,340Z" />
+            <path class="c" d="M152,242.43a34.32,34.32,0,0,1,64.68.2" />
+            <path class="c" d="M367.79,242.43a34.32,34.32,0,0,1,64.68.2" />
+            <path class="e" d="M325,314.13c21,4.22,36.85,12.82,36.85,25.8a69.7,69.7,0,0,1-41.09,63.58" />
+        </svg>
+        <div class="shadow"></div>
+        <h4>Getting everything ready, Hang in there.</h4>
+    </div>
 	<sm-popup id="confirmation">
         <h4 class="title"></h4>
         <p class="message"></p>
@@ -228,8 +281,8 @@
 			<h4>Add contact</h4>
 			<sm-button id="add_contact_button" variant="primary" disabled>Add</sm-button>
 		</header>
-		<sm-input id="add_contact_name" placeholder="Name" animate required></sm-input>
 		<sm-input id="add_contact_floID" placeholder="FLO address" animate required></sm-input>
+		<sm-input id="add_contact_name" placeholder="Name" animate required></sm-input>
 	</sm-popup>
 	<sm-popup id="compose_mail_popup">
 		<header class="flex align-center" slot="header">
@@ -309,7 +362,7 @@
 		</div>
 	</template>
 
-	<main id="main" class="grid">
+	<main id="main" class="grid hide-completely">
 		<nav id="main_navbar" class="flex">
 			<div class="logo-section hide-on-mobile">			
 				<svg class="main-logo" viewBox="0 0 27.25 32">
@@ -477,10 +530,18 @@
                         <input type="file" id="restore_data" accept=".json" />
                     </label>
                     <span id="backup_info"></span>
+
+                    <h4>Theme</h4>
+                    <p>Toggle dark theme</p>
+                    <div class="flex">
+                        <p id="dark_theme_status"></p>
+                        <sm-switch id="theme_switcher" class="justify-right"></sm-switch>
+                    </div>
                 </div>
             </section>
 		</section>
-	</main>
+    </main>
+    <script src="components.js"></script>
 	<script>
 		//Checks for internet connection status
 		if (!navigator.onLine)
@@ -508,7 +569,8 @@
 				signInButton = document.getElementById('sign_in_button'),
 				guestLoginButton = document.getElementById('guest_login_button'),
 				signInLanding = document.getElementById('sign_in_page'),
-				privateKeyInputField = document.getElementById('private_key_input_field')
+				privateKeyInputField = document.getElementById('private_key_input_field'),
+				loadingPage = document.getElementById('loading_page')
 		
 		const   allmailsSection = document.getElementById('mails'),
 				allContactsSection = document.getElementById('contacts'),
@@ -600,12 +662,12 @@
             contactCard(floID, name){
                 let card = contactTemplate.content.cloneNode(true),
                         cardContainer = card.querySelector('.contact')
-                cardContainer.setAttribute("name", name)
+                cardContainer.setAttribute("name", name || 'Unknown')
                 cardContainer.setAttribute("flo-id", floID)
-                card.querySelector('.name').textContent = name
+                card.querySelector('.name').textContent = name || 'Unknown'
                 card.querySelector('.address').textContent = floID
                 let initial = card.querySelector('.initial')
-                initial.textContent = name.charAt(0)
+                initial.textContent = name ? name.charAt(0) : 'U'
                 let randomColor = randomHsl(90, 40)
                 cardContainer.setAttribute("text-color", randomColor)
                 initial.setAttribute(`style`, `color: ${randomColor}`)
@@ -670,13 +732,18 @@
 		document.addEventListener('input', e => {
 			if(e.target.closest('sm-popup')){
 				checkInput(e.target)
-			}
+            }
 		})
-
+        
 		addEventListener('keyup', e => {
-			if(e.target.id === 'search_contact'){
+            if(e.target.id === 'search_contact'){
 				console.log('hi')
 			}
+            if(e.target.closest('sm-input') && e.target.closest('sm-popup')){
+                if(e.code === 'Enter'){
+                    e.target.closest('sm-popup').querySelector('sm-button[variant="primary"]').click()
+                }
+            }
 		})
 		document.addEventListener('click', e => {
 			if(e.target.closest('.navbar-item') && activePage.button !== e.target.closest('.navbar-item')){
@@ -693,7 +760,7 @@
 			}
 			if(e.target.closest('#new_mail_button')){
 				composeMailPopup.show()
-			}
+            }
         })
 
         function copyToClipboard(target, message){
@@ -712,8 +779,39 @@
                 showMessage(error, 'error')
             })
         }
+
+        let themeSwitcher = document.getElementById('theme_switcher'),
+            darkThemeStatus = document.getElementById('dark_theme_status')
+
+        if (localStorage.theme === "dark") {
+            nightlight()
+            themeSwitcher.checked = true;
+        } else {
+            daylight()
+            themeSwitcher.checked = false;
+        }
+        
+        function daylight() {
+            darkThemeStatus.textContent = 'Dark theme is OFF' 
+            document.body.setAttribute("data-theme", "light");
+        }
+        
+        function nightlight() {
+            darkThemeStatus.textContent = 'Dark theme is ON' 
+            document.body.setAttribute("data-theme", "dark");
+        }
+        themeSwitcher.addEventListener('change', function(e){
+            if(this.checked){
+                nightlight();
+                localStorage.setItem("theme", "dark");
+            }
+            else{
+                daylight();
+                localStorage.setItem("theme", "light");
+            }
+        })
+
 	</script>
-	<script src="components.js"></script>
 	<script id="UI">
 
 		function goto(page){
@@ -848,13 +946,13 @@
             document.getElementById("add_contact_popup").show()
 		})
 		
-        document.getElementById('add_contact_button').addEventListener("click", addContact)
+        document.getElementById('add_contact_button').addEventListener("clicked", addContact)
 
         document.getElementById('show_reply_popup').addEventListener("click", () => {
             replyMailPopup.show()
         })
         
-        replyMailButton.addEventListener("click", replyMail)
+        replyMailButton.addEventListener("clicked", replyMail)
 
         function refresh(){
             messenger.refreshInbox().then(data => {
@@ -1078,7 +1176,7 @@
                 document.getElementById(currentConversation).classList.add('hide-completely')
             let currentChat = document.getElementById(floID)
             currentChat.classList.remove('hide-completely');
-            receiverInitial.textContent = floGlobals.contacts[floID].charAt(0) || name.charAt(0) || ' ';
+            receiverInitial.textContent = floGlobals.contacts[floID] ? floGlobals.contacts[floID].charAt(0) : name.charAt(0) || ' ';
             receiverInitial.setAttribute('style', `color: ${textColor}`)
             receiverName.textContent = floGlobals.contacts[floID] || name || ' ';
             receiverFloID.textContent = floID;
@@ -1094,7 +1192,7 @@
         function renderMailList(mails, markUnread = true) {
             for (m in mails) {
                 let { ref, subject, time, category, floID, content} = mails[m]
-                if(category === 'receivedFrom')
+                if(category === 'receivedFrom' || category === 'replyFrom')
                     frag.prepend(render.mailCard(ref, subject, time, category, floID, content, markUnread));
                 if(category === 'sentTo' || category === 'replyTo')
                     sentMailFrag.prepend(render.mailCard(ref, subject, time, category, floID, content, markUnread));

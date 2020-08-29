@@ -1228,16 +1228,22 @@ customElements.define('sm-switch', class extends HTMLElement {
         this.isDisabled = false
     }
 
-    static get observedAttributes() {
-        return ['disabled', 'checked']
-    }
-
     get disabled() {
         return this.getAttribute('disabled')
     }
 
     set disabled(val) {
-        this.setAttribute('disabled', val)
+        if (val) {
+            this.disabled = true
+            this.setAttribute('disabled', '')
+            this.switch.classList.add('disabled')
+        }
+        else {
+            this.disabled = false
+            this.removeAttribute('disabled')
+            this.switch.classList.remove('disabled')
+            
+        }
     }
 
     get checked() {
@@ -1245,10 +1251,19 @@ customElements.define('sm-switch', class extends HTMLElement {
     }
 
     set checked(value) {
-        this.setAttribute('checked', value)
+        if (value) {
+            this.setAttribute('checked', '')
+            this.isChecked = true
+            this.input.checked = true
+        }
+        else {
+            this.removeAttribute('checked')
+            this.isChecked = false
+            this.input.checked = false
+        }
     }
 
-    dispatch() {
+    dispatch = () => {
         this.dispatchEvent(new CustomEvent('change', {
             bubbles: true,
             composed: true
@@ -1256,39 +1271,20 @@ customElements.define('sm-switch', class extends HTMLElement {
     }
 
     connectedCallback() {
+        if(this.hasAttribute('disabled'))
+            this.switch.classList.add('disabled')
         this.addEventListener('keyup', e => {
-            if ((e.code === "Enter" || e.code === "Space") && this.isDisabled == false) {
-                this.isChecked = !this.isChecked
-                this.setAttribute('checked', this.isChecked)
+            if ((e.code === "Enter" || e.code === "Space") && !this.isDisabled) {
+                this.input.click()
             }
         })
-    }
-
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (oldValue !== newValue) {
-            if (name === 'disabled') {
-                if (newValue === 'true') {
-                    this.switch.classList.add('disabled')
-                    this.isDisabled = true
-                }
-                else {
-                    this.switch.classList.remove('disabled')
-                    this.isDisabled = false
-                }
-            }
-            if (name === 'checked') {
-                if (newValue == 'true') {
-                    this.isChecked = true
-                    this.input.checked = true
-                    this.dispatch()
-                }
-                else {
-                    this.isChecked = false
-                    this.input.checked = false
-                    this.dispatch()
-                }
-            }
-        }
+        this.input.addEventListener('click', e => {
+            if (this.input.checked)
+                this.checked = true
+            else
+                this.checked = false
+            this.dispatch()
+        })
     }
 })
 
