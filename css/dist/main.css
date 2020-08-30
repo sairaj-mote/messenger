@@ -832,6 +832,7 @@ sm-tab-header {
   }
 
   #main {
+    height: 100vh;
     grid-template-rows: 1fr auto;
     grid-template-areas: "." "navbar";
   }
