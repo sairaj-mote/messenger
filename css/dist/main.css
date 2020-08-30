@@ -290,7 +290,8 @@ sm-button[variant=primary] .icon {
 }
 #sign_in .title-font {
   font-kerning: normal;
-  line-height: 1.2;
+  line-height: 1;
+  text-transform: uppercase;
   font-weight: 900;
   font-size: 2.5rem;
 }
@@ -301,9 +302,6 @@ sm-button[variant=primary] .icon {
 }
 #sign_in .left h4 {
   color: rgba(var(--foreground-color), 1);
-}
-#sign_in .left .flex {
-  margin-bottom: 1.5rem;
 }
 #sign_in .left sm-button {
   margin-top: 3rem;
@@ -369,7 +367,15 @@ sm-button[variant=primary] .icon {
   z-index: -2;
 }
 
+#lock {
+  height: 12rem;
+  position: absolute;
+  top: -5rem;
+  left: 0;
+}
+
 #sign_in_popup {
+  position: relative;
   width: 100%;
 }
 #sign_in_popup sm-button, #sign_in_popup sm-input {
@@ -377,7 +383,7 @@ sm-button[variant=primary] .icon {
   min-width: 100%;
 }
 #sign_in_popup h4 {
-  margin-top: 10rem;
+  margin-top: 6rem;
   line-height: 0.6;
   font-weight: 500;
 }
@@ -765,7 +771,7 @@ sm-button[variant=primary] .icon {
   max-width: max-content;
   margin-bottom: 0.4rem;
   margin-top: 0.8rem;
-  box-shadow: 0 0 0.2rem #00000020;
+  box-shadow: 0 1px 0.1rem #00000020;
 }
 #chat .message .time {
   align-self: flex-end;
@@ -816,7 +822,7 @@ sm-tab-header {
 #contacts_container,
 #inbox_mail_container,
 #sent_mail_container {
-  padding-bottom: 4.5rem;
+  padding-bottom: 6rem;
 }
 
 #chat, #mail {
