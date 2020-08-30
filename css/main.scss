@@ -780,6 +780,7 @@ sm-tab-header{
     }
     #main{
         height: 100vh;
+        height: calc(var(--vh, 1vh) * 100);
         grid-template-rows: 1fr auto;
         grid-template-areas: '.' 'navbar';
         #main_navbar{

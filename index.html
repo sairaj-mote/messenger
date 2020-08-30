@@ -34,9 +34,6 @@
 	</script>
 	<script id="onLoadStartUp">
 		function onLoadStartUp() {
-            if(window.innerWidth < 640){
-                mainPage.requestFullscreen()
-            }
             privKeyNotSecured = true;
             
             //display loading screen
@@ -822,7 +819,10 @@
 
 	</script>
 	<script id="UI">
-
+        window.addEventListener('resize', () => {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        });
 		function goto(page){
 			if(page === 'chats'){
 				chatSection.classList.add('hide-on-mobile')
