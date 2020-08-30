@@ -152,8 +152,8 @@ textarea:focus {
 .fab {
   box-shadow: 0 1rem 1rem #00000020;
   margin-right: 1rem;
-  position: absolute;
-  bottom: 0;
+  position: fixed;
+  bottom: 3.5rem;
   right: 0;
   z-index: 2;
 }
@@ -392,14 +392,14 @@ sm-button[variant=primary] .icon {
   transform-origin: bottom;
   height: 6rem;
   width: 6rem;
-  animation: bounce 0.6s infinite alternate ease-in;
+  animation: bounce 0.5s infinite alternate ease-in;
 }
 #loading_page .shadow {
   width: 5rem;
   height: 2rem;
   background: rgba(var(--text-color), 0.1);
   border-radius: 50%;
-  animation: scale 0.6s infinite alternate ease-in;
+  animation: scale 0.5s infinite alternate ease-in;
   margin-left: 1rem;
 }
 #loading_page h4 {
@@ -623,7 +623,7 @@ sm-button[variant=primary] .icon {
 }
 
 #main_navbar {
-  position: relative;
+  position: fixed;
   bottom: 0;
   padding: 0.5rem 1.5rem;
   flex-wrap: wrap;
@@ -831,15 +831,6 @@ sm-tab-header {
     display: none !important;
   }
 
-  #main {
-    height: calc(var(--vh, 1vh) * 100);
-    grid-template-rows: 1fr auto;
-    grid-template-areas: "." "navbar";
-  }
-  #main #main_navbar {
-    grid-area: navbar;
-  }
-
   #sign_in {
     grid-template-rows: 16rem 2fr;
     grid-template-areas: "illustration" ".";
@@ -856,6 +847,10 @@ sm-tab-header {
   #chat .message {
     width: fit-content;
     max-width: 90%;
+  }
+
+  #settings_page {
+    padding-bottom: 3.5rem;
   }
 }
 @media only screen and (min-width: 640px) {
@@ -876,6 +871,11 @@ sm-tab-header {
 
   .page {
     padding-bottom: 0;
+  }
+
+  .fab {
+    position: absolute;
+    bottom: 0;
   }
 
   .logo-section {
