@@ -539,7 +539,7 @@
                     </div>
 
                     <h4>Version</h4>
-                    <p>0.0.25</p>
+                    <p>0.0.26</p>
                 </div>
             </section>
 		</section>
@@ -816,18 +816,12 @@
                 localStorage.setItem("theme", "light");
             }
         })
+        window.addEventListener('resize', e => {
+            if(window.innerWidth < 640){
+                chatSection.style.height = window.innerHeight + 'px'
+            }
+        })
 
-	</script>
-	<script id="UI">
-        function updateVh(){
-            mainPage.style.height = window.innerHeight + 'px'
-            signInLanding.style.height = window.innerHeight + 'px'
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        }
-        window.addEventListener('resize', () => {
-            requestAnimationFrame(updateVh)
-        });
 		function goto(page){
 			if(page === 'chats'){
 				chatSection.classList.add('hide-on-mobile')
@@ -1198,7 +1192,7 @@
                 noEncryption.classList.add("hide-completely");
             else
                 noEncryption.classList.remove("hide-completely");
-            chatContainer.scrollTo(0, chatContainer.scrollHeight)
+            chatContainer.scrollTo(0, chatContainer.scrollHeight)   
             messenger.removeMark(floID, "unread");
         }
 

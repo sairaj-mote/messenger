@@ -10,6 +10,9 @@
 :root{
     scroll-behavior: smooth;
 }
+html, body{
+    height: 100%;
+}
 body{
     --accent-color: #0268D1;
     --secondary-color: #FDB956;
@@ -23,7 +26,7 @@ body{
     --lightness: 41%;
     font-size: 16px;
     color: rgba(var(--text-color), 1);
-    background: url(yosemite.jpg) no-repeat fixed,linear-gradient( 135deg, cyan, purple ,crimson, var(--accent-color));
+    background: linear-gradient(#0268D140, #0268D180) , url(yosemite.jpg) no-repeat fixed;
     background-size: cover;
 }
 body[data-theme='dark']{
@@ -581,7 +584,7 @@ sm-button[variant="primary"]{
 #main_navbar{
     position: fixed;
     bottom: 0;
-    padding: 0.5rem 1.5rem;
+    padding: 0;
     flex-wrap: wrap;
     width: 100%;
     background: rgba(var(--foreground-color), 0.7);
@@ -594,7 +597,9 @@ sm-button[variant="primary"]{
         padding: 0;
     }
     .navbar-item{
+        height: 100%;
         flex: 1;
+        justify-content: center;
         flex-direction: column;
         .icon{
             height: 1.2rem;
@@ -864,6 +869,8 @@ sm-tab-header{
         box-shadow: none;
         height: auto;
         .navbar-item{
+            height: auto;
+            justify-content: flex-start;
             flex-direction: row;
             flex: none;
             padding: 1rem 0.5rem;
@@ -899,7 +906,6 @@ sm-tab-header{
     #main{
         width: 100vw;
         height: 100vh;
-        overflow: hidden;
         grid-template-columns: auto 1fr;
     }
     #chat, #mail{
