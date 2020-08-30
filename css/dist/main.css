@@ -29,7 +29,6 @@ body {
   --lightness: 41%;
   font-size: 16px;
   color: rgba(var(--text-color), 1);
-  background: linear-gradient(#0268D140, #0268D180), url(yosemite.jpg) no-repeat fixed;
   background-size: cover;
 }
 
@@ -164,6 +163,8 @@ textarea:focus {
 .fab .icon {
   margin-left: 0 !important;
   margin-right: 0.5rem;
+  height: 0.9rem !important;
+  stroke-width: 8 !important;
 }
 
 a:any-link {
@@ -287,22 +288,22 @@ sm-button[variant=primary] .icon {
   font-size: 2rem;
   font-weight: 600;
 }
+#sign_in .title-font {
+  font-kerning: normal;
+  line-height: 1.2;
+  font-weight: 900;
+  font-size: 2.5rem;
+}
 #sign_in .left {
   display: grid;
   flex-direction: column;
   padding-bottom: 1.5rem;
 }
-#sign_in .left h2 {
-  font-weight: 400;
-}
 #sign_in .left h4 {
   color: rgba(var(--foreground-color), 1);
 }
-#sign_in .left .title-font {
-  font-kerning: normal;
-  text-transform: uppercase;
-  line-height: 1;
-  font-weight: 900;
+#sign_in .left .flex {
+  margin-bottom: 1.5rem;
 }
 #sign_in .left sm-button {
   margin-top: 3rem;
@@ -356,11 +357,12 @@ sm-button[variant=primary] .icon {
   background: var(--secondary-color);
   width: 20vh;
   height: 20vh;
+  top: -10vh;
   z-index: -1;
 }
 #sign_in_illustration .circle:nth-of-type(2) {
-  right: 20vh;
-  bottom: -40vh;
+  right: 30vh;
+  bottom: -30vh;
   background: var(--accent-color);
   width: 60vh;
   height: 60vh;
@@ -393,12 +395,14 @@ sm-button[variant=primary] .icon {
   justify-items: center;
 }
 #loading_page svg {
+  z-index: 1;
   transform-origin: bottom;
   height: 6rem;
   width: 6rem;
   animation: bounce 0.5s infinite alternate ease-in;
 }
 #loading_page .shadow {
+  margin-top: -1rem;
   width: 5rem;
   height: 2rem;
   background: rgba(var(--text-color), 0.1);
@@ -519,7 +523,7 @@ sm-button[variant=primary] .icon {
   height: 100%;
   top: 0;
   left: 0;
-  background: var(--secondary-color);
+  background: #00C853;
 }
 
 .mail-card.unread,
@@ -614,6 +618,7 @@ sm-button[variant=primary] .icon {
   margin-bottom: 0.4em;
 }
 .mail .mail-content {
+  height: max-content;
   max-width: 60ch;
 }
 
@@ -643,6 +648,7 @@ sm-button[variant=primary] .icon {
   padding: 0;
 }
 #main_navbar .navbar-item {
+  position: relative;
   height: 100%;
   flex: 1;
   justify-content: center;
@@ -651,6 +657,25 @@ sm-button[variant=primary] .icon {
 #main_navbar .navbar-item .icon {
   height: 1.2rem;
   width: 1.2rem;
+}
+#main_navbar .navbar-item.badge::after {
+  right: 0;
+  top: 0;
+  position: absolute;
+  content: attr(data-notifications);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.4rem;
+  line-height: 0;
+  height: calc(1em + 0.4rem);
+  background: #00C853;
+  color: rgba(var(--foreground-color), 1);
+  border-radius: 2rem;
+  transition: transform 0.3s;
+}
+#main_navbar .navbar-item.badge.active::after, #main_navbar .navbar-item.badge[data-notifications="0"]::after, #main_navbar .navbar-item.badge[data-notifications=""]::after {
+  transform: scale(0);
 }
 #main_navbar .active h5 {
   color: var(--accent-color);
@@ -690,7 +715,7 @@ sm-button[variant=primary] .icon {
 }
 #contacts header sm-button .icon, #mails header sm-button .icon {
   margin-left: 0;
-  margin-right: 0.8rem;
+  margin-right: 0.5rem;
 }
 
 #chat_page {
@@ -838,7 +863,6 @@ sm-tab-header {
   }
 
   #sign_in {
-    grid-template-rows: 16rem 2fr;
     grid-template-areas: "illustration" ".";
     height: 100%;
   }

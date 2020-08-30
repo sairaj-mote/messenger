@@ -26,7 +26,6 @@ body{
     --lightness: 41%;
     font-size: 16px;
     color: rgba(var(--text-color), 1);
-    background: linear-gradient(#0268D140, #0268D180) , url(yosemite.jpg) no-repeat fixed;
     background-size: cover;
 }
 body[data-theme='dark']{
@@ -135,6 +134,8 @@ textarea{
     .icon{
         margin-left: 0 !important;
         margin-right: 0.5rem;
+        height: 0.9rem !important;
+        stroke-width: 8 !important;
     }
 }
 a:any-link{
@@ -254,21 +255,21 @@ sm-button[variant="primary"]{
         font-size: 2rem;
         font-weight: 600;
     }
+    .title-font{
+        font-kerning: normal;
+        line-height: 1.2;
+        font-weight: 900;
+        font-size: 2.5rem;
+    }
     .left{
         display: grid;
         flex-direction: column;
         padding-bottom: 1.5rem;
-        h2{
-            font-weight: 400;
-        }
         h4{
             color: rgba(var(--foreground-color), 1);
         }
-        .title-font{
-            font-kerning: normal;
-            text-transform: uppercase;
-            line-height: 1;
-            font-weight: 900;
+        .flex{
+            margin-bottom: 1.5rem;
         }
         sm-button{
             margin-top: 3rem;
@@ -323,11 +324,12 @@ sm-button[variant="primary"]{
         background: var(--secondary-color);
         width: 20vh;
         height: 20vh;
+        top: -10vh;
         z-index: -1;
     }
     .circle:nth-of-type(2){
-        right: 20vh;
-        bottom: -40vh;
+        right: 30vh;
+        bottom: -30vh;
         background: var(--accent-color);
         width: 60vh;
         height: 60vh;
@@ -358,12 +360,14 @@ sm-button[variant="primary"]{
     place-content: center;
     justify-items: center;
     svg{
+        z-index: 1;
         transform-origin: bottom;
         height: 6rem;
         width: 6rem;
         animation: bounce 0.5s infinite alternate ease-in;
     }
     .shadow{
+        margin-top: -1rem;
         width: 5rem;
         height: 2rem;
         background: rgba(var(--text-color), 0.1);
@@ -481,7 +485,7 @@ sm-button[variant="primary"]{
     height: 100%;
     top: 0;
     left: 0;
-    background: var(--secondary-color);
+    background: #00C853;
 }
 .mail-card.unread,
 .contact.unread{
@@ -570,6 +574,7 @@ sm-button[variant="primary"]{
         margin-bottom: 0.4em;
     }
     .mail-content{
+        height: max-content;
         max-width: 60ch;
     }
 }
@@ -597,6 +602,7 @@ sm-button[variant="primary"]{
         padding: 0;
     }
     .navbar-item{
+        position: relative;
         height: 100%;
         flex: 1;
         justify-content: center;
@@ -604,6 +610,27 @@ sm-button[variant="primary"]{
         .icon{
             height: 1.2rem;
             width: 1.2rem;
+        }
+        &.badge::after{
+            right: 0;
+            top: 0;
+            position: absolute;
+            content: attr(data-notifications);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.4rem;
+            line-height: 0;
+            height: calc(1em + 0.4rem);
+            background: #00C853;
+            color: rgba(var(--foreground-color), 1);
+            border-radius: 2rem;
+            transition: transform 0.3s;
+        }
+        &.badge.active::after,
+        &.badge[data-notifications="0"]::after,
+        &.badge[data-notifications=""]::after{
+            transform: scale(0);
         }
     }
     .active{
@@ -644,7 +671,7 @@ sm-button[variant="primary"]{
             margin: 0 0 0 auto;
             .icon{
                 margin-left: 0;
-                margin-right: 0.8rem ;
+                margin-right: 0.5rem;
             }
         }
     }
@@ -784,7 +811,6 @@ sm-tab-header{
         display: none !important;
     }
     #sign_in{
-        grid-template-rows: 16rem 2fr;
         grid-template-areas: 'illustration' '.';
         height: 100%;
     }
