@@ -539,7 +539,7 @@
                     </div>
 
                     <h4>Version</h4>
-                    <p>0.0.21</p>
+                    <p>0.0.23</p>
                 </div>
             </section>
 		</section>
@@ -819,9 +819,12 @@
 
 	</script>
 	<script id="UI">
-        window.addEventListener('resize', () => {
+        function updateVh(){
             let vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        window.addEventListener('resize', () => {
+            requestAnimationFrame(updateVh)
         });
 		function goto(page){
 			if(page === 'chats'){
