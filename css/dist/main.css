@@ -152,8 +152,8 @@ textarea:focus {
 .fab {
   box-shadow: 0 1rem 1rem #00000020;
   margin-right: 1rem;
-  position: absolute;
-  bottom: 0;
+  position: fixed;
+  bottom: 0rem;
   right: 0;
   z-index: 2;
 }
@@ -872,6 +872,10 @@ sm-tab-header {
   .logo-section {
     padding: 2rem 3rem;
     margin-bottom: 2rem;
+  }
+
+  .fab {
+    position: absolute;
   }
 
   #sign_in {
