@@ -23,7 +23,7 @@ body{
     --lightness: 41%;
     font-size: 16px;
     color: rgba(var(--text-color), 1);
-    background: url(yosemite.jpg) ,linear-gradient( 135deg, cyan, purple ,crimson, var(--accent-color));
+    background: url(yosemite.jpg) no-repeat fixed,linear-gradient( 135deg, cyan, purple ,crimson, var(--accent-color));
     background-size: cover;
 }
 body[data-theme='dark']{
@@ -428,7 +428,6 @@ sm-button[variant="primary"]{
     grid-template-columns: auto 1fr auto;
     grid-template-areas: 'dp . menu' 'dp . menu';
     padding: 0.8rem 1.5rem;
-    width: 100%;
     .initial{
         grid-area: dp;
     }
@@ -489,7 +488,6 @@ sm-button[variant="primary"]{
     font-weight: 600;
 }
 .mail-card{
-    width: 100%;
     position: relative;
     display: flex;
     flex-direction: column;

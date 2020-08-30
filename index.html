@@ -34,6 +34,9 @@
 	</script>
 	<script id="onLoadStartUp">
 		function onLoadStartUp() {
+            if(window.innerWidth < 640){
+                mainPage.requestFullscreen()
+            }
             privKeyNotSecured = true;
             
             //display loading screen
@@ -347,10 +350,10 @@
 		<div class="contact">
 			<div class="initial flex align-center"></div>
 			<h4 class="name"></h4>
-            <h5 class="address"></h5>
-            <sm-menu align-options="right" set-context="true">
+            <h5 class="address copy"></h5>
+            <sm-menu align-options="right">
                 <sm-menu-option class="send-mail-option">Send mail</sm-menu-option>
-                <sm-menu-option>Copy FLO ID</sm-menu-option>
+                <sm-menu-option onclick="copyToClipboard('.copy', 'FLO ID copied', this.closest('.contact-card'))">Copy FLO ID</sm-menu-option>
             </sm-menu>
 		</div>
 	</template>
@@ -639,7 +642,6 @@
                     minutes = String(new Date(timestamp).getMinutes()),
                     hours = new Date(timestamp).getHours(),
                     dateTime
-                console.log(minutes.length)
                 minutes = minutes.length === 1 ? `0${minutes}` : minutes  
                 let finalHours = hours - 12 > 0 ? `${hours - 12}:${minutes} PM` : `${hours}:${minutes} AM`
 
@@ -763,10 +765,14 @@
             }
         })
 
-        function copyToClipboard(target, message){
+        function copyToClipboard(target, message, parent){
             let copyText, copyTarget = target;
-            if(typeof target === 'string'){
-                copyTarget = document.querySelector(target)
+            if(typeof target === 'string'){                
+                if(parent)
+                    copyTarget = parent.querySelector(target)
+                else{
+                    copyTarget = document.querySelector(target)
+                }
             }
             if(copyTarget.tagName === 'SM-INPUT' || copyTarget.tagName === 'INPUT' || copyTarget.tagName === 'TEXTAREA')
                 copyText = copyTarget.value
@@ -923,7 +929,7 @@
         });
 
         document.getElementById("secure_key").addEventListener('click', function (e) {
-            getPromptInput("Secure Private Key", 'Enter Password', false).then(value => {
+            getPromptInput("Set password", 'Enter Password', false).then(value => {
                 floDapps.securePrivKey(value).then(result => {
                     privKeyNotSecured = false;
                     showMessage("Private Key secured", 'success');
@@ -1207,24 +1213,24 @@
                 clearElement(document.getElementById("mail_container"))
 
             messenger.getMail(mailRef).then(result => {
-                let {floID, time, category, subject, content} = result
+                let {floID, time, category, subject, content, prevRef} = result
                 //add name (if available)  
-                let senderName = floGlobals.contacts[result.floID] || ' ';
+                let senderName = floGlobals.contacts[floID] || ' ';
                 //append the contents to mail container
                 document.getElementById("mail_container").append(render.mail(senderName, floID, time, category, subject, content));
                 //add prop for previous mail (if available)
                 let prevMail = document.getElementById("prev_mail");
-                prevMail.dataset["value"] = result.prevRef;
-                prevMail.style.display = result.prevRef ? 'block' : 'none';
+                prevMail.dataset["value"] = prevRef;
+                prevMail.style.display = prevRef ? 'block' : 'none';
                 //set values for reply mail form if new view
                 if (newView) {
-                    if (result.floID.includes(','))
+                    if (floID.includes(','))
                         document.getElementById("show_reply_popup").classList.add("hide-completely");
                     else {
-                        replyMailPopup.dataset["to"] = result.floID;
+                        replyMailPopup.dataset["to"] = floID;
                         replyMailPopup.dataset["prevRef"] = mailRef;
-                        subjectOfReplyMail.value = result.subject.startsWith("Re: ") ? result
-                            .subject : `Re: ${result.subject}`;
+                        subjectOfReplyMail.value = subject.startsWith("Re: ") ? result
+                            .subject : `Re: ${subject}`;
                         document.getElementById("show_reply_popup").classList.remove("hide-completely");
                     }
                 }
