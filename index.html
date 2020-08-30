@@ -539,7 +539,7 @@
                     </div>
 
                     <h4>Version</h4>
-                    <p>0.0.23</p>
+                    <p>0.0.24</p>
                 </div>
             </section>
 		</section>
@@ -820,6 +820,8 @@
 	</script>
 	<script id="UI">
         function updateVh(){
+            mainPage.style.height = window.innerHeight + 'px'
+            signInLanding.style.height = window.innerHeight + 'px'
             let vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         }
