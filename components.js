@@ -390,7 +390,6 @@ customElements.define('sm-input',
 
         connectedCallback() {
             this.inputParent = this.shadowRoot.querySelector('.input')
-            this.computedStyle = window.getComputedStyle(this.inputParent)
             this.clearBtn = this.shadowRoot.querySelector('.clear')
             this.label = this.shadowRoot.querySelector('.label')
             this.helperText = this.shadowRoot.querySelector('.helper-text')
@@ -449,7 +448,225 @@ customElements.define('sm-input',
         }
     })
 
-// tab-header
+//textarea
+const smTextarea = document.createElement('template')
+smTextarea.innerHTML = `
+        <style>
+        *{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        } 
+        ::-moz-focus-inner{
+            border: none;
+        }
+        :host{
+            display: flex;
+        }
+        .hide{
+           opacity: 0 !important;
+           pointer-events: none !important;
+        }
+        .hide-completely{
+            display: none;
+        }
+        .icon {
+            fill: none;
+            height: 1.6em;
+            width: 1.6em;
+            padding: 0.5em;
+            stroke: rgba(var(--text-color), 0.7);
+            stroke-width: 10;
+            overflow: visible;
+            stroke-linecap: round;
+            border-radius: 1em;
+            stroke-linejoin: round;
+            cursor: pointer;
+            min-width: 0;
+        }
+        .input {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 0.7em 1em;
+            border-radius: 0.3em;
+            transition: opacity 0.3s;
+            background: rgba(var(--text-color), 0.1);
+            font-family: var(--font-family);
+            width: 100%
+            outline: none;
+            min-width: 0;
+        }
+
+        textarea:focus{
+            caret-color: var(--accent-color);
+        }
+        .input:focus-within{
+            box-shadow: 0 0 0 0.1em var(--accent-color) inset;
+        }
+    
+        .label {
+            user-select: none;
+            opacity: .7;
+            font-weight: 400;
+            font-size: 1em;
+            position: absolute;
+            top: 0.9em;
+            transition: transform 0.3s;
+            -webkit-transform-origin: left;
+            transform-origin: left;
+            pointer-events: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            will-change: transform;
+        }   
+        textarea{
+            font-size: 1em;
+            border: none;
+            background: transparent;
+            outline: none;
+            color: rgba(var(--text-color), 1);
+            width: 100%;
+            font-family: inherit;
+        }
+        .animate-label textarea {
+            -webkit-transform: translateY(0.6em);
+                    transform: translateY(0.6em);
+        }
+          
+        .animate-label .label {
+            -webkit-transform: translateY(-0.6em) scale(0.8);
+                    transform: translateY(-0.6em) scale(0.8);
+            opacity: 1;
+            color: var(--accent-color)
+        }
+        @media (any-hover: hover){
+            .icon:hover{
+                background: rgba(var(--text-color), 0.1);
+            }
+        }
+    </style>
+    <label class="input">
+        <textarea rows="1"></textarea>
+        <div part="placeholder" class="label"></div>
+        <svg class="icon clear hide" viewBox="0 0 64 64">
+            <title>clear</title>
+            <line x1="64" y1="0" x2="0" y2="64"/>
+            <line x1="64" y1="64" x2="0" y2="0"/>
+        </svg>
+    </label>
+`;
+customElements.define('sm-textarea',
+    class extends HTMLElement {
+        constructor() {
+            super()
+            this.attachShadow({ mode: 'open' }).append(smTextarea.content.cloneNode(true))
+        }
+        static get observedAttributes() {
+            return ['placeholder']
+        }
+
+        get value() {
+            return this.shadowRoot.querySelector('textarea').value
+        }
+
+        set value(val) {
+            this.shadowRoot.querySelector('textarea').value = val;
+            this.checkInput()
+            this.fireEvent()
+        }
+
+        get placeholder() {
+            return this.getAttribute('placeholder')
+        }
+
+        set placeholder(val) {
+            this.setAttribute('placeholder', val)
+        }
+
+        fireEvent() {
+            let event = new Event('input', {
+                bubbles: true,
+                cancelable: true,
+                composed: true
+            });
+            this.dispatchEvent(event);
+        }
+
+        checkInput() {
+            if (!this.hasAttribute('placeholder') || this.getAttribute('placeholder') === '')
+                return;
+            if (this.input.value !== '') {
+                if (this.animate)
+                    this.inputParent.classList.add('animate-label')
+                else
+                    this.label.classList.add('hide')
+                if(!this.readonly)
+                    this.clearBtn.classList.remove('hide')
+            }
+            else {
+                if (this.animate)
+                    this.inputParent.classList.remove('animate-label')
+                else
+                    this.label.classList.remove('hide')
+                if(!this.readonly)
+                    this.clearBtn.classList.add('hide')
+            }
+
+            this.input.style.height = 'auto'
+            this.input.style.height = (this.input.scrollHeight) + 'px';
+        }
+        
+
+        connectedCallback() {
+            this.inputParent = this.shadowRoot.querySelector('.input')
+            this.clearBtn = this.shadowRoot.querySelector('.clear')
+            this.label = this.shadowRoot.querySelector('.label')
+            this.helperText = this.shadowRoot.querySelector('.helper-text')
+            this.valueChanged = false;
+            this.readonly = false
+            this.animate = this.hasAttribute('animate')
+            this.input = this.shadowRoot.querySelector('textarea')
+            this.shadowRoot.querySelector('.label').textContent = this.getAttribute('placeholder')
+            
+            this.input.setAttribute('style', 'height:' + (this.input.scrollHeight) + 'px;overflow-y:hidden;');
+            
+            if (this.hasAttribute('value')) {
+                this.input.value = this.getAttribute('value')
+                this.checkInput()
+            }
+            if (this.hasAttribute('required')) {
+                this.input.setAttribute('required', '')
+            }
+            if (this.hasAttribute('readonly')) {
+                this.input.setAttribute('readonly', '')
+                this.readonly = true
+            }
+            if (this.hasAttribute('helper-text')) {
+                this.helperText.textContent = this.getAttribute('helper-text')
+            }
+            this.input.addEventListener('keydown', e => {
+                if (this.getAttribute('type') === 'number')
+                    this.preventNonNumericalInput(e);
+            })
+            this.input.addEventListener('input', e => {
+                this.checkInput()
+            })
+            this.clearBtn.addEventListener('click', e => {
+                this.value = ''
+            })
+        }
+
+        attributeChangedCallback(name, oldValue, newValue) {
+            if (oldValue !== newValue) {
+                if (name === 'placeholder')
+                    this.shadowRoot.querySelector('.label').textContent = newValue;
+            }
+        }
+    })
 
 const smTabs = document.createElement('template')
 smTabs.innerHTML = `

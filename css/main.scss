@@ -597,7 +597,7 @@ sm-button[variant="primary"]{
     padding: 0;
     flex-wrap: wrap;
     width: 100%;
-    background: rgba(var(--foreground-color), 0.7);
+    background: rgba(var(--foreground-color), 0.9);
     //backdrop-filter: blur(1rem);
     box-shadow: 0 -0.2rem 1rem #00000016;
     height: 3.5rem;
@@ -678,6 +678,16 @@ sm-button[variant="primary"]{
                 margin-left: 0;
                 margin-right: 0.5rem;
             }
+            &[variant="outlined"]::part(button){
+                border-radius: 2rem;
+            }
+            &[variant="outlined"] .icon{
+                stroke: var(--accent-color);
+                height: 0.9rem;
+                width: 0.9rem;
+                align-self: center;
+                stroke-width: 8;
+            }
         }
     }
 }
@@ -707,10 +717,15 @@ sm-button[variant="primary"]{
         }
     }
     footer{
-        padding: 0 1rem;
+        align-items: flex-end;
+        padding: 1rem;
         box-shadow: 0 -0.4rem 0.8rem #00000010;
         sm-button{
+            margin: 0;
             margin-left: 1rem;
+        }
+        sm-textarea{
+            margin: 0;
         }
     }
     #type_message{
@@ -727,6 +742,8 @@ sm-button[variant="primary"]{
         margin-bottom: 0.4rem;
         margin-top: 0.8rem;
         box-shadow: 0 1px 0.1rem #00000020;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
         .time{
             align-self: flex-end;
             margin-top: auto;
@@ -770,19 +787,24 @@ sm-tab-panels{
 sm-tab-header{
     --accent-color: rgba(var(--text-color), 0.7);
 }
-#contacts_container,
+
 #inbox_mail_container,
 #sent_mail_container
 {
     padding-bottom: 6rem;
 }
 #chat, #mail{
-    background: rgba(var(--foreground-color), 0.8);
+    background: rgba(var(--foreground-color), 0.7);
 }
 #mail{
     height: 100vh;
     padding: 1.5rem;
     align-items: flex-start;
+    .flex{margin-top: 1rem;
+        sm-button:first-of-type{
+            margin-right: 0.5rem;
+        }
+    }
 }
 #settings_page{
     height: calc(100vh - 3.5rem);

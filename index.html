@@ -433,21 +433,21 @@
 			<div id="contacts" class="grid">
 				<header class="flex align-center">
                     <h4>Contacts</h4>
-                    <sm-button onclick="refresh()">
+                    <!--<sm-button onclick="refresh()">
                         <svg class="icon" viewBox="0 0 64 64">
                             <polyline points="42.99 0.16 50.25 21.23 28.78 27.7"/>
                             <path d="M56.61,44.63A24.65,24.65,0,0,1,50,56.24a25.1,25.1,0,0,1-35.31,0,24.67,24.67,0,0,1,0-35,25.1,25.1,0,0,1,35.31,0"/>
                         </svg>
                         refresh
+                    </sm-button>-->
+                    <sm-button variant="outlined" id="show_contact_popup_button">
+                        <svg class="icon" viewBox="0 0 64 64">
+                            <line x1="32" x2="32" y2="64" />
+                            <line x1="64" y1="32" y2="32" />
+                        </svg>
+                        Add Contact
                     </sm-button>
 				</header>
-                <sm-button variant="primary" id="show_contact_popup_button" class="fab">
-                    <svg class="icon" viewBox="0 0 64 64">
-                        <line x1="32" x2="32" y2="64" />
-                        <line x1="64" y1="32" y2="32" />
-                    </svg>
-                    Add Contact
-                </sm-button>
 				<div id="contacts_container" class="flex">
 				</div>
 			</div>
@@ -462,15 +462,12 @@
 						<h4 id="receiver_name"></h4>
 						<h5 id="receiver_floID" class="text-overflow"></h5>
                     </div>
-                    <sm-menu align-options="right">
-                        <sm-menu-option onclick="refresh()">Refresh</sm-menu-option>
-                    </sm-menu>
 				</header>
                 <h5 id="warn_no_encryption">Messages are not encrypted until receiver replies</h5>
 				<section id="chat_container" class="flex">
 				</section>
-				<footer class="flex align-center">
-                    <sm-input id="type_message" placeholder="Type a message" class="rest"></sm-input>
+				<footer class="flex">
+                    <sm-textarea id="type_message" placeholder="Type a message" class="rest"></sm-textarea>
                     <sm-button variant="round" id="send_message_button" disabled>
                         <svg class="icon" viewBox="-4 0 64 64">
                             <path d="M35.32,32.09,19.74,32a1.66,1.66,0,0,1-1.36-.82L.91,4.19c-1.15-1.78.31-4.36,2-3.53L31.63,14.78,62.37,29.9a2.51,2.51,0,0,1,0,4.2L31.63,49.22,2.92,63.34c-1.7.83-3.16-1.75-2-3.53L9.07,47.2"/>
@@ -561,14 +558,19 @@
                     <span id="backup_info"></span>
 
                     <h4>Theme</h4>
-                    <p>Toggle dark theme</p>
                     <div class="flex">
-                        <p id="dark_theme_status"></p>
+                        <p>Toggle dark theme</p>
                         <sm-switch id="theme_switcher" class="justify-right"></sm-switch>
                     </div>
 
+                    <h4>Enter key is send</h4>
+                    <div class="flex">
+                        <p>If this toggle is ON then pressing 'Enter' key will send messages</p>
+                        <sm-switch id="enter_is_send" class="justify-right"></sm-switch>
+                    </div>
+
                     <h4>Version</h4>
-                    <p>0.0.30</p>
+                    <p>0.0.31</p>
                 </div>
             </section>
 		</section>
@@ -821,7 +823,8 @@
         }
 
         let themeSwitcher = document.getElementById('theme_switcher'),
-            darkThemeStatus = document.getElementById('dark_theme_status')
+            enterIsSend = document.getElementById('enter_is_send'),
+            isEnterSend = true
 
         if (localStorage.theme === "dark") {
             nightlight()
@@ -832,12 +835,10 @@
         }
         
         function daylight() {
-            darkThemeStatus.textContent = 'Dark theme is OFF' 
             document.body.setAttribute("data-theme", "light");
         }
         
         function nightlight() {
-            darkThemeStatus.textContent = 'Dark theme is ON' 
             document.body.setAttribute("data-theme", "dark");
         }
         themeSwitcher.addEventListener('change', function(e){
@@ -850,6 +851,29 @@
                 localStorage.setItem("theme", "light");
             }
         })
+
+        if(localStorage.isEnterSend === null)
+            localStorage.setItem('isEnterSend', 'true')
+
+        if (localStorage.isEnterSend === 'true') {
+            isEnterSend = true
+            enterIsSend.checked = true;
+        } else {
+            isEnterSend = false
+            enterIsSend.checked = false;
+        }
+        
+        enterIsSend.addEventListener('change', function(){
+            if(this.checked){
+                isEnterSend = true
+                localStorage.setItem("isEnterSend", 'true');
+            }
+            else{
+                isEnterSend = false
+                localStorage.setItem("isEnterSend", 'false');
+            }
+        })
+
         function updateHeight(){
             if(window.innerWidth < 640){
                 chatSection.style.height = window.innerHeight + 'px'
@@ -911,8 +935,10 @@
                 document.getElementById('send_message_button').disabled = true
         })
         typeMessage.addEventListener('keydown', e => {
-            if(e.code === "Enter" && typeMessage.value.trim() !== '')
+            if(e.code === "Enter" && typeMessage.value.trim() !== '' && isEnterSend){
+                e.preventDefault()
                 sendMessage()
+            }
         })
 
         document.getElementById("contacts_container").addEventListener('click', function (e) {
