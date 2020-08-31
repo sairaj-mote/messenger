@@ -456,7 +456,7 @@
 						<title>Go to main page</title>
 						<polyline points="48.01 0.35 16.35 32 48.01 63.65"/>
                     </svg>
-                    <div id="receiver_initial" class="initial flex align-center"></div>
+                    <div id="receiver_initial"  onclick="goto('chats')" class="initial flex align-center"></div>
 					<div class="flex rest direction-column">
 						<h4 id="receiver_name"></h4>
 						<h5 id="receiver_floID" class="text-overflow"></h5>
@@ -567,7 +567,7 @@
                     </div>
 
                     <h4>Version</h4>
-                    <p>0.0.28</p>
+                    <p>0.0.29</p>
                 </div>
             </section>
 		</section>
@@ -647,7 +647,7 @@
                     hours = new Date(timestamp).getHours(),
                     dateTime
                 minutes = minutes.length === 1 ? `0${minutes}` : minutes  
-                let finalHours = hours - 12 > 0 ? `${hours - 12}:${minutes} PM` : `${hours}:${minutes} AM`
+                let finalHours = hours - 12 > 0 ? `${hours - 12}:${minutes} pm` : `${hours}:${minutes} am`
 
                 if(new Date().getDate() === new Date(timestamp).getDate())
                     dateTime = finalHours
@@ -675,7 +675,7 @@
                     hours = new Date(timestamp).getHours(),
                     dateTime
                 minutes = minutes.length === 1 ? `0${minutes}` : minutes  
-                let finalHours = hours - 12 > 0 ? `${hours - 12}:${minutes} PM` : `${hours}:${minutes} AM`
+                let finalHours = hours - 12 > 0 ? `${hours - 12}:${minutes} pm` : `${hours}:${minutes} am`
 
                 if(new Date().getDate() === new Date(timestamp).getDate())
                     dateTime = finalHours
@@ -714,7 +714,7 @@
                     minutes = String(new Date(timestamp).getMinutes()),
                     hours = new Date(timestamp).getHours()
                 minutes = minutes.length === 1 ? `0${minutes}` : minutes  
-                let finalHours = hours - 12 > 0 ? `${hours - 12}:${minutes} PM` : `${hours}:${minutes} AM`
+                let finalHours = hours - 12 > 0 ? `${hours - 12}:${minutes} pm` : `${hours}:${minutes} am`
 
                 cardContainer.classList.add(category)
                 card.querySelector('.message-body').textContent = message
@@ -1218,6 +1218,7 @@
 
         function renderMessages(data, markUnread = true) {
             let floID
+            console.log(data)
             for (m in data) {
                 floID = data[m].floID
                 render.messageBubble(data[m].floID, data[m].message, data[m].time, data[m].category)
@@ -1249,12 +1250,7 @@
                 noEncryption.classList.add("hide-completely");
             else
                 noEncryption.classList.remove("hide-completely");
-            if(window.innerWidth < 640)
-                setTimeout(() => {
-                    chatContainer.scrollTo(0, chatContainer.scrollHeight)   
-                }, 0);
-            else
-                chatContainer.scrollTo(0, chatContainer.scrollHeight)   
+            chatContainer.scrollTo(0, chatContainer.scrollHeight)   
             messenger.removeMark(floID, "unread");
         }
 

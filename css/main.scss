@@ -166,7 +166,7 @@ a:any-link{
     width: 100%;
     height: 100%;
     background: rgba(var(--foreground-color), 0.8);
-    backdrop-filter: blur(1rem);
+    //backdrop-filter: blur(1rem);
 }
 .card{
     display: flex;
@@ -598,7 +598,7 @@ sm-button[variant="primary"]{
     flex-wrap: wrap;
     width: 100%;
     background: rgba(var(--foreground-color), 0.7);
-    backdrop-filter: blur(1rem);
+    //backdrop-filter: blur(1rem);
     box-shadow: 0 -0.2rem 1rem #00000016;
     height: 3.5rem;
     align-items: center;
@@ -813,7 +813,10 @@ sm-tab-header{
 }
 @media screen and (max-width: 640px){
     .hide-on-mobile{
-        display: none !important;
+        position: fixed;
+        max-height: 0;
+        opacity: 0;
+        pointer-events: none;
     }
     #sign_in{
         grid-template-areas: 'illustration' '.';
