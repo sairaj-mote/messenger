@@ -29,6 +29,7 @@ body {
   --lightness: 41%;
   font-size: 16px;
   color: rgba(var(--text-color), 1);
+  background: url(bg.svg) fixed no-repeat;
   background-size: cover;
 }
 
@@ -198,7 +199,7 @@ a:any-link {
   align-items: flex-start;
   width: 100%;
   height: 100%;
-  background: rgba(var(--foreground-color), 0.8);
+  background: rgba(var(--foreground-color), 0.7);
 }
 
 .card {
@@ -441,30 +442,13 @@ sm-button[variant=primary] .icon {
     transform: scale(1);
   }
 }
-.contact-list {
-  grid-template-rows: max-content 1fr;
-}
-.contact-list header {
-  background: rgba(var(--foreground-color), 1);
-  padding: 1rem 1.5rem 0 1.5rem;
-  display: grid;
-  align-items: center;
-  gap: 0 1rem;
-  grid-template-columns: 1fr auto;
-  grid-template-areas: ". ." "search search";
-}
-.contact-list header sm-input {
-  grid-area: search;
-  margin: 0.5 0 0 0;
-}
-
 .initial {
   justify-content: center;
   font-size: 1.6rem;
   width: 3rem;
   height: 3rem;
   background: rgba(var(--foreground-color), 1);
-  box-shadow: 0 0.1rem 0.1rem #00000016, 0 0.1rem 0.3rem #00000010;
+  box-shadow: 0 0.1rem 0.1rem #0000001a, 0 0.1rem 0.3rem #00000016;
   border-radius: 2rem;
   text-transform: uppercase;
 }
@@ -718,18 +702,18 @@ sm-button[variant=primary] .icon {
   margin: 0 0 0 auto;
 }
 #contacts header sm-button .icon, #mails header sm-button .icon {
-  margin-left: 0;
-  margin-right: 0.5rem;
-}
-#contacts header sm-button[variant=outlined]::part(button), #mails header sm-button[variant=outlined]::part(button) {
-  border-radius: 2rem;
-}
-#contacts header sm-button[variant=outlined] .icon, #mails header sm-button[variant=outlined] .icon {
-  stroke: var(--accent-color);
   height: 0.9rem;
   width: 0.9rem;
   align-self: center;
   stroke-width: 8;
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+#contacts header sm-button[variant=outlined]::part(button), #contacts header sm-button::part(button), #mails header sm-button[variant=outlined]::part(button), #mails header sm-button::part(button) {
+  border-radius: 2rem;
+}
+#contacts header sm-button[variant=outlined] .icon, #mails header sm-button[variant=outlined] .icon {
+  stroke: var(--accent-color);
 }
 
 #chat_page {
@@ -742,7 +726,7 @@ sm-button[variant=primary] .icon {
 }
 #chat header {
   padding: 0.5rem 1rem;
-  box-shadow: 0 0.2rem 0.6rem #00000010;
+  border-bottom: solid 1px rgba(var(--text-color), 0.16);
 }
 #chat header .back-button {
   margin-right: 0.2rem;
@@ -762,7 +746,7 @@ sm-button[variant=primary] .icon {
 #chat footer {
   align-items: flex-end;
   padding: 1rem;
-  box-shadow: 0 -0.4rem 0.8rem #00000010;
+  border-top: solid 1px rgba(var(--text-color), 0.16);
 }
 #chat footer sm-button {
   margin: 0;
@@ -815,6 +799,29 @@ sm-button[variant=primary] .icon {
   margin-bottom: 1rem;
 }
 
+#new_conversation, #no_mails {
+  height: 100%;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+}
+#new_conversation p, #no_mails p {
+  margin-top: 0.8rem;
+}
+
+#no_mails .new-conversation {
+  height: 7rem;
+  margin-bottom: 1rem;
+}
+
+.new-conversation {
+  height: 8rem;
+  width: 8rem;
+  align-self: center;
+  stroke-width: 16;
+  stroke: rgba(var(--text-color), 0.4);
+}
+
 #contacts_container,
 #chat_container,
 #inbox_mail_container,
@@ -824,6 +831,14 @@ sm-button[variant=primary] .icon {
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
+}
+
+#contacts_container:empty {
+  display: none;
+}
+
+#contacts_container:not(:empty) ~ .empty-state {
+  display: none;
 }
 
 sm-tab-panels {
@@ -1020,10 +1035,6 @@ sm-tab-header {
     grid-template-columns: auto 1fr;
   }
 
-  #chat, #mail {
-    box-shadow: -0.2rem 0 1rem #00000010;
-  }
-
   #chat .message .message-body {
     max-width: 50ch;
   }
@@ -1032,10 +1043,15 @@ sm-tab-header {
     grid-template-columns: 22rem 1fr;
   }
 
-  #contacts, #mails, #settings_page {
+  #contacts, #mails {
     height: 100vh;
+    background: rgba(var(--text-color), 0.04);
+    backdrop-filter: blur(1rem);
   }
 
+  #settings_page {
+    height: 100vh;
+  }
   #settings_page section {
     display: grid;
     grid-template-columns: 1fr 1fr;
