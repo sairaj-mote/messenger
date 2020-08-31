@@ -96,6 +96,7 @@
 					//hide loading screen
 					loadingPage.classList.add("hide-completely")
                     mainPage.classList.remove('hide-completely')
+                    refreshAgain()
                     document.getElementById('chat_page_button').click()
                     if(privKeyNotSecured)
                         notify("Private key is not secured with password. Remember to secure the private key in settings", "warn", '', true)
@@ -567,7 +568,7 @@
                     </div>
 
                     <h4>Version</h4>
-                    <p>0.0.29</p>
+                    <p>0.0.30</p>
                 </div>
             </section>
 		</section>
