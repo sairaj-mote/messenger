@@ -16,14 +16,9 @@ smButton.innerHTML = `
                 background: rgba(var(--text-color), 0.3) !important;
                 color: rgba(var(--foreground-color), 1);
             }
-            :host([variant='primary']) .button,
-            :host([variant='round']) .button{
+            :host([variant='primary']) .button{
                 background: hsl(var(--hue), var(--saturation), var(--lightness));
                 color: rgba(var(--foreground-color), 1);
-            }
-            :host([variant='round']) .button{
-                border-radius: 50%;
-                padding: 0.8rem;
             }
             :host([variant='outlined']) .button{
                 box-shadow: 0 0 0 1px rgba(var(--text-color), 0.2) inset;
@@ -36,6 +31,9 @@ smButton.innerHTML = `
             }
             :host(.small) .button{
                 padding: 0.4rem 0.8rem;
+            }
+            :host(.round) .button{
+                border-radius: 10rem;
             }
             .button {
                 display: flex;
@@ -74,12 +72,10 @@ smButton.innerHTML = `
                 :host([variant='outlined']) .button:hover{
                     box-shadow: 0 0 0 1px rgba(var(--text-color), 0.2) inset, 0 0.1rem 0.1rem rgba(0, 0, 0, 0.1), 0 0.4rem 0.8rem rgba(0, 0, 0, 0.12);
                 }
-                :host([variant="primary"]:not([disabled])) .button:active,
-                :host([variant="round"]:not([disabled])) .button:active{
+                :host([variant="primary"]:not([disabled])) .button:active{
                     background: hsl(var(--hue), var(--saturation), calc(var(--lightness) - 20%)) !important;
                 }
-                :host([variant="primary"]:not([disabled])) .button:hover,
-                :host([variant="round"]:not([disabled])) .button:hove{
+                :host([variant="primary"]:not([disabled])) .button:hover{
                     background: hsl(var(--hue), var(--saturation), calc(var(--lightness) - 10%));
                 }
             }
@@ -340,6 +336,14 @@ customElements.define('sm-input',
             return this.shadowRoot.querySelector('input').checkValidity()
         }
 
+        focusIn() {
+            this.shadowRoot.querySelector('input').focus()
+        }
+
+        focusOut() {
+            this.shadowRoot.querySelector('input').blur()
+        }
+
         preventNonNumericalInput(e) {
             let keyCode = e.keyCode;
             if (!((keyCode > 47 && keyCode < 56) || (keyCode > 36 && keyCode < 39) || (keyCode > 95 && keyCode < 104) || keyCode === 110 || (keyCode > 7 && keyCode < 19))) {
@@ -531,6 +535,7 @@ smTextarea.innerHTML = `
             color: rgba(var(--text-color), 1);
             width: 100%;
             font-family: inherit;
+            line-height: 1.6;
         }
         .animate-label textarea {
             -webkit-transform: translateY(0.6em);
@@ -542,6 +547,9 @@ smTextarea.innerHTML = `
                     transform: translateY(-0.6em) scale(0.8);
             opacity: 1;
             color: var(--accent-color)
+        }
+        .clear{
+            align-self: flex-start;
         }
         @media (any-hover: hover){
             .icon:hover{

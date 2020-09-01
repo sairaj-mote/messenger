@@ -70,6 +70,7 @@
                     } else if (type === "PIN/Password") {
                         privateKeyInputField.setAttribute("placeholder", "PIN/Password")
                         signInPopup.show()
+                        privateKeyInputField.focusIn()
                         document.getElementById("remove_account").classList.remove("hide-completely");
                         document.getElementById("type_of_key").textContent = 'PIN/Password'
                         privKeyNotSecured = false;
@@ -89,9 +90,10 @@
 					floGlobals.settings = data.settings;
 					floGlobals.appendix = data.appendix;
 					renderContactList(floGlobals.contacts)
+					renderMailContactList(floGlobals.contacts)
 					renderMessages(data.messages, false)
 					renderMailList(data.mails, false)
-					renderMarked(data.marked)
+                    renderMarked(data.marked)
 					reactor.dispatchEvent("startUpSuccessLog", `Load Successful!`)
 					//hide loading screen
 					loadingPage.classList.add("hide-completely")
@@ -100,8 +102,13 @@
                     mailSection.classList.add('hide-completely')
                     refreshAgain()
                     document.getElementById('chat_page_button').click()
-                    if(privKeyNotSecured)
-                        notify("Private key is not secured with password. Remember to secure the private key in settings", "warn", '', true)
+                    if(privKeyNotSecured){
+                        notify("Private key is not secured with password. Remember to secure the private key in settings", "warn", '')
+                        document.getElementById("secure_key").textContent = 'Set password'
+                    }
+                    else{
+                        document.getElementById("secure_key").textContent = 'Change password'
+                    }
                 }).catch(error => {
 					reactor.dispatchEvent("startUpErrorLog", `Failed to load data`)
 					notify(error, "error")
@@ -324,8 +331,11 @@
 			</svg>
 			<h4>Compose Mail</h4>
 			<sm-button id="send_mail_button" variant="primary" disabled>Send</sm-button>
-		</header>
-		<sm-input id="send_mail_to" placeholder="To" animate required></sm-input>
+        </header>
+        <div id="auto_complete_contact" class="flex direction-column">
+            <sm-input id="send_mail_to" placeholder="To" animate required></sm-input>
+            <div id="mail_contact_list" class="hide-completely contact-list"></div>
+        </div>
 		<sm-input id="subject_of_mail" placeholder="Subject" animate></sm-input>
 		<textarea id="mail_content" placeholder="Type a mail" name="" id="" rows="10" required></textarea>
 	</sm-popup>
@@ -340,7 +350,7 @@
 			<sm-button id="reply_mail_button" variant="primary" disabled>Send</sm-button>
 		</header>
 		<sm-input id="subject_of_reply_mail" placeholder="Subject" animate></sm-input>
-		<textarea id="reply_mail_content" placeholder="Type a mail" name="" id="" rows="10" required></textarea>
+		<textarea id="reply_mail_content" placeholder="Type a mail" id="" rows="10" required></textarea>
 	</sm-popup>
 
 	<!-- Templates -->
@@ -375,7 +385,7 @@
     </template>
 
 	<template id="contact_template">
-		<div class="contact">
+		<div class="contact" tabindex="0">
 			<div class="initial flex align-center"></div>
 			<h4 class="name"></h4>
             <h5 class="address copy"></h5>
@@ -435,14 +445,7 @@
 			<div id="contacts" class="grid">
 				<header class="flex align-center">
                     <h4>Contacts</h4>
-                    <!--<sm-button onclick="refresh()">
-                        <svg class="icon" viewBox="0 0 64 64">
-                            <polyline points="42.99 0.16 50.25 21.23 28.78 27.7"/>
-                            <path d="M56.61,44.63A24.65,24.65,0,0,1,50,56.24a25.1,25.1,0,0,1-35.31,0,24.67,24.67,0,0,1,0-35,25.1,25.1,0,0,1,35.31,0"/>
-                        </svg>
-                        refresh
-                    </sm-button>-->
-                    <sm-button id="show_contact_popup_button">
+                    <sm-button class="round" id="show_contact_popup_button">
                         <svg class="icon" viewBox="0 0 64 64">
                             <line x1="32" x2="32" y2="64" />
                             <line x1="64" y1="32" y2="32" />
@@ -480,7 +483,7 @@
 				</section>
 				<footer class="flex">
                     <sm-textarea id="type_message" placeholder="Type a message" class="rest"></sm-textarea>
-                    <sm-button variant="round" id="send_message_button" disabled>
+                    <sm-button variant="primary" class="round" id="send_message_button" disabled>
                         <svg class="icon" viewBox="-4 0 64 64">
                             <path d="M35.32,32.09,19.74,32a1.66,1.66,0,0,1-1.36-.82L.91,4.19c-1.15-1.78.31-4.36,2-3.53L31.63,14.78,62.37,29.9a2.51,2.51,0,0,1,0,4.2L31.63,49.22,2.92,63.34c-1.7.83-3.16-1.75-2-3.53L9.07,47.2"/>
                         </svg>
@@ -495,7 +498,7 @@
                         <sm-tab>Inbox</sm-tab>
                         <sm-tab>Sent</sm-tab>
                     </sm-tab-header>
-                    <sm-button onclick="refresh()">
+                    <sm-button class="round" onclick="refresh()">
                         <svg class="icon" viewBox="0 0 64 64">
                             <polyline points="42.99 0.16 50.25 21.23 28.78 27.7"/>
                             <path d="M56.61,44.63A24.65,24.65,0,0,1,50,56.24a25.1,25.1,0,0,1-35.31,0,24.67,24.67,0,0,1,0-35,25.1,25.1,0,0,1,35.31,0"/>
@@ -512,9 +515,8 @@
                 </sm-button>
                 <div class="empty-state flex direction-column align-center" id="no_mails">
                     <svg class="icon new-conversation" viewBox="0 0 512 512">
-                        <title>no-mails</title>
-                        <path d="M227,26.14,20.53,177.54a49,49,0,0,0-20,39.53V446.33a49,49,0,0,0,49,49h413a49,49,0,0,0,49-49V217.07a49,49,0,0,0-20-39.53L285,26.14A49,49,0,0,0,227,26.14Z"/>
-                        <path d="M64,250.27l166.31,86.88a39,39,0,0,0,36.22,0L434,249.64"/>
+                        <path d="M227,26.16,20.5,177.56a49,49,0,0,0-20,39.53V446.35a49,49,0,0,0,49,49h413a49,49,0,0,0,49-49h0V217.09a49,49,0,0,0-20-39.53L285,26.16A49,49,0,0,0,227,26.16Z"/>
+                        <path d="M71,250.29l166.31,86.88a39,39,0,0,0,36.22,0L441,249.66"/>
                     </svg>
                     <h4>All your mails will appear here.</h4>
                     <p class="light-text">Tap/click on 'New Mail' button below to compose new mail.</p>
@@ -547,7 +549,7 @@
                         <sm-button class="small justify-right" onclick="copyToClipboard('#greet_tag', 'FLO ID Copied')">copy</sm-button>
                     </div>
                     
-                    <h4>Private Key</h4>
+                    <h4>My private key</h4>
                     <sm-input id="view_private_key" title="Click to Copy" placeholder="View Private Key. Click to copy" readonly/></sm-input>
                     
                     <h4>Set Password</h4>
@@ -557,26 +559,26 @@
                     </p>
                     <sm-button id="secure_key">Set Password</sm-button>
                     
-                    <h4>Clear Data</h4>
-                    <p><strong>This can't be undone.</strong> Make sure you have stored the PRIVATE KEY and backed up the data.</p>
+                    <h4>Clear data</h4>
+                    <p><strong></strong>This can't be undone.</strong> Make sure you have stored the PRIVATE KEY and backed up the data.</p>
                     <sm-button id="clear_data">Clear Data</sm-button>
                     
-                    <h4>Sign Out</h4>
+                    <h4>Sign out</h4>
                     <p>*Remember to store your <strong>PRIVATE KEY </strong> before signing out.</p>
                     <sm-button id="sign_out">Sign Out</sm-button>
                 </div>
                 <div class="card">
-                    <h4>Backup Data</h4>
+                    <h4>Backup data</h4>
                     <p>Create a backup of contacts, conversations and mails. Which can later be used to restore these in case of data is cleared. </p>
                     <sm-button id="backup_data" >Backup Data</sm-button>
+                    <span id="backup_info"></span>
                     
-                    <h4>Restore Backup</h4>
+                    <h4>Restore backup</h4>
                     <p>Select backup file with extension '.json'. Which was downloaded when backup was performed.</p>
                     <label class="select-file">
                         <sm-button >Select File</sm-button>
                         <input type="file" id="restore_data" accept=".json" />
                     </label>
-                    <span id="backup_info"></span>
 
                     <h4>Theme</h4>
                     <div class="flex">
@@ -591,7 +593,7 @@
                     </div>
 
                     <h4>Version</h4>
-                    <p>0.0.32</p>
+                    <p>0.0.33</p>
                 </div>
             </section>
 		</section>
@@ -649,6 +651,7 @@
 				signInPopup = document.getElementById('sign_in_popup'),
 				composeMailPopup = document.getElementById('compose_mail_popup'),
 				sendMailTo = document.getElementById('send_mail_to'),
+				mailContactList = document.getElementById('mail_contact_list'),
 				addContactPopup = document.getElementById('add_contact_popup'),
 				allInputs = document.querySelectorAll('sm-popup sm-input, sm-popup textarea')
                 
@@ -729,7 +732,9 @@
                 let randomColor = randomHsl(90, 40)
                 cardContainer.setAttribute("text-color", randomColor)
                 initial.setAttribute(`style`, `color: ${randomColor}`)
+                let duplicateCard = card.cloneNode(true);
                 contactsContainer.append(card);
+                mailContactList.append(duplicateCard);
             },
             messageBubble(floID, message, timestamp, category){
                 let card = messageTemplate.content.cloneNode(true),
@@ -762,11 +767,12 @@
 
 		function randomHsl(saturation = 90, lightness = 50) {
 			return `hsla( ${(Math.random() * 360)}, ${saturation}%, ${lightness}%, 1)`;
-		}
+        }
 
 		openSignInButton.addEventListener('clicked', () => {
 			isSignInOpen = true;
-			signInPopup.show()
+            signInPopup.show()
+            privateKeyInputField.focusIn()
 		})
 
 		function checkInput(element){
@@ -793,32 +799,99 @@
             }
 		})
         
-		addEventListener('keyup', e => {
-            if(e.target.id === 'search_contact'){
-				console.log('hi')
-			}
+		document.addEventListener('keyup', e => {
             if(e.target.closest('sm-input') && e.target.closest('sm-popup')){
                 if(e.code === 'Enter'){
                     e.target.closest('sm-popup').querySelector('sm-button[variant="primary"]').click()
                 }
             }
-		})
+            if(e.target.closest('#send_mail_to')){
+                if(e.code === 'ArrowDown'){
+                    for(child of mailContactList.children){
+                        if(!child.classList.contains('hide-completely')){
+                            child.focus()
+                            break
+                        }
+                    }
+                }
+                if(e.code === 'Enter' && mailContactList.firstElementChild){
+                    for(child of mailContactList.children){
+                        if(!child.classList.contains('hide-completely')){
+                            child.click()
+                            break
+                        }
+                    }
+                }
+            }
+            if(e.target.closest('.contact')){
+                if(e.code === 'ArrowDown' || e.code === 'ArrowRight'){
+                    if(document.activeElement.nextElementSibling)
+                        document.activeElement.nextElementSibling.focus()
+                    else
+                        mailContactList.firstElementChild.focus()
+                }
+                if(e.code === 'ArrowUp' || e.code === 'ArrowLeft' ){
+                    if(document.activeElement.previousElementSibling)
+                        document.activeElement.previousElementSibling.focus()
+                    else
+                        mailContactList.lastElementChild.focus()
+                }
+            }
+        })
+
+        sendMailTo.addEventListener('input', function() {
+            mailContactList.classList.remove('hide-completely')
+            if(this.value.trim !== ''){
+                for(child of mailContactList.children) {
+                    if(child.getAttribute('name').toUpperCase().indexOf(this.value.toUpperCase()) > -1){
+                        child.classList.remove('hide-completely')
+                    }
+                    else{
+                        child.classList.add('hide-completely')
+                    }
+                }
+            }
+        })
+
+        mailContactList.addEventListener('click', e => {
+            if(e.target.closest('.contact')){
+                sendMailTo.value = e.target.closest('.contact').getAttribute('flo-id')
+                mailContactList.classList.add('hide-completely')
+                sendMailTo.focusIn()
+            }
+        })
+        
+        mailContactList.addEventListener('keyup', e => {
+            if(e.target.closest('.contact') && e.code === 'Enter' || e.code === 'Space'){
+                sendMailTo.value = document.activeElement.getAttribute('flo-id')
+                mailContactList.classList.add('hide-completely')
+                sendMailTo.focusIn()
+            }
+        })
+        
 		document.addEventListener('click', e => {
-			if(e.target.closest('.navbar-item') && activePage.button !== e.target.closest('.navbar-item')){
+            if(e.target.closest('.navbar-item') && activePage.button !== e.target.closest('.navbar-item')){
                 refresh()
                 let targetButton = e.target.closest('.navbar-item'),
-					targetPage = document.getElementById(targetButton.dataset.target)
+                targetPage = document.getElementById(targetButton.dataset.target)
 				targetButton.classList.add('active')
 				targetPage.classList.remove('hide-completely')
 				if(activePage.page){
-					activePage.page.classList.add('hide-completely')
+                    activePage.page.classList.add('hide-completely')
 					activePage.button.classList.remove('active')
 				}
 				activePage.button = targetButton
 				activePage.page = targetPage;
-			}
+            }
+            if(e.target.closest('#send_mail_to') || e.target.closest('#mail_contact_list')){
+                mailContactList.classList.remove('hide-completely')
+            }
+            else{
+                mailContactList.classList.add('hide-completely')
+            }
 			if(e.target.closest('#new_mail_button')){
-				composeMailPopup.show()
+                composeMailPopup.show()
+                sendMailTo.focusIn()
             }
         })
 
@@ -1019,13 +1092,26 @@
             }).catch(error => {})
         });
 
-        document.getElementById("secure_key").addEventListener('click', function (e) {
-            getPromptInput("Set password", 'Enter Password', false).then(value => {
-                floDapps.securePrivKey(value).then(result => {
-                    privKeyNotSecured = false;
-                    notify("Private Key secured", 'success');
-                }).catch(error => notify("Securing Failed", "error", error))
-            }).catch(error => {})
+        document.getElementById("secure_key").addEventListener('click', async function (e) {
+            try{
+                if(privKeyNotSecured){
+                    let value = await getPromptInput("Set password", 'Enter Password', false);
+                    floDapps.securePrivKey(value).then(result => {
+                        privKeyNotSecured = false;
+                        notify("Private Key secured", 'success');
+                        this.textContent = 'Change Password'
+                    })
+                }
+                else{
+                    let value = await getPromptInput("Change password", 'New Password', false);
+                    floDapps.securePrivKey(value).then(result => {
+                        notify("Password changed", 'success');
+                    })
+                }
+            }
+            catch(error){
+                notify("Securing Failed", "error", error)
+            }
         });
 
         document.getElementById("clear_data").addEventListener('click', function (e) {
@@ -1040,7 +1126,8 @@
         });
 
         document.getElementById('show_contact_popup_button').addEventListener("click", function (e) {
-            document.getElementById("add_contact_popup").show()
+            addContactPopup.show()
+            addContactFloID.focusIn()
 		})
 		
         document.getElementById('add_contact_button').addEventListener("clicked", addContact)
@@ -1059,10 +1146,14 @@
             messenger.refreshInbox().then(data => {
                 renderMessages(data.messages)
                 renderMailList(data.mails)
-                if(Object.keys(data.messages).length && activePage.button !== chatPageButton)
+                if(Object.keys(data.messages).length && activePage.button !== chatPageButton){
                     chatPageButton.setAttribute('data-notifications', Object.keys(data.messages).length)
-                if(Object.keys(data.mails).length && activePage.button !== mailPageButton)
+                    notify(`${Object.keys(data.messages).length} new message(s)`)
+                }
+                if(Object.keys(data.mails).length && activePage.button !== mailPageButton){
                     mailPageButton.setAttribute('data-notifications', Object.keys(data.mails).length)
+                    notify(`${Object.keys(data.mails).length} new mail(s)`)
+                }
                 setTimeout(() => {
                     refreshing = false
                 }, 5000);
@@ -1180,7 +1271,7 @@
             })
         }
 
-        function getPromptInput(title, message, showText = true, trueBtn = "Ok", falseBtn = "Cancel") {
+        async function getPromptInput(title, message, showText = true, trueBtn = "Ok", falseBtn = "Cancel") {
             let prompt = document.getElementById("prompt");
             prompt.show()
             prompt.querySelector('.title').textContent = title;
@@ -1234,6 +1325,11 @@
                 getConversationElement(floID, contactList[floID])
         }
 
+        function renderMailContactList(contactList = {}) {
+            for (floID in contactList)
+                getConversationElement(floID, contactList[floID])
+        }
+
         function renderMarked(data) {
             for (let d in data) {
                 let element = document.getElementsByName(d)[0]
@@ -1242,7 +1338,7 @@
             }
         }
 
-        function getConversationElement(floID, name = "#null") {
+        function getConversationElement(floID, name = "Unknown") {
             let element = chatContainer.querySelector(`#${floID}`)
             if (!element) {
                 element = document.createElement("div");
